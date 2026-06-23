@@ -15,10 +15,5 @@ Replace Team_name
 | **Misha**   | Designer / Frontend Developer  | email@g.com |
 
 
-## 🏫 Institution
-``` c 
-Team is computing under University of ...
-```
-
 ## 📧 Other Contact Info
 - Portfilio : <https://plum165.github.io/portfolio/>
