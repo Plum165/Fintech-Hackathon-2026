@@ -10,7 +10,7 @@ Replace Team_name
 |----------|---------------------|-------------|
 | **Moegamat Samsodien**   | Lead Backend Developer   | rashaadsm2004@gmail.com |
 | **Zahra Salie**   | Designer / Backend Developer   | zahrasalie2004@gmail.com |
-| **Mikeeal**   | Designer / Frontend Developer  | email@g.com |
+| **Mikeeal Naidoo**   | Designer / Frontend Developer  | mikaeelnaidoo2@gmail.com |
 | **Entisaar**   | Designer / Frontend Developer  | email@g.com |
 | **Misha**   | Designer / Frontend Developer  | email@g.com |
 
