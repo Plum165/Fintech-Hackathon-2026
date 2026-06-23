@@ -12,7 +12,7 @@ Replace Team_name
 | **Zahra Salie**   | Designer / Backend Developer   | zahrasalie2004@gmail.com |
 | **Mikeeal Naidoo**   | Designer / Frontend Developer  | mikaeelnaidoo2@gmail.com |
 | **Entisaar Elfadl**   | Designer / Frontend Developer  | entisaarsuliman@gmail.com |
-| **Misha**   | Designer / Frontend Developer  | email@g.com |
+| **Misha Dick**   | Designer / Frontend Developer  | mishadj1425@gmail.com |
 
 
 ## 📧 Other Contact Info
