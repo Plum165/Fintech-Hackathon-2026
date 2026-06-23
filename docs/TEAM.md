@@ -8,9 +8,11 @@ Replace Team_name
 ## 👥 Members
 | Name     | Role                | Email |
 |----------|---------------------|-------------|
-| **Team Mate 1**   | Lead Backend Developer   | email@g.com |
-| **Team Mate 2**   | Designer / Backend Developer   | email@g.com |
-| **Team Mate 3**   | Designer / Frontend Developer  | email@g.com |
+| **Moegamat Samsodien**   | Lead Backend Developer   | rashaadsm2004@gmail.com |
+| **Zahra**   | Designer / Backend Developer   | email@g.com |
+| **Mikeeal**   | Designer / Frontend Developer  | email@g.com |
+| **Entisaar**   | Designer / Frontend Developer  | email@g.com |
+| **Misha**   | Designer / Frontend Developer  | email@g.com |
 
 
 ## 🏫 Institution
