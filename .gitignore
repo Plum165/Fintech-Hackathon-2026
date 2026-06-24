@@ -20,7 +20,6 @@ ehthumbs.db
 # IDE / Editor
 # ==========================
 # VSCode
-.vscode/
 .history/
 *.code-workspace
 
