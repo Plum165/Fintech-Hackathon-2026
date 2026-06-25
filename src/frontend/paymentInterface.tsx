@@ -607,6 +607,7 @@ export default function App() {
             <select
               value={creditDecision}
               onChange={(e) => setCreditDecision(e.target.value as any)}
+              aria-label="Decision Engine selector"
               className="bg-slate-800 border border-slate-700 rounded px-2 py-0.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
             >
               <option value="approve">Auto-Approve Plan</option>
@@ -619,6 +620,7 @@ export default function App() {
             <select
               value={paymentGatewayStatus}
               onChange={(e) => setPaymentGatewayStatus(e.target.value as any)}
+              aria-label="Card Processor selector"
               className="bg-slate-800 border border-slate-700 rounded px-2 py-0.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
             >
               <option value="success">Always Authorize (Success)</option>
@@ -680,13 +682,17 @@ export default function App() {
               {/* Mobile Navigation Toggle Icon */}
               <div className="flex md:hidden bg-slate-100 p-1 rounded-lg">
                 <button
+                  type="button"
                   onClick={() => setActiveTab("checkout")}
+                  aria-label="Switch to checkout tab"
                   className={`p-1.5 rounded-md ${activeTab === "checkout" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500"}`}
                 >
                   <ShoppingBag className="w-4 h-4" />
                 </button>
                 <button
+                  type="button"
                   onClick={() => setActiveTab("portal")}
+                  aria-label="Switch to customer hub tab"
                   className={`p-1.5 rounded-md ${activeTab === "portal" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500"}`}
                 >
                   <User className="w-4 h-4" />
@@ -715,6 +721,8 @@ export default function App() {
                     {/* Sandbox Switch Merchant */}
                     <div className="relative">
                       <select
+                        aria-label="Select merchant"
+                        title="Select merchant"
                         value={selectedMerchant.id}
                         onChange={(e) => {
                           const merch = MERCHANTS.find(m => m.id === e.target.value);
@@ -771,9 +779,9 @@ export default function App() {
                                 <Trash2 className="w-3.5 h-3.5" />
                               </button>
                               <div className="flex items-center gap-1.5 bg-white border border-slate-200 rounded px-1.5 py-0.5">
-                                <button onClick={() => updateQty(item.id, -1)} className="text-slate-400 hover:text-slate-600"><Minus className="w-2.5 h-2.5" /></button>
+                                <button onClick={() => updateQty(item.id, -1)} className="text-slate-400 hover:text-slate-600" title="Decrease quantity"><Minus className="w-2.5 h-2.5" /></button>
                                 <span className="text-[10px] font-bold w-3 text-center">{item.qty}</span>
-                                <button onClick={() => updateQty(item.id, 1)} className="text-slate-400 hover:text-slate-600"><Plus className="w-2.5 h-2.5" /></button>
+                                <button onClick={() => updateQty(item.id, 1)} className="text-slate-400 hover:text-slate-600" title="Increase quantity"><Plus className="w-2.5 h-2.5" /></button>
                               </div>
                             </div>
                           </div>
@@ -1232,8 +1240,10 @@ export default function App() {
                                   />
                                 </div>
                                 <div className="space-y-1.5">
-                                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Mobile Phone</label>
+                                  <label htmlFor="applicant-phone" className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Mobile Phone</label>
                                   <input
+                                    id="applicant-phone"
+                                    aria-label="Mobile Phone"
                                     type="text"
                                     value={applicantPhone}
                                     onChange={(e) => setApplicantPhone(e.target.value)}
@@ -1242,8 +1252,10 @@ export default function App() {
                                   />
                                 </div>
                                 <div className="space-y-1.5">
-                                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">National ID / SSN (Last 4)</label>
+                                  <label htmlFor="applicant-ssn" className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">National ID / SSN (Last 4)</label>
                                   <input
+                                    id="applicant-ssn"
+                                    aria-label="National ID or SSN last 4 digits"
                                     type="password"
                                     value={applicantSSN}
                                     onChange={(e) => setApplicantSSN(e.target.value.replace(/\D/g, "").substring(0, 4))}
@@ -1252,8 +1264,10 @@ export default function App() {
                                   />
                                 </div>
                                 <div className="space-y-1.5">
-                                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Date of Birth</label>
+                                  <label htmlFor="applicant-dob" className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Date of Birth</label>
                                   <input
+                                    id="applicant-dob"
+                                    aria-label="Date of Birth"
                                     type="date"
                                     value={applicantDOB}
                                     onChange={(e) => setApplicantDOB(e.target.value)}
