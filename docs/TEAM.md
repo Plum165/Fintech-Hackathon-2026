@@ -20,6 +20,7 @@ Replace Team_name
 - [Entisaar Elfadl](https://www.linkedin.com/in/entisaar-elfadl-400744351/)
 - [Mikaeel Naidoo](https://www.linkedin.com/in/mikastudent/)
 - [Moegamat Samsodien](https://www.linkedin.com/in/moegamatsamsodien/)
+- [Zahra Salie](https://www.linkedin.com/in/zahrasalie)
 
 
 ## 📧 Other Contact Info
