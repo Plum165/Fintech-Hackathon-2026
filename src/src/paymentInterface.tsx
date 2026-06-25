@@ -139,7 +139,7 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
     merchantName: "Urban Threads Co.",
     amount: 74.25,
     date: "2026-06-25",
-    type: "REMMZ Setup Downpayment"
+    type: "Zenpay Setup Downpayment"
   },
   {
     id: "tx-2",
@@ -148,7 +148,7 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
     merchantName: "TechVerse Store",
     amount: 29.67,
     date: "2026-05-25",
-    type: "REMMZ Installment 1"
+    type: "Zenpay Installment 1"
   },
   {
     id: "tx-3",
@@ -157,7 +157,7 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
     merchantName: "TechVerse Store",
     amount: 29.67,
     date: "2026-06-25",
-    type: "REMMZ Installment 2"
+    type: "Zenpay Installment 2"
   }
 ];
 
@@ -213,7 +213,7 @@ export default function App() {
     installments?: number;
   } | null>(null);
 
-  // State: REMMZ Customer Portal (Auth / Data)
+  // State: ZenPay Customer Portal (Auth / Data)
   const [loans, setLoans] = useState<LoanPlan[]>(INITIAL_LOANS);
   const [transactions, setTransactions] = useState<Transaction[]>(INITIAL_TRANSACTIONS);
   const [portalFeedback, setPortalFeedback] = useState<string | null>(null);
@@ -336,16 +336,16 @@ export default function App() {
   // Trigger BNPL check simulation
   const handleApplyBNPL = () => {
     if (!applicantName || !applicantPhone || (!applicantSSN && activeDrawTab === 'type')) {
-      setErrorMessage("Please fill in all requested fields to perform the REMMZ check.");
+      setErrorMessage("Please fill in all requested fields to perform the ZenPay check.");
       return;
     }
     setErrorMessage("");
     setBnplStep("verifying");
 
     const steps = [
-      "Establishing connection to REMMZ Secure Network...",
+      "Establishing connection to ZenPay Secure Network...",
       "Conducting soft bureau query (No credit impact)...",
-      "Evaluating risk profile against REMMZ scorecards...",
+      "Evaluating risk profile against ZenPay scorecards...",
       "Generating customized amortization code..."
     ];
 
@@ -379,7 +379,7 @@ export default function App() {
         return;
       }
       if (!isSigned && activeDrawTab === "draw") {
-        setErrorMessage("Please sign the REMMZ electronic installment agreement.");
+        setErrorMessage("Please sign the ZenPay electronic installment agreement.");
         return;
       }
       if (activeDrawTab === "type" && !signatureTyped) {
@@ -449,7 +449,7 @@ export default function App() {
               merchantName: selectedMerchant.name,
               amount: downpayment,
               date: dateStr,
-              type: "REMMZ Setup Downpayment"
+              type: "Zenpay Setup Downpayment"
             };
 
             setLoans(prev => [newLoan, ...prev]);
@@ -500,7 +500,7 @@ export default function App() {
     if (!loan) return;
 
     if (loan.remainingAmt <= 0) {
-      setPortalFeedback("This REMMZ plan is already fully satisfied!");
+      setPortalFeedback("This ZenPay plan is already fully satisfied!");
       return;
     }
 
@@ -599,7 +599,7 @@ export default function App() {
       <div className="bg-slate-900 text-slate-300 text-xs py-2 px-4 md:px-8 flex flex-wrap gap-4 items-center justify-between border-b border-slate-800">
         <div className="flex items-center gap-2 font-medium">
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span className="text-white uppercase font-bold tracking-wider text-[10px]">REMMZ Sandbox Node: Active</span>
+          <span className="text-white uppercase font-bold tracking-wider text-[10px]">ZenPay Sandbox Node: Active</span>
         </div>
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-2">
@@ -641,7 +641,7 @@ export default function App() {
                 <div className="w-8 h-8 bg-indigo-600 rounded flex items-center justify-center">
                   <div className="w-4 h-4 bg-white rotate-45"></div>
                 </div>
-                <span className="font-bold text-xl tracking-tight uppercase">REMMZ</span>
+                <span className="font-bold text-xl tracking-tight uppercase">ZenPay</span>
               </div>
               
               {/* Top Navigation for Sandbox Modes */}
@@ -668,7 +668,7 @@ export default function App() {
                   }`}
                 >
                   <LayoutDashboard className="w-3.5 h-3.5" />
-                  REMMZ Customer Hub
+                  ZenPay Customer Hub
                   {loans.length > 0 && (
                     <span className="ml-1 bg-indigo-100 text-indigo-700 text-[10px] px-1.5 py-0.5 rounded-full">
                       {loans.length}
@@ -853,7 +853,7 @@ export default function App() {
                 </div>
               </section>
 
-              {/* Right Panel: Checkout / REMMZ Secure Gateway */}
+              {/* Right Panel: Checkout / ZenPay Secure Gateway */}
               <section className="flex-1 p-6 md:p-10 lg:p-12 bg-slate-50 flex flex-col justify-between overflow-y-auto">
                 
                 {/* 1. Loading state */}
@@ -863,7 +863,7 @@ export default function App() {
                       <div className="absolute inset-0 rounded-full border-4 border-slate-100 border-t-indigo-600 animate-spin"></div>
                       <div className="absolute inset-2.5 rounded-full border-4 border-slate-100 border-b-emerald-500 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
                     </div>
-                    <h3 className="font-bold text-lg text-slate-800 mb-2">REMMZ Checkout Engine</h3>
+                    <h3 className="font-bold text-lg text-slate-800 mb-2">ZenPay Checkout Engine</h3>
                     <p className="text-sm text-slate-500 text-center max-w-sm animate-pulse font-medium">{processingMessage}</p>
                   </div>
                 ) : orderCompleted && completedReceipt ? (
@@ -874,7 +874,7 @@ export default function App() {
                         <CheckCircle2 className="w-10 h-10" />
                       </div>
                       <h2 className="text-2xl font-black tracking-tight text-slate-900">Payment Secured</h2>
-                      <p className="text-sm text-slate-500 mt-1 font-medium">REMMZ authorization generated and approved successfully.</p>
+                      <p className="text-sm text-slate-500 mt-1 font-medium">ZenPay authorization generated and approved successfully.</p>
                     </div>
 
                     <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-6 space-y-4">
@@ -891,7 +891,7 @@ export default function App() {
                         <div className="flex justify-between text-sm">
                           <span className="text-slate-500 font-medium">Payment Protocol</span>
                           <span className="font-bold text-slate-800 uppercase text-xs tracking-wider">
-                            {completedReceipt.paymentType === "bnpl" ? "REMMZ Installment Plan" : "Standard Upfront Card"}
+                            {completedReceipt.paymentType === "bnpl" ? "ZenPay Installment Plan" : "Standard Upfront Card"}
                           </span>
                         </div>
                         
@@ -909,7 +909,7 @@ export default function App() {
                               </span>
                             </div>
                             <div className="flex justify-between text-sm">
-                              <span className="text-slate-500 font-medium">REMMZ Installments</span>
+                              <span className="text-slate-500 font-medium">ZenPay Installments</span>
                               <span className="font-bold text-slate-800">{completedReceipt.installments} equal payments</span>
                             </div>
                           </>
@@ -943,12 +943,12 @@ export default function App() {
                         }}
                         className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 px-4 rounded-xl text-xs shadow-md shadow-indigo-100 transition-all uppercase tracking-wider flex items-center justify-center gap-1.5"
                       >
-                        <LayoutDashboard className="w-3.5 h-3.5" /> View REMMZ Account
+                        <LayoutDashboard className="w-3.5 h-3.5" /> View ZenPay Account
                       </button>
                     </div>
 
                     <p className="text-[10px] text-center text-slate-400 mt-6 font-semibold uppercase tracking-widest flex items-center justify-center gap-1">
-                      <ShieldCheck className="w-3.5 h-3.5 text-indigo-500" /> Secure REMMZ Settlement Token Registered
+                      <ShieldCheck className="w-3.5 h-3.5 text-indigo-500" /> Secure ZenPay Settlement Token Registered
                     </p>
                   </div>
                 ) : (
@@ -957,7 +957,7 @@ export default function App() {
                     <div>
                       {/* Step Title */}
                       <div className="mb-6">
-                        <h1 className="text-2xl font-black text-slate-800 tracking-tight">REMMZ Secure Gateways</h1>
+                        <h1 className="text-2xl font-black text-slate-800 tracking-tight">ZenPay Secure Gateways</h1>
                         <p className="text-slate-500 text-xs font-semibold mt-1">Select your optimized payment architecture</p>
                       </div>
 
@@ -998,7 +998,7 @@ export default function App() {
                                 {paymentOption === "bnpl" && <div className="w-2.5 h-2.5 bg-indigo-600 rounded-full"></div>}
                               </div>
                             </div>
-                            <h3 className="font-black text-sm text-slate-800">REMMZ PayLater</h3>
+                            <h3 className="font-black text-sm text-slate-800">ZenPay PayLater</h3>
                             <p className="text-slate-400 text-[11px] font-medium mt-1 leading-normal">
                               Amortize purchase with split zero-interest installments.
                             </p>
@@ -1045,7 +1045,7 @@ export default function App() {
                           
                           {bnplStep === "selection" && (
                             <div className="space-y-4">
-                              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Choose REMMZ Term Schedule</span>
+                              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Choose ZenPay Term Schedule</span>
                               
                               <div className="grid gap-3">
                                 {/* Plan 1: Pay in 4 */}
@@ -1059,7 +1059,7 @@ export default function App() {
                                 >
                                   <div>
                                     <div className="flex items-center gap-2">
-                                      <span className="font-extrabold text-sm text-slate-800">REMMZ Pay in 4</span>
+                                      <span className="font-extrabold text-sm text-slate-800">ZenPay Pay in 4</span>
                                       <span className="text-[9px] font-bold bg-indigo-100 text-indigo-700 px-1.5 py-0.2 rounded">Interest-Free</span>
                                     </div>
                                     <p className="text-[11px] text-slate-400 mt-1">Four installments every 2 weeks.</p>
@@ -1081,7 +1081,7 @@ export default function App() {
                                 >
                                   <div>
                                     <div className="flex items-center gap-2">
-                                      <span className="font-extrabold text-sm text-slate-800">REMMZ Pay in 3</span>
+                                      <span className="font-extrabold text-sm text-slate-800">ZenPay Pay in 3</span>
                                       <span className="text-[9px] font-bold bg-emerald-100 text-emerald-700 px-1.5 py-0.2 rounded">Zero Fees</span>
                                     </div>
                                     <p className="text-[11px] text-slate-400 mt-1">Three installments paid monthly.</p>
@@ -1103,7 +1103,7 @@ export default function App() {
                                 >
                                   <div>
                                     <div className="flex items-center gap-2">
-                                      <span className="font-extrabold text-sm text-slate-800">REMMZ Slice It</span>
+                                      <span className="font-extrabold text-sm text-slate-800">ZenPay Slice It</span>
                                       <span className="text-[9px] font-bold bg-slate-100 text-slate-700 px-1.5 py-0.2 rounded">5% Surcharge</span>
                                     </div>
                                     <p className="text-[11px] text-slate-400 mt-1">Six monthly interest terms with soft underwriting.</p>
@@ -1117,7 +1117,7 @@ export default function App() {
 
                               {/* Amortization Timeline Visualization */}
                               <div className="bg-white border border-slate-200 rounded-xl p-4">
-                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-3">REMMZ Deductions Schedule</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-3">ZenPay Deductions Schedule</span>
                                 
                                 <div className="flex items-stretch justify-between relative pl-4 border-l-2 border-indigo-100 py-1 space-y-4 flex-col">
                                   {selectedBnplPlan === "payIn4" ? (
@@ -1223,7 +1223,7 @@ export default function App() {
                             <div className="space-y-4 bg-white border border-slate-200 rounded-xl p-5 md:p-6 shadow-sm">
                               <div>
                                 <h3 className="font-black text-sm text-slate-800 flex items-center gap-2">
-                                  <Fingerprint className="w-4 h-4 text-indigo-600" /> Verify Identity for REMMZ Credit
+                                  <Fingerprint className="w-4 h-4 text-indigo-600" /> Verify Identity for ZenPay Credit
                                 </h3>
                                 <p className="text-[11px] text-slate-400 mt-1">This soft inquiry has zero impact on your national credit rating.</p>
                               </div>
@@ -1300,7 +1300,7 @@ export default function App() {
                               </div>
                               <h3 className="font-black text-lg text-slate-900">Credit Score Unsuited</h3>
                               <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
-                                REMMZ’s soft scoring node could not authorize a split-payment plan for this order value automatically.
+                                ZenPay’s soft scoring node could not authorize a split-payment plan for this order value automatically.
                               </p>
                               <div className="bg-slate-50 p-3 rounded-lg text-slate-400 text-[10px] italic border border-slate-100">
                                 Sandbox Hint: Set the "Decision Engine" selection in the top developer bar to "Auto-Approve Plan" to ensure successful approval simulation!
@@ -1328,7 +1328,7 @@ export default function App() {
                                 <div>
                                   <div className="flex items-center gap-1.5 text-emerald-600">
                                     <CheckCircle2 className="w-4.5 h-4.5" />
-                                    <span className="font-extrabold text-xs uppercase tracking-wider">REMMZ Soft Pre-Approval Granted</span>
+                                    <span className="font-extrabold text-xs uppercase tracking-wider">ZenPay Soft Pre-Approval Granted</span>
                                   </div>
                                   <h3 className="font-black text-lg mt-1 text-slate-800">Authorized Credit limit: R15,000.00</h3>
                                 </div>
@@ -1368,7 +1368,7 @@ export default function App() {
 
                                 <div className="p-4 space-y-3">
                                   <p className="text-[10.5px] text-slate-400 leading-normal">
-                                    By signing below, you electronically authorize REMMZ to securely debit the schedule above from your linked banking coordinates on the specified dates.
+                                    By signing below, you electronically authorize ZenPay to securely debit the schedule above from your linked banking coordinates on the specified dates.
                                   </p>
 
                                   {activeDrawTab === "type" ? (
@@ -1429,7 +1429,7 @@ export default function App() {
                                 onClick={handleExecutePayment}
                                 className="w-full bg-slate-900 text-white font-bold py-4 rounded-xl mt-4 hover:bg-black transition-colors flex items-center justify-center gap-2 text-xs uppercase tracking-wider"
                               >
-                                Confirm REMMZ Installment Plan
+                                Confirm ZenPay Installment Plan
                                 <ArrowRight className="w-4 h-4" />
                               </button>
                             </div>
@@ -1454,7 +1454,7 @@ export default function App() {
                                 <span className="text-[8px] font-bold text-indigo-300 uppercase tracking-widest block">REMMZ Secures</span>
                               </div>
                               <div className="text-right">
-                                <span className="font-black text-sm italic tracking-widest block text-indigo-200">REMMZ Upfront</span>
+                                <span className="font-black text-sm italic tracking-widest block text-indigo-200">ZenPay Upfront</span>
                                 <span className="text-[10px] font-black tracking-wide bg-indigo-800 px-2 py-0.5 rounded text-white mt-1 inline-block uppercase">
                                   {getCardBrand()}
                                 </span>
@@ -1557,21 +1557,21 @@ export default function App() {
                     </div>
 
                     <p className="text-center text-[10px] text-slate-400 mt-6 leading-relaxed font-medium">
-                      By proceeding, you agree to REMMZ's Payment terms of services, soft-credit score checks, and merchant disclosure statements. Subject to underwriting approval.
+                      By proceeding, you agree to ZenPay's Payment terms of services, soft-credit score checks, and merchant disclosure statements. Subject to underwriting approval.
                     </p>
                   </div>
                 )}
               </section>
             </main>
           ) : (
-            /* --- REMMZ CUSTOMER PORTAL INTERFACE --- */
+            /* --- ZenPay CUSTOMER PORTAL INTERFACE --- */
             <main className="flex-1 p-6 md:p-8 lg:p-10 bg-slate-50 overflow-y-auto">
               
               {/* Portal Intro Header */}
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                 <div>
                   <h1 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-                    <User className="w-6 h-6 text-indigo-600" /> My REMMZ Credit Account
+                    <User className="w-6 h-6 text-indigo-600" /> My ZenPay Credit Account
                   </h1>
                   <p className="text-slate-500 text-xs font-semibold mt-1">Manage active micro-loans, view payoff progress, and satisfy payments early</p>
                 </div>
@@ -1611,7 +1611,7 @@ export default function App() {
                     <div className="absolute right-0 top-0 opacity-10 font-bold text-9xl tracking-tighter transform translate-x-10 translate-y-10">
                       R
                     </div>
-                    <span className="text-[10px] font-bold text-indigo-300 block uppercase tracking-wider">REMMZ Total Debt Ledger</span>
+                    <span className="text-[10px] font-bold text-indigo-300 block uppercase tracking-wider">ZenPay Total Debt Ledger</span>
                     <h2 className="text-3xl font-black tracking-tight mt-1 text-white">
                       R{totalOutstanding.toFixed(2)}
                     </h2>
@@ -1711,7 +1711,7 @@ export default function App() {
 
                       {/* Details of deductions schedule */}
                       <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3 mb-6">
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">REMMZ Deduction Statement</span>
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">ZenPay Deduction Statement</span>
                         
                         <div className="space-y-2">
                           {Array.from({ length: selectedPortalLoan.paymentsTotal }).map((_, i) => {
@@ -1751,7 +1751,7 @@ export default function App() {
                     /* Default List of Active loans */
                     <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
                       <div>
-                        <h3 className="font-black text-sm text-slate-800">Active REMMZ Loan Accounts</h3>
+                        <h3 className="font-black text-sm text-slate-800">Active ZenPay Loan Accounts</h3>
                         <p className="text-[11px] text-slate-400 mt-1">Select an active line item to view deduction histories or pay ahead of schedule.</p>
                       </div>
 
@@ -1805,9 +1805,9 @@ export default function App() {
                       <ShieldCheck className="w-5 h-5" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-xs text-slate-800">REMMZ Financial Underwriting Standards</h4>
+                      <h4 className="font-bold text-xs text-slate-800">ZenPay Financial Underwriting Standards</h4>
                       <p className="text-[10.5px] text-slate-400 leading-normal mt-1">
-                        REMMZ micro-installment lending coordinates with fully compliant PCI DSS security measures and registers payoff credit lines dynamically to promote transparent consumer finance.
+                        ZenPay micro-installment lending coordinates with fully compliant PCI DSS security measures and registers payoff credit lines dynamically to promote transparent consumer finance.
                       </p>
                     </div>
                   </div>
@@ -1825,7 +1825,7 @@ export default function App() {
               <span className="hidden sm:inline">256-BIT ENCRYPTED CONNECTION</span>
             </div>
             <div className="flex gap-4">
-              <span className="text-indigo-600">© REMMZ FINTECH 2026</span>
+              <span className="text-indigo-600">© ZENPAY FINTECH 2026</span>
             </div>
           </footer>
         </div>
