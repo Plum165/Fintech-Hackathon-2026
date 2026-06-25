@@ -4,12 +4,12 @@ import { motion } from 'motion/react';
 export default function Mascot({ state, message, size = 'md' }: MascotProps) {
   // Map mascot states to visual emojis and descriptive styles
   const config = {
-    idle: { emoji: '🦊', color: 'bg-emerald-50 text-emerald-700 border-emerald-400', label: 'Healthy & Safe' },
+    idle: { emoji: '🐼', color: 'bg-emerald-50 text-emerald-700 border-emerald-400', label: 'Healthy & Safe' },
     happy: { emoji: '🎉', color: 'bg-teal-50 text-teal-800 border-teal-500', label: 'Payment Settled!' },
     warning: { emoji: '⚠️', color: 'bg-amber-50 text-amber-800 border-amber-500', label: 'Budget Alert' },
     sad: { emoji: '😢', color: 'bg-rose-50 text-rose-800 border-rose-500', label: 'Low Funds' },
     thinking: { emoji: '🧠', color: 'bg-indigo-50 text-indigo-800 border-indigo-500', label: 'Zenny is thinking...' }
-  }[state] || { emoji: '🦊', color: 'bg-emerald-50 text-emerald-700 border-emerald-400', label: 'Idle' };
+  }[state] || { emoji: '🐼', color: 'bg-emerald-50 text-emerald-700 border-emerald-400', label: 'Idle' };
 
   const sizeClasses = {
     sm: 'w-10 h-10 text-xl border',

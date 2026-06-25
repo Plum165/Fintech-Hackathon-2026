@@ -158,7 +158,7 @@ const defaultDb: DatabaseSchema = {
     {
       id: 'log_1',
       action: 'SYSTEM_STARTUP',
-      details: 'ZenPay core accounting ledger activated.',
+      details: 'PandaPay core accounting ledger activated.',
       timestamp: new Date().toISOString()
     }
   ]

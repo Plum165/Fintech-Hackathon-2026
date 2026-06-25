@@ -60,21 +60,21 @@ export class AIService {
   }
 
   /**
-   * Generate customized advice from Zenny 🦊
+   * Generate customized advice from Zen 🐼
    */
-  static async getBudgetAdvice(transactions: Transaction[], currentBudgets: any[]): Promise<string> {
+  static async getBudgetAdvice(transatiocns: Transaction[], currentBudgets: any[]): Promise<string> {
     try {
       const provider = this.getProvider();
       const prompt = `Here are the active transactions: ${JSON.stringify(transactions)}.
 Here are the active categories and limits: ${JSON.stringify(currentBudgets)}.
-Provide personal budget advice in 2 clear sentences. Keep the tone friendly, encouraging, and write in the persona of Zenny, the wise fox mascot of ZenPay 🦊. Use "R" for currency symbol.`;
+Provide personal budget advice in 2 clear sentences. Keep the tone friendly, encouraging, and write in the persona of Zen, the wise panda mascot of PandaPay 🐼. Use "R" for currency symbol.`;
 
-      const instruction = "You are Zenny, the fintech companion mascot. You speak directly to the user.";
+      const instruction = "You are Zen, the fintech companion mascot. You speak directly to the user.";
       const advice = await provider.generateText(prompt, instruction);
       return advice;
     } catch (e) {
       console.error("AI budget advice generation failed:", e);
-      return "Zenny recommends saving more and checking your subscription limits!";
+      return "Zen recommends saving more and checking your subscription limits!";
     }
   }
 }

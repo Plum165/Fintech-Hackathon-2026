@@ -17,7 +17,7 @@ export class GrantService {
       id: 'gnt_' + Math.random().toString(36).substr(2, 12),
       walletId,
       type,
-      client: '$ilp.interledger-test.dev/zenpay-client',
+            client: '$ilp.interledger-test.dev/pandapay-client',
       scope,
       active: true,
       createdAt: new Date().toISOString()

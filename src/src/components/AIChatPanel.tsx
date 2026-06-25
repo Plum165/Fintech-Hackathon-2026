@@ -12,13 +12,13 @@ export default function AIChatPanel({ token }: AIChatPanelProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'model',
-      content: 'Hello Corazon! I am Zenny 🦊, your Interledger accounting companion. Ask me anything about your active limits, transactions, or general budget savings advice!',
+      content: 'Hello Corazon! I am Zen 🐼, your Interledger accounting companion. Ask me anything about your active limits, transactions, or general budget savings advice!',
       timestamp: new Date().toISOString()
     }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [advice, setAdvice] = useState('Zenny recommends keeping your Tech & subscriptions category checked this week!');
+  const [advice, setAdvice] = useState('Zen recommends keeping your Tech & subscriptions category checked this week!');
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -105,9 +105,9 @@ export default function AIChatPanel({ token }: AIChatPanelProps) {
       <div className="lg:col-span-2 flex flex-col h-[480px] bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm">
         <div className="p-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <span className="text-lg">🦊</span>
+            <span className="text-lg">🐼</span>
             <div>
-              <h4 className="text-xs font-bold text-slate-800">Consult Zenny</h4>
+              <h4 className="text-xs font-bold text-slate-800">Consult Zen</h4>
               <p className="text-[10px] text-indigo-600 font-mono font-medium">Gemini 3.5 Assistant Active</p>
             </div>
           </div>
@@ -147,7 +147,7 @@ export default function AIChatPanel({ token }: AIChatPanelProps) {
             <div className="flex justify-start">
               <div className="bg-slate-100 border border-slate-200 text-slate-700 rounded-2xl rounded-tl-none p-3.5 text-xs flex items-center gap-2 shadow-sm">
                 <Loader2 className="w-4 h-4 animate-spin text-indigo-600" />
-                <span>Zenny is crafting financial advice...</span>
+                <span>Zen is crafting financial advice...</span>
               </div>
             </div>
           )}
@@ -174,11 +174,11 @@ export default function AIChatPanel({ token }: AIChatPanelProps) {
         </form>
       </div>
 
-      {/* Static insights / Advice card with Zenny in custom thinking state */}
+      {/* Static insights / Advice card with Zen in custom thinking state */}
       <div className="flex flex-col gap-6">
         <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-4">
           <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5 font-sans">
-            <Sparkles className="w-4 h-4 text-indigo-600" /> Zenny's Active Advice
+            <Sparkles className="w-4 h-4 text-peach-600" /> Zen's Active Advice
           </h4>
           <p className="text-xs text-slate-700 leading-relaxed font-sans italic bg-slate-50 p-4 border border-slate-200 rounded-2xl">
             "{advice}"

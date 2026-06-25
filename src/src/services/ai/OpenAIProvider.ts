@@ -11,7 +11,7 @@ export class OpenAIProvider implements AIProvider {
   async generateText(prompt: string, systemInstruction?: string): Promise<string> {
     if (!this.apiKey) {
       console.warn("OpenAI API Key is missing. Falling back to simulation mode.");
-      return `[OpenAI Simulation Mode] I am Zenny, processing your request: "${prompt}"`;
+      return `[OpenAI Simulation Mode] I am Zen, processing your request: "${prompt}"`;
     }
     
     try {
@@ -35,7 +35,7 @@ export class OpenAIProvider implements AIProvider {
       return data.choices?.[0]?.message?.content || "No response received.";
     } catch (e) {
       console.error("OpenAI text generation failed:", e);
-      return `[OpenAI Error Fallback] Unable to reach OpenAI API. Zenny recommends checking your API keys.`;
+      return `[OpenAI Error Fallback] Unable to reach OpenAI API. Zen recommends checking your API keys.`;
     }
   }
 

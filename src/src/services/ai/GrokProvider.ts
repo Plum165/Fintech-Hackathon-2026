@@ -11,7 +11,7 @@ export class GrokProvider implements AIProvider {
   async generateText(prompt: string, systemInstruction?: string): Promise<string> {
     if (!this.apiKey) {
       console.warn("Grok API Key is missing. Falling back to simulation mode.");
-      return `[Grok Simulation Mode] Hello! I am Zenny the Grok chatbot. You asked: "${prompt}"`;
+      return `[Grok Simulation Mode] Hello! I am Zen the Grok chatbot. You asked: "${prompt}"`;
     }
 
     try {
@@ -34,7 +34,7 @@ export class GrokProvider implements AIProvider {
       return data.choices?.[0]?.message?.content || "No response received.";
     } catch (e) {
       console.error("Grok text generation failed:", e);
-      return `[Grok Error Fallback] Unable to reach Grok API. Zenny recommends checking your secrets.`;
+      return `[Grok Error Fallback] Unable to reach Grok API. Zen recommends checking your secrets.`;
     }
   }
 

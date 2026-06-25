@@ -1,5 +1,5 @@
 /**
- * Shared Type Definitions for ZenPay - Modern Interledger Platform
+ * Shared Type Definitions for PandaPay - Modern Interledger Platform
  */
 
 export interface User {

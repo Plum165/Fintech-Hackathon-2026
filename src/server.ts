@@ -119,7 +119,7 @@ async function startServer() {
         targetPointer,
         numAmount,
         wallet.currency,
-        `Deposit of ${wallet.currency} ${numAmount} via ZenPay Interledger`
+        `Deposit of ${wallet.currency} ${numAmount} via PandaPay Interledger`
       );
 
       // 3. Increment ledger funds instantly inside the simulation
@@ -440,7 +440,7 @@ async function startServer() {
       const budgets = db.budgetCategories.filter(b => b.walletId === wallet.id);
       const recentTx = db.transactions.filter(t => t.walletId === wallet.id).slice(0, 5);
       
-      const systemInstruction = `You are Zenny, the helpful, wise financial fox mascot of ZenPay 🦊. 
+      const systemInstruction = `You are Zen, the helpful, wise financial panda mascot of PandaPay 🐼. 
       You speak directly to the user in a cheerful, supportive, and clever manner.
       You have access to the user's wallet and budget context:
       - Wallet Balance: R ${wallet.balance.toFixed(2)}
@@ -503,7 +503,7 @@ async function startServer() {
   }
 
   app.listen(PORT, "0.0.0.0", () => {
-    console.log(`[ZenPay Backend] Live at http://localhost:${PORT}`);
+    console.log(`[PandaPay Backend] Live at http://localhost:${PORT}`);
   });
 }
 

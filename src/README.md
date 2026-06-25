@@ -1,26 +1,26 @@
-# 💳 ZenPay Interledger
+# 💳 PandaPay Interledger
 
-ZenPay is an elegant, full-stack, production-ready fintech dashboard powered by the **Interledger Protocol (ILP)**, offering automated smart budget tracking, advanced transaction auditing, and real-time AI-powered financial coaching. 
+PandaPay is an elegant, full-stack, production-ready fintech dashboard powered by the **Interledger Protocol (ILP)**, offering automated smart budget tracking, advanced transaction auditing, and real-time AI-powered financial coaching. 
 
-Guided by **Zenny the Fox** 🦊, our embedded financial assistant, ZenPay brings the future of open-payments, micro-transactions, and cognitive budget planning together in a beautifully crafted user interface.
+Guided by **Zen the Panda** 🐼, our embedded financial assistant, PandaPay brings the future of open-payments, micro-transactions, and cognitive budget planning together in a beautifully crafted user interface.
 
 ---
 
 ## ✨ Core Features
 
 ### 📡 Interledger Protocol (ILP) Open Payments
-* **Simulated Ledger Routing**: Full simulated end-to-end sandbox implementation of ILP payment pointers (e.g., `$ilp.interledger-test.dev/username`).
-* **Secure Payment Grants**: Automatic secure backend negotiation of incoming and outgoing payment grants based on Interledger Specifications.
-* **Instant Deposits**: Real-time incoming payment resolution, ledger balance updates, and interactive QR Code generation for deposit authorization.
-* **Intelligent Quotes**: Interactive peer-to-peer quoting engine that negotiates currency routing and transfer parameters prior to final ledger consensus.
+* *Simulated Ledger Routing*: Full simulated end-to-end sandbox implementation of ILP payment pointers (e.g., `$ilp.interledger-test.dev/username`).
+* *Secure Payment Grants*: Automatic secure backend negotiation of incoming and outgoing payment grants based on Interledger Specifications.
+* *Instant Deposits*: Real-time incoming payment resolution, ledger balance updates, and interactive QR Code generation for deposit authorization.
+* *Intelligent Quotes*: Interactive peer-to-peer quoting engine that negotiates currency routing and transfer parameters prior to final ledger consensus.
 
 ### 📊 Smart Budget Tracker (CRUD)
-* **Custom Budget Allocations**: Create, update, and remove personalized budget categories with responsive color controls and specific spending ceilings.
-* **Automated AI Transaction Categorization**: Direct natural language description parser that automatically routes every outbound payment to its corresponding budget category.
-* **Real-time Spending Meters**: Interactive gauge indicators that visualize the remaining runway for your monthly limits.
+* *Custom Budget Allocations*: Create, update, and remove personalized budget categories with responsive color controls and specific spending ceilings.
+* *Automated AI Transaction Categorization*: Direct natural language description parser that automatically routes every outbound payment to its corresponding budget category.
+* *Real-time Spending Meters*: Interactive gauge indicators that visualize the remaining runway for your monthly limits.
 
-### 💬 "Consult Zenny" AI Financial Mascot (Gemini 3.5)
-* **Contextual Conversation**: Zenny 🦊 has complete awareness of your current wallet balance, ledger transactions, and spending targets to provide hyper-personalized saving suggestions.
+#### 💬 "Consult Zen" AI Financial Mascot (Gemini 3.5)
+* *Contextual Conversation*: Zen 🐼 has complete awareness of your current wallet balance, ledger transactions, and spending targets to provide hyper-personalized saving suggestions.
 * **Proactive Runway Insights**: Automated smart summaries parsing your current spending behaviors to alert you of potential budget overshoots.
 
 ### 🔍 Advanced Ledger History & Filtering
@@ -31,7 +31,7 @@ Guided by **Zenny the Fox** 🦊, our embedded financial assistant, ZenPay bring
 
 ## 🛠️ Tech Stack
 
-ZenPay is built on a high-performance **Full-Stack (Client + Server) Architecture** leveraging modern tools for modularity and speed:
+PandaPay is built on a high-performance **Full-Stack (Client + Server) Architecture** leveraging modern tools for modularity and speed:
 
 ### 💻 Frontend (Client-Side)
 * **React 19**: Powered by functional components, custom state management hooks, and structured context providers.
@@ -55,7 +55,7 @@ ZenPay is built on a high-performance **Full-Stack (Client + Server) Architectur
 
 ## 🏗️ Architecture
 
-ZenPay strictly decouples private API operations from the client browser:
+PandaPay strictly decouples private API operations from the client browser:
 
 ```
                   ┌──────────────────────────────────────────┐
@@ -72,7 +72,7 @@ ZenPay strictly decouples private API operations from the client browser:
                        ▼                               ▼
        ┌───────────────────────────────┐       ┌───────────────────────────────┐
        │     Google Gemini API (AI)    │       │   Interledger Open Payments   │
-       │   [Budget Insights & Zenny]   │       │   [Grants, Quotes, Pointers]  │
+       │    [Budget Insights & Zen]    │       │   [Grants, Quotes, Pointers]  │
        └───────────────────────────────┘       └───────────────────────────────┘
 ```
 
