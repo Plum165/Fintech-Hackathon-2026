@@ -66,7 +66,7 @@ PandaPay strictly decouples private API operations from the client browser:
                                        ▼
                   ┌──────────────────────────────────────────┐
                   │          Express Backend Router          │
-                  │       [Port 3000 / Node.js ESM]          │
+                  │       [Port 5689 / Node.js ESM]          │
                   └────┬───────────────────────────────┬─────┘
                        │                               │
                        ▼                               ▼
@@ -97,7 +97,7 @@ Boot both the Express server and Vite middleware simultaneously:
 ```bash
 npm run dev
 ```
-The application will be accessible locally on [http://localhost:3000](http://localhost:3000).
+The application will be accessible locally on [http://localhost:5689](http://localhost:5689).
 
 ### 4. Build for Production
 Bundle the client SPA and compile the TypeScript backend:

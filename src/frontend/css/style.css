@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+@theme {
+  /* Slate mappings to soft organic Peach & Cream tones:
+     - slate-50: luxurious cream (#fffdfa)
+     - slate-100: warm soft peach-cream page background (#fff5ee)
+     - slate-200: soft warm peach outline/divider (#fddcb4)
+     - slate-300: warmer cream-peach accent (#fccfa3)
+     - slate-400: warm peach-taupe text (#a38574)
+     - slate-500: warm medium espresso taupe (#8a6c5a)
+     - slate-600: deep warm brown-taupe (#715341)
+     - slate-700: deep warm espresso (#583b2a)
+     - slate-800: rich charcoal dark chocolate (#3f2415)
+     - slate-900: very deep dark chocolate / developer bar (#260d01)
+  */
+  --color-slate-50: #fffdfa;
+  --color-slate-100: #fff5ee;
+  --color-slate-200: #fddcb4;
+  --color-slate-300: #fccfa3;
+  --color-slate-400: #a38574;
+  --color-slate-500: #8a6c5a;
+  --color-slate-600: #715341;
+  --color-slate-700: #583b2a;
+  --color-slate-800: #3f2415;
+  --color-slate-900: #260d01;
+
+  /* Indigo mappings to rich terracotta peach, apricot, and coral tones:
+     - indigo-50: light peach highlight (#fffaf5)
+     - indigo-100: soft apricot shade (#ffe8d6)
+     - indigo-200: lovely warm peach (#fec89a)
+     - indigo-300: rich peach (#fda06a)
+     - indigo-400: bright apricot-peach (#f98050)
+     - indigo-500: energetic peach-coral (#f76022)
+     - indigo-600: rich terracotta peach accent (#dd4d15)
+     - indigo-700: deep terracotta-rust (#b83c0c)
+     - indigo-800: dark mahogany peach (#942e06)
+     - indigo-900: deepest burnt coral (#6b1f01)
+  */
+  --color-indigo-50: #fffaf5;
+  --color-indigo-100: #ffe8d6;
+  --color-indigo-200: #fec89a;
+  --color-indigo-300: #fda06a;
+  --color-indigo-400: #f98050;
+  --color-indigo-500: #f76022;
+  --color-indigo-600: #dd4d15;
+  --color-indigo-700: #b83c0c;
+  --color-indigo-800: #942e06;
+  --color-indigo-900: #6b1f01;
+
+  /* Clean Inter font pairing */
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
