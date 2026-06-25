@@ -1,0 +1,169 @@
+{
+  "users": [
+    {
+      "id": "usr_corazon",
+      "email": "mikaeelnaidoo2@gmail.com",
+      "name": "Corazon",
+      "createdAt": "2026-06-25T09:28:19.271Z"
+    },
+    {
+      "id": "usr_dj1apkjtm",
+      "email": "john123@gmail.com",
+      "name": "john123",
+      "createdAt": "2026-06-25T09:49:40.429Z"
+    }
+  ],
+  "wallets": [
+    {
+      "id": "wal_corazon",
+      "userId": "usr_corazon",
+      "username": "corazon",
+      "pointer": "$ilp.interledger-test.dev/corazon",
+      "balance": 4820.5,
+      "currency": "ZAR",
+      "active": true,
+      "createdAt": "2026-06-25T09:28:19.272Z"
+    },
+    {
+      "id": "wal_m2sf4n38e",
+      "userId": "usr_dj1apkjtm",
+      "username": "john123",
+      "pointer": "$ilp.interledger-test.dev/john123",
+      "balance": 1000,
+      "currency": "ZAR",
+      "active": true,
+      "createdAt": "2026-06-25T09:49:40.434Z"
+    }
+  ],
+  "grants": [],
+  "incomingPayments": [],
+  "outgoingPayments": [],
+  "quotes": [],
+  "transactions": [
+    {
+      "id": "tx_1",
+      "walletId": "wal_corazon",
+      "type": "deposit",
+      "direction": "in",
+      "amount": 500,
+      "currency": "ZAR",
+      "counterparty": "Deposit via ILP",
+      "reference": "ref_dep_9837a",
+      "status": "completed",
+      "category": "General",
+      "createdAt": "2026-06-25T07:28:19.272Z"
+    },
+    {
+      "id": "tx_2",
+      "walletId": "wal_corazon",
+      "type": "send",
+      "direction": "out",
+      "amount": 220,
+      "currency": "ZAR",
+      "counterparty": "$ilp.interledger-test.dev/liam",
+      "reference": "ref_snd_3321b",
+      "status": "completed",
+      "category": "Food",
+      "createdAt": "2026-06-24T09:28:19.272Z"
+    },
+    {
+      "id": "tx_3",
+      "walletId": "wal_corazon",
+      "type": "receive",
+      "direction": "in",
+      "amount": 350,
+      "currency": "ZAR",
+      "counterparty": "$ilp.interledger-test.dev/nia",
+      "reference": "ref_rcv_7612c",
+      "status": "completed",
+      "category": "General",
+      "createdAt": "2026-06-22T09:28:19.272Z"
+    },
+    {
+      "id": "tx_4",
+      "walletId": "wal_corazon",
+      "type": "send",
+      "direction": "out",
+      "amount": 80,
+      "currency": "ZAR",
+      "counterparty": "$ilp.interledger-test.dev/marco",
+      "reference": "ref_snd_4419d",
+      "status": "pending",
+      "category": "Transport",
+      "createdAt": "2026-06-21T09:28:19.272Z"
+    },
+    {
+      "id": "tx_5",
+      "walletId": "wal_corazon",
+      "type": "deposit",
+      "direction": "in",
+      "amount": 1300,
+      "currency": "ZAR",
+      "counterparty": "Deposit via ILP",
+      "reference": "ref_dep_1123e",
+      "status": "completed",
+      "category": "Savings",
+      "createdAt": "2026-06-20T09:28:19.272Z"
+    }
+  ],
+  "budgetCategories": [
+    {
+      "id": "bc_food",
+      "walletId": "wal_corazon",
+      "name": "Food & groceries",
+      "icon": "shopping-cart",
+      "limit": 900,
+      "allocated": 680,
+      "color": "#1D9E75"
+    },
+    {
+      "id": "bc_trans",
+      "walletId": "wal_corazon",
+      "name": "Transport",
+      "icon": "bus",
+      "limit": 400,
+      "allocated": 210,
+      "color": "#378ADD"
+    },
+    {
+      "id": "bc_tech",
+      "walletId": "wal_corazon",
+      "name": "Tech & subscriptions",
+      "icon": "device-laptop",
+      "limit": 500,
+      "allocated": 490,
+      "color": "#A32D2D"
+    },
+    {
+      "id": "bc_save",
+      "walletId": "wal_corazon",
+      "name": "Savings",
+      "icon": "piggy-bank",
+      "limit": 1400,
+      "allocated": 1000,
+      "color": "#EF9F27"
+    }
+  ],
+  "budgetAllocations": [],
+  "aiConversations": [],
+  "auditLogs": [
+    {
+      "id": "log_wbybaetgd",
+      "action": "WALLET_CREATED",
+      "details": "Wallet pointer $ilp.interledger-test.dev/john123 initialized with default balance.",
+      "timestamp": "2026-06-25T09:49:40.436Z"
+    },
+    {
+      "id": "log_6ewjdpxr7",
+      "action": "USER_CREATED",
+      "details": "New user registered with email: john123@gmail.com",
+      "timestamp": "2026-06-25T09:49:40.431Z"
+    },
+    {
+      "id": "log_1",
+      "action": "SYSTEM_STARTUP",
+      "details": "ZenPay core accounting ledger activated.",
+      "timestamp": "2026-06-25T09:28:19.272Z"
+    }
+  ]
+}

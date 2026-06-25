@@ -1,0 +1,6 @@
+{
+  "name": "ZenPay",
+  "description": "An elegant, production-ready fintech dashboard powered by the Interledger Protocol, smart budget tracking, and real-time AI financial insights with Zenny the mascot.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
