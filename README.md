@@ -1,6 +1,4 @@
-# Hackathon Submission Template 
-
-Template for all users
+# Open Payments Challenge Hackathon
 
 ---
 
@@ -77,7 +75,6 @@ Template for all users
 
 - **LICENSE**  
     Default license template for your submission (MIT recommended).
-    *You must add the names of your team members to this template.*
 
 - **README.md**  
     This file
