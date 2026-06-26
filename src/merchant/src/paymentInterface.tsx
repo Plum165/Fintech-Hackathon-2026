@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import QRCode from "qrcode";
 import {
   CreditCard,
-  ShieldCheck,
   CheckCircle2,
   Trash2,
   ExternalLink,
@@ -309,21 +308,6 @@ export default function PaymentInterface() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-between font-sans antialiased text-slate-900 selection:bg-indigo-100">
       
-      {/* Top Header Block */}
-      <div className="bg-slate-900 text-slate-300 text-[11px] py-2 px-4 md:px-8 flex flex-wrap gap-4 items-center justify-between border-b border-slate-800 shrink-0">
-        <div className="flex items-center gap-2 font-semibold">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span className="text-white uppercase tracking-wider text-[10px] flex items-center gap-1.5">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-            Zen-i Open Payment Ledger Connection
-          </span>
-        </div>
-        <div className="flex flex-wrap items-center gap-4 text-slate-400">
-          <span>Active Gateway: Zen-i South Africa</span>
-          <span>•</span>
-          <span>PCI-DSS Cryptographically Signed</span>
-        </div>
-      </div>
 
       {/* App Workspace Container */}
       <div className="flex-1 flex flex-col max-w-7xl w-full mx-auto p-4 md:p-6 lg:p-8 gap-6">
@@ -888,14 +872,15 @@ export default function PaymentInterface() {
 
       </div>
 
-      {/* PCI DSS Compliant Footer */}
-      <footer className="h-12 bg-white border-t border-slate-200 px-6 md:px-10 flex items-center justify-between text-[10px] font-bold text-slate-400 tracking-widest shrink-0 uppercase mt-8">
-        <div className="flex gap-4 md:gap-6">
-          <span className="flex items-center gap-1"><ShieldCheck className="w-4 h-4 text-indigo-600" /> PCI DSS SECURE LINK TERMINAL</span>
-          <span className="hidden sm:inline">256-BIT CRYPTOGRAPHIC DEBIT PROTOCOLS</span>
+           {/* Modern Clean Website Footer */}
+      <footer className="py-8 bg-white border-t border-slate-200 px-6 md:px-10 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4 mt-12 shrink-0">
+        <div>
+          <span className="font-semibold text-slate-800">Apparel Co.</span> — Powered by Zen-i Payments
         </div>
-        <div className="flex gap-4">
-          <span className="text-indigo-600">© Zen-i FINTECH SOUTH AFRICA</span>
+        <div className="flex gap-6 text-slate-400 font-medium">
+          <span>Secure Checkout</span>
+          <span>Terms of Service</span>
+          <span>Privacy Policy</span>
         </div>
       </footer>
 
