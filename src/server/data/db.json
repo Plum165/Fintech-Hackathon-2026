@@ -7,6 +7,14 @@
       "consentAccepted": false,
       "kycStatus": "unverified",
       "createdAt": "2026-06-26T13:21:47.737Z"
+    },
+    {
+      "id": "usr_hq5kpatlw",
+      "email": "mikaeelnaidoo2@gmail.com",
+      "name": "Mikaeelnaidoo2",
+      "consentAccepted": true,
+      "kycStatus": "unverified",
+      "createdAt": "2026-06-26T19:28:55.022Z"
     }
   ],
   "wallets": [
@@ -24,17 +32,154 @@
       "currency": "ZAR",
       "active": true,
       "createdAt": "2026-06-26T13:21:47.741Z"
+    },
+    {
+      "id": "wal_g4pl61w2a",
+      "userId": "usr_hq5kpatlw",
+      "username": "mikaeelnaidoo2",
+      "pointer": "$ilp.interledger-test.dev/mikaeelnaidoo2",
+      "balance": 46,
+      "reserveBalance": 0,
+      "creditOwed": 0,
+      "creditLimit": 1500,
+      "accumulatedInterest": 0,
+      "confidenceScore": 630,
+      "currency": "ZAR",
+      "active": true,
+      "createdAt": "2026-06-26T19:28:55.032Z"
     }
   ],
   "grants": [],
   "incomingPayments": [],
   "outgoingPayments": [],
   "quotes": [],
-  "transactions": [],
+  "transactions": [
+    {
+      "id": "tx_gv75c9wrg",
+      "walletId": "wal_g4pl61w2a",
+      "type": "send",
+      "direction": "out",
+      "amount": 159,
+      "currency": "ZAR",
+      "counterparty": "$tests",
+      "reference": "debit_order_60is34r",
+      "status": "completed",
+      "category": "Tech & subscriptions",
+      "createdAt": "2026-06-26T19:53:28.079Z"
+    },
+    {
+      "id": "tx_7lxrm9lz0",
+      "walletId": "wal_g4pl61w2a",
+      "type": "send",
+      "direction": "out",
+      "amount": 159,
+      "currency": "ZAR",
+      "counterparty": "$tests",
+      "reference": "debit_order_nuomnx0",
+      "status": "completed",
+      "category": "Tech & subscriptions",
+      "createdAt": "2026-06-26T19:53:27.285Z"
+    },
+    {
+      "id": "tx_tkloxoe4d",
+      "walletId": "wal_g4pl61w2a",
+      "type": "send",
+      "direction": "out",
+      "amount": 159,
+      "currency": "ZAR",
+      "counterparty": "$tests",
+      "reference": "debit_order_48yhemf",
+      "status": "completed",
+      "category": "Tech & subscriptions",
+      "createdAt": "2026-06-26T19:53:24.064Z"
+    },
+    {
+      "id": "tx_vy996643z",
+      "walletId": "wal_g4pl61w2a",
+      "type": "send",
+      "direction": "out",
+      "amount": 159,
+      "currency": "ZAR",
+      "counterparty": "$tests",
+      "reference": "debit_order_th8x1ap",
+      "status": "completed",
+      "category": "Tech & subscriptions",
+      "createdAt": "2026-06-26T19:53:23.615Z"
+    },
+    {
+      "id": "tx_8lf7wqgnd",
+      "walletId": "wal_g4pl61w2a",
+      "type": "send",
+      "direction": "out",
+      "amount": 159,
+      "currency": "ZAR",
+      "counterparty": "$tests",
+      "reference": "debit_order_ttdycab",
+      "status": "completed",
+      "category": "Tech & subscriptions",
+      "createdAt": "2026-06-26T19:53:22.848Z"
+    },
+    {
+      "id": "tx_fyczurzxn",
+      "walletId": "wal_g4pl61w2a",
+      "type": "send",
+      "direction": "out",
+      "amount": 159,
+      "currency": "ZAR",
+      "counterparty": "$tests",
+      "reference": "debit_order_cq3vuv3",
+      "status": "completed",
+      "category": "Tech & subscriptions",
+      "createdAt": "2026-06-26T19:53:21.577Z"
+    },
+    {
+      "id": "tx_7l7zmebh5",
+      "walletId": "wal_g4pl61w2a",
+      "type": "deposit",
+      "direction": "in",
+      "amount": 100,
+      "currency": "ZAR",
+      "counterparty": "Deposit via ILP",
+      "reference": "ref_dep_ea9g61x",
+      "status": "completed",
+      "category": "General",
+      "createdAt": "2026-06-26T19:42:01.565Z"
+    }
+  ],
   "budgetCategories": [],
   "budgetAllocations": [],
   "aiConversations": [],
   "auditLogs": [
+    {
+      "id": "log_18fcumlm0",
+      "action": "SUBSCRIPTION_CREATED",
+      "details": "Netflix  R 159 monthly",
+      "timestamp": "2026-06-26T19:53:19.099Z"
+    },
+    {
+      "id": "log_q683uz78l",
+      "action": "DEPOSIT",
+      "details": "R 100 deposited to $ilp.interledger-test.dev/mikaeelnaidoo2",
+      "timestamp": "2026-06-26T19:42:01.569Z"
+    },
+    {
+      "id": "log_kpq3yz5t6",
+      "action": "CONSENT_ACCEPTED",
+      "details": "mikaeelnaidoo2@gmail.com accepted data privacy consent.",
+      "timestamp": "2026-06-26T19:28:58.857Z"
+    },
+    {
+      "id": "log_q867lqrv8",
+      "action": "WALLET_CREATED",
+      "details": "Internal wallet for $ilp.interledger-test.dev/mikaeelnaidoo2 created.",
+      "timestamp": "2026-06-26T19:28:55.035Z"
+    },
+    {
+      "id": "log_ojr06lafj",
+      "action": "USER_CREATED",
+      "details": "New user: mikaeelnaidoo2@gmail.com",
+      "timestamp": "2026-06-26T19:28:55.026Z"
+    },
     {
       "id": "log_8xq4rkzz3",
       "action": "WALLET_CREATED",

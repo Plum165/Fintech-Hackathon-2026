@@ -33,12 +33,24 @@ const app = express();
 const PORT = parseInt(process.env.PORT ?? '4000', 10);
 
 // ── Middleware ──────────────────────────────────────────────────────────────
+// Base localhost origins + anything extra listed in ALLOWED_ORIGINS (comma-separated).
+// .vercel.app and .trycloudflare.com wildcards are always allowed so you never
+// need to update this file when tunnel or Vercel preview URLs change.
+const _baseOrigins = new Set([
+  'http://localhost:3000',
+  'http://localhost:5174',
+  'http://localhost:5689',
+  'http://localhost:5173',
+  ...(process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',').map(s => s.trim()) : [])
+]);
+
 app.use(cors({
-  origin: [
-    'http://localhost:3000',   // pandapay frontend
-    'http://localhost:5689',   // merchant frontend
-    'http://localhost:5173',   // vite default
-  ],
+  origin: (origin, cb) => {
+    if (!origin) return cb(null, true); // same-origin / server-to-server
+    if (_baseOrigins.has(origin)) return cb(null, true);
+    if (origin.endsWith('.vercel.app') || origin.endsWith('.trycloudflare.com')) return cb(null, true);
+    cb(new Error(`CORS: origin not allowed — ${origin}`));
+  },
   credentials: true
 }));
 app.use(express.json());
@@ -1114,7 +1126,24 @@ async function safeAutoCategorize(desc: string, amount: number): Promise<string>
 // START
 // ============================================================================
 
-app.listen(PORT, '0.0.0.0', () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`[PandaPay Server] Running on http://localhost:${PORT}`);
-  console.log(`[PandaPay Server] Open Payments mode: ${isOPConfigured() ? 'LIVE' : 'SIMULATION'}`);
+  console.log(`[PandaPay Server] Open Payments: ${isOPConfigured() ? 'LIVE' : 'SIMULATION'}`);
 });
+
+server.on('error', (err: NodeJS.ErrnoException) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`[PandaPay Server] Port ${PORT} already in use — kill the old process or change PORT in .env`);
+  } else {
+    console.error('[PandaPay Server] Server error:', err);
+  }
+  process.exit(1);
+});
+
+// Graceful shutdown: let tsx --watch / Docker / PM2 release the port cleanly
+// before the new process starts, preventing EADDRINUSE on hot reload.
+const shutdown = () => {
+  server.close(() => process.exit(0));
+};
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);
