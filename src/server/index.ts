@@ -44,7 +44,7 @@ const _baseOrigins = new Set([
   ...(process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',').map(s => s.trim()) : [])
 ]);
 
-app.use(cors({
+const _corsOptions: cors.CorsOptions = {
   origin: (origin, cb) => {
     if (!origin) return cb(null, true); // same-origin / server-to-server
     if (_baseOrigins.has(origin)) return cb(null, true);
@@ -52,7 +52,10 @@ app.use(cors({
     cb(new Error(`CORS: origin not allowed — ${origin}`));
   },
   credentials: true
-}));
+};
+
+app.use(cors(_corsOptions));
+app.options('*', cors(_corsOptions)); // handle preflight for all routes
 app.use(express.json());
 
 // ── Auth (in-memory session map) ────────────────────────────────────────────
