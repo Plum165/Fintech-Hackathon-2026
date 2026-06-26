@@ -102,6 +102,11 @@ export default function App() {
     }
   }, [token, refreshKey]);
 
+  const [isRegisterMode, setIsRegisterMode] = useState(false);
+  const [registerName, setRegisterName] = useState('');
+  const [registerUsername, setRegisterUsername] = useState('');
+  const [registerEmail, setRegisterEmail] = useState('');
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     const inputVal = email.trim();
@@ -137,6 +142,51 @@ export default function App() {
       }
     } catch (err) {
       setAuthError('Server API offline. Try restarting your development server.');
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const emailVal = registerEmail.trim();
+    const nameVal = registerName.trim();
+    const usernameVal = registerUsername.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+
+    if (!emailVal || !nameVal || !usernameVal) {
+      setAuthError('All registration fields are required.');
+      return;
+    }
+
+    if (!emailVal.includes('@')) {
+      setAuthError('Please enter a valid email address.');
+      return;
+    }
+
+    if (usernameVal.length < 3) {
+      setAuthError('Wallet username must be at least 3 characters.');
+      return;
+    }
+
+    setIsLoggingIn(true);
+    setAuthError('');
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: emailVal, name: nameVal, username: usernameVal })
+      });
+      const data = await response.json();
+      if (response.ok) {
+        localStorage.setItem('token', data.token);
+        setToken(data.token);
+        setUser(data.user);
+        setWallet(data.wallet);
+      } else {
+        setAuthError(data.error || 'Registration failed.');
+      }
+    } catch (err) {
+      setAuthError('Registration failed. Server API offline.');
     } finally {
       setIsLoggingIn(false);
     }
@@ -215,11 +265,41 @@ export default function App() {
           className="w-full max-w-md bg-white border border-slate-200 rounded-3xl p-8 shadow-lg relative overflow-hidden text-slate-800 z-10"
         >
           {/* Logo */}
-          <div className="flex flex-col items-center text-center space-y-4 mb-8">
+          <div className="flex flex-col items-center text-center space-y-4 mb-6">
             <ZenILogo size="lg" />
-            <p className="text-xs text-slate-500 max-w-xs mt-2">
-              Authenticate via single-step secure email and instantly resolve your custom open payment pointers.
+            <p className="text-xs text-slate-500 max-w-xs mt-1">
+              Authenticate with single-step Open Payments routing and instantly resolve your custom decentralized pointers.
             </p>
+          </div>
+
+          {/* Tab Switcher */}
+          <div className="grid grid-cols-2 bg-slate-100 rounded-xl p-1 mb-6 border border-slate-200/50">
+            <button
+              onClick={() => {
+                setIsRegisterMode(false);
+                setAuthError('');
+              }}
+              className={`py-2 text-xs font-bold rounded-lg transition cursor-pointer border-0 ${
+                !isRegisterMode 
+                  ? 'bg-white text-slate-800 shadow-sm' 
+                  : 'text-slate-500 hover:text-slate-800 bg-transparent'
+              }`}
+            >
+              Sign In
+            </button>
+            <button
+              onClick={() => {
+                setIsRegisterMode(true);
+                setAuthError('');
+              }}
+              className={`py-2 text-xs font-bold rounded-lg transition cursor-pointer border-0 ${
+                isRegisterMode 
+                  ? 'bg-white text-slate-800 shadow-sm' 
+                  : 'text-slate-500 hover:text-slate-800 bg-transparent'
+              }`}
+            >
+              Sign Up
+            </button>
           </div>
 
           {authError && (
@@ -229,32 +309,122 @@ export default function App() {
             </div>
           )}
 
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div className="space-y-1.5">
-              <label className="text-xs text-slate-500 font-bold flex items-center gap-1.5 font-sans">
-                <Key className="w-3.5 h-3.5 text-peach-700" /> Email or Payment Pointer
-              </label>
-              <input
-                type="text"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-850 placeholder-slate-400 focus:outline-none focus:border-peach-500 focus:ring-1 focus:ring-peach-500 transition font-medium font-mono"
-                placeholder="$pointer or you@example.com"
-                required
-              />
-            </div>
+          <AnimatePresence mode="wait">
+            {!isRegisterMode ? (
+              <motion.form
+                key="signin-form"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 10 }}
+                onSubmit={handleLogin}
+                className="space-y-4"
+              >
+                <div className="space-y-1.5">
+                  <label className="text-xs text-slate-500 font-bold flex items-center gap-1.5 font-sans">
+                    <Key className="w-3.5 h-3.5 text-peach-700" /> Email or Payment Pointer
+                  </label>
+                  <input
+                    type="text"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-850 placeholder-slate-400 focus:outline-none focus:border-peach-500 focus:ring-1 focus:ring-peach-500 transition font-medium font-mono"
+                    placeholder="$pointer or you@example.com"
+                    required
+                  />
+                </div>
 
+                <button
+                  type="submit"
+                  disabled={isLoggingIn}
+                  className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-peach-600 hover:bg-peach-700 disabled:bg-slate-100 disabled:text-slate-400 text-white font-bold text-sm rounded-xl transition cursor-pointer shadow-sm border-0"
+                >
+                  {isLoggingIn ? 'Verifying Pointer...' : 'Open Wallet Node'}
+                </button>
+              </motion.form>
+            ) : (
+              <motion.form
+                key="signup-form"
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                onSubmit={handleRegister}
+                className="space-y-4"
+              >
+                <div className="space-y-1.5">
+                  <label className="text-xs text-slate-500 font-bold flex items-center gap-1.5 font-sans">
+                    <UserIcon className="w-3.5 h-3.5 text-peach-700" /> Full Name
+                  </label>
+                  <input
+                    type="text"
+                    value={registerName}
+                    onChange={(e) => setRegisterName(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-850 placeholder-slate-400 focus:outline-none focus:border-peach-500 focus:ring-1 focus:ring-peach-500 transition font-medium"
+                    placeholder="e.g. Liam Naidoo"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs text-slate-500 font-bold flex items-center gap-1.5 font-sans">
+                    <Mail className="w-3.5 h-3.5 text-peach-700" /> Email Address
+                  </label>
+                  <input
+                    type="email"
+                    value={registerEmail}
+                    onChange={(e) => setRegisterEmail(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-850 placeholder-slate-400 focus:outline-none focus:border-peach-500 focus:ring-1 focus:ring-peach-500 transition font-medium"
+                    placeholder="you@example.com"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs text-slate-500 font-bold flex items-center gap-1.5 font-sans">
+                    <Sparkle className="w-3.5 h-3.5 text-peach-700" /> Choose Wallet Username
+                  </label>
+                  <div className="flex rounded-xl bg-slate-50 border border-slate-200 focus-within:border-peach-500 focus-within:ring-1 focus-within:ring-peach-500 transition overflow-hidden">
+                    <span className="bg-slate-100 text-slate-500 px-3 py-3 text-xs font-mono border-r border-slate-200 flex items-center select-none font-semibold">
+                      $ilp.../
+                    </span>
+                    <input
+                      type="text"
+                      value={registerUsername}
+                      onChange={(e) => setRegisterUsername(e.target.value.toLowerCase().replace(/[^a-z0-9]/g, ''))}
+                      className="bg-transparent text-slate-850 px-4 py-3 text-sm focus:outline-none flex-1 font-mono font-bold"
+                      placeholder="username"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isLoggingIn}
+                  className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-peach-600 hover:bg-peach-700 disabled:bg-slate-100 disabled:text-slate-400 text-white font-bold text-sm rounded-xl transition cursor-pointer shadow-sm border-0"
+                >
+                  {isLoggingIn ? 'Provisioning Wallet...' : 'Create Secure Wallet'}
+                </button>
+              </motion.form>
+            )}
+          </AnimatePresence>
+
+          {/* Switch helper link */}
+          <div className="mt-4 text-center">
             <button
-              type="submit"
-              disabled={isLoggingIn}
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-peach-600 hover:bg-peach-700 disabled:bg-slate-100 disabled:text-slate-400 text-white font-bold text-sm rounded-xl transition cursor-pointer shadow-sm"
+              onClick={() => {
+                setIsRegisterMode(!isRegisterMode);
+                setAuthError('');
+              }}
+              className="text-xs text-peach-700 hover:text-peach-800 font-bold bg-transparent border-0 cursor-pointer"
             >
-              {isLoggingIn ? 'Verifying Pointer...' : 'Open Wallet Node'}
+              {!isRegisterMode 
+                ? "Don't have an account? Sign Up" 
+                : "Already have an account? Sign In"}
             </button>
-          </form>
+          </div>
 
           {/* Seed demo instructions */}
-          <div className="mt-8 pt-6 border-t border-slate-100 text-[10px] text-slate-500 text-center flex flex-col items-center space-y-1.5">
+          <div className="mt-6 pt-6 border-t border-slate-100 text-[10px] text-slate-500 text-center flex flex-col items-center space-y-1.5">
             <span className="font-mono bg-slate-50 px-2 py-1 rounded text-peach-700 font-bold">
               Demo credentials: mikaeelnaidoo2@gmail.com
             </span>

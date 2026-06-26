@@ -140,7 +140,7 @@ export default function SendForm({ onSendComplete, token }: SendFormProps) {
           <button 
             onClick={reset} 
             aria-label="Go back to step 1"
-            className="p-2 -ml-2 text-slate-500 hover:text-slate-800 transition rounded-xl hover:bg-slate-100 cursor-pointer min-w-[44px] min-h-[44px] flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="p-2 -ml-2 text-slate-500 hover:text-slate-850 transition rounded-xl hover:bg-slate-100 cursor-pointer min-w-[44px] min-h-[44px] flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-emerald-500 border-0 bg-transparent"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
@@ -180,7 +180,7 @@ export default function SendForm({ onSendComplete, token }: SendFormProps) {
                   type="button" 
                   onClick={() => setShowScanner(!showScanner)}
                   aria-expanded={showScanner}
-                  className="flex items-center gap-1.5 py-1 px-2 text-[10px] uppercase tracking-wider font-bold text-emerald-700 hover:text-emerald-800 transition cursor-pointer min-h-[32px] rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="flex items-center gap-1.5 py-1 px-2 text-[10px] uppercase tracking-wider font-bold text-emerald-700 hover:text-emerald-800 transition cursor-pointer min-h-[44px] rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 border-0 bg-transparent"
                 >
                   <Camera className="w-4 h-4" /> {showScanner ? 'Close' : 'Scan QR'}
                 </button>
@@ -191,7 +191,7 @@ export default function SendForm({ onSendComplete, token }: SendFormProps) {
                 </div>
               )}
               <div className="flex rounded-xl bg-slate-50 border border-slate-200 focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/20 transition overflow-hidden">
-                <span className="bg-slate-100 text-slate-500 px-3 py-3 text-xs font-mono border-r border-slate-200 flex items-center select-none">
+                <span className="bg-slate-100 text-slate-500 px-3 py-3 text-xs font-mono border-r border-slate-200 flex items-center select-none font-semibold">
                   $ilp.interledger-test.dev/
                 </span>
                 <input 
@@ -243,7 +243,7 @@ export default function SendForm({ onSendComplete, token }: SendFormProps) {
             <button 
               type="submit" 
               disabled={isLoading}
-              className="w-full flex items-center justify-center gap-1.5 py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 active:scale-98 disabled:opacity-50 disabled:pointer-events-none text-white font-bold rounded-xl text-xs transition mt-4 cursor-pointer shadow-sm min-h-[44px] focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full flex items-center justify-center gap-1.5 py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 active:scale-98 disabled:opacity-50 disabled:pointer-events-none text-white font-bold rounded-xl text-xs transition mt-4 cursor-pointer shadow-sm min-h-[44px] focus:outline-none focus:ring-2 focus:ring-emerald-500 border-0"
             >
               {isLoading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -297,7 +297,7 @@ export default function SendForm({ onSendComplete, token }: SendFormProps) {
               </p>
               <button 
                 onClick={handleOpenApproval}
-                className="w-full flex items-center justify-center gap-2 py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition shadow-sm cursor-pointer min-h-[44px] focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full flex items-center justify-center gap-2 py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition shadow-sm cursor-pointer min-h-[44px] focus:outline-none focus:ring-2 focus:ring-emerald-500 border-0"
               >
                 <ExternalLink className="w-4 h-4" /> Approve in Your Wallet
               </button>
@@ -305,7 +305,7 @@ export default function SendForm({ onSendComplete, token }: SendFormProps) {
 
             <button 
               onClick={reset} 
-              className="w-full py-3 text-slate-500 hover:text-slate-800 text-xs font-semibold rounded-xl transition cursor-pointer min-h-[44px] focus:outline-none focus:ring-2 focus:ring-slate-300"
+              className="w-full py-3 text-slate-500 hover:text-slate-800 text-xs font-semibold rounded-xl transition cursor-pointer min-h-[44px] focus:outline-none focus:ring-2 focus:ring-slate-300 border-0 bg-transparent"
             >
               Cancel
             </button>
@@ -345,7 +345,7 @@ export default function SendForm({ onSendComplete, token }: SendFormProps) {
             <button 
               onClick={handleExecute} 
               disabled={isLoading}
-              className="w-full flex items-center justify-center gap-1.5 py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:pointer-events-none text-white font-bold text-xs rounded-xl transition shadow-sm cursor-pointer min-h-[44px] focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full flex items-center justify-center gap-1.5 py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:pointer-events-none text-white font-bold text-xs rounded-xl transition shadow-sm cursor-pointer min-h-[44px] focus:outline-none focus:ring-2 focus:ring-emerald-500 border-0"
             >
               {isLoading ? (
                 <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</>
@@ -356,7 +356,7 @@ export default function SendForm({ onSendComplete, token }: SendFormProps) {
 
             <button 
               onClick={() => setStep(2)} 
-              className="w-full py-3 text-slate-500 hover:text-slate-850 text-xs font-semibold rounded-xl transition cursor-pointer min-h-[44px] focus:outline-none focus:ring-2 focus:ring-slate-300"
+              className="w-full py-3 text-slate-500 hover:text-slate-850 text-xs font-semibold rounded-xl transition cursor-pointer min-h-[44px] focus:outline-none focus:ring-2 focus:ring-slate-300 border-0 bg-transparent"
             >
               Go Back
             </button>
@@ -387,7 +387,7 @@ export default function SendForm({ onSendComplete, token }: SendFormProps) {
             </div>
             <button 
               onClick={reset} 
-              className="w-full py-3.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition cursor-pointer min-h-[44px] focus:outline-none focus:ring-2 focus:ring-slate-300"
+              className="w-full py-3.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition cursor-pointer min-h-[44px] focus:outline-none focus:ring-2 focus:ring-slate-300 border-0"
             >
               Make Another Transfer
             </button>
@@ -398,4 +398,3 @@ export default function SendForm({ onSendComplete, token }: SendFormProps) {
     </div>
   );
 }
-

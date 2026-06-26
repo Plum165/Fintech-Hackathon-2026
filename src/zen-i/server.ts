@@ -91,22 +91,7 @@ async function startServer() {
           user = db.users.find(u => u.id === existingWallet.userId);
           wallet = existingWallet;
         } else {
-          // Create new user/wallet from pointer
-          const username = input.replace(/^\$/, '').split('/')[0] || 'user';
-          const mockEmail = `${username}@example.com`;
-          user = {
-            id: 'usr_' + Math.random().toString(36).substr(2, 9),
-            email: mockEmail,
-            name: username.charAt(0).toUpperCase() + username.slice(1),
-            consentAccepted: false,
-            kycStatus: 'unverified',
-            createdAt: new Date().toISOString()
-          };
-          db.users.push(user);
-          Database.write(db);
-          Database.log('USER_CREATED', `New user registered via pointer: ${input}`);
-          
-          wallet = await WalletService.getOrCreateWallet(user.id, username);
+          return res.status(404).json({ error: 'No wallet found matching that pointer. Please sign up to create a new wallet.' });
         }
       } else {
         // Normal email login
@@ -117,22 +102,15 @@ async function startServer() {
         user = db.users.find(u => u.email.toLowerCase() === input);
         
         if (!user) {
-          user = {
-            id: 'usr_' + Math.random().toString(36).substr(2, 9),
-            email: input,
-            name: input.split('@')[0],
-            consentAccepted: false,
-            kycStatus: 'unverified',
-            createdAt: new Date().toISOString()
-          };
-          db.users.push(user);
-          Database.write(db);
-          Database.log('USER_CREATED', `New user registered with email: ${input}`);
+          return res.status(404).json({ error: 'No account found with this email. Please sign up first!' });
         }
 
-        // Ensure wallet is created/dispatched
-        const username = user.name.toLowerCase().replace(/[^a-z0-9]/g, '');
-        wallet = await WalletService.getOrCreateWallet(user.id, username);
+        // Ensure wallet is retrieved
+        wallet = db.wallets.find(w => w.userId === user.id);
+        if (!wallet) {
+          const username = user.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+          wallet = await WalletService.getOrCreateWallet(user.id, username);
+        }
       }
 
       // Generate simulation token
@@ -142,6 +120,67 @@ async function startServer() {
       res.json({ token, user, wallet });
     } catch (e: any) {
       res.status(500).json({ error: e.message || 'Authentication error.' });
+    }
+  });
+
+  app.post("/api/auth/register", async (req, res) => {
+    try {
+      const { email, name, username } = req.body;
+      if (!email || !name || !username) {
+        return res.status(400).json({ error: 'Email, Full Name, and Wallet Username are all required for registration.' });
+      }
+
+      const cleanEmail = email.trim().toLowerCase();
+      const cleanName = name.trim();
+      const cleanUsername = username.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+
+      if (!cleanEmail.includes('@')) {
+        return res.status(400).json({ error: 'Please enter a valid email address.' });
+      }
+
+      if (cleanUsername.length < 3) {
+        return res.status(400).json({ error: 'Wallet username must be at least 3 alphanumeric characters.' });
+      }
+
+      const db = Database.read();
+
+      // Check if email already exists
+      const existingUser = db.users.find(u => u.email.toLowerCase() === cleanEmail);
+      if (existingUser) {
+        return res.status(400).json({ error: 'This email address is already registered. Please sign in instead.' });
+      }
+
+      // Check if username/pointer already exists
+      const targetPointer = WalletService.generatePointer(cleanUsername);
+      const existingWallet = db.wallets.find(w => w.pointer.toLowerCase() === targetPointer.toLowerCase() || w.username.toLowerCase() === cleanUsername);
+      if (existingWallet) {
+        return res.status(400).json({ error: 'This wallet username is already taken. Please choose another one.' });
+      }
+
+      // Create new user
+      const user = {
+        id: 'usr_' + Math.random().toString(36).substr(2, 9),
+        email: cleanEmail,
+        name: cleanName,
+        consentAccepted: false,
+        kycStatus: 'unverified' as const,
+        createdAt: new Date().toISOString()
+      };
+      db.users.push(user);
+
+      // Create wallet
+      const wallet = await WalletService.getOrCreateWallet(user.id, cleanUsername);
+
+      Database.write(db);
+      Database.log('USER_CREATED', `New user registered with email: ${cleanEmail}, pointer: ${wallet.pointer}`);
+
+      // Generate simulation token
+      const token = 'token_' + Math.random().toString(36).substr(2, 16);
+      authTokens.set(token, { email: user.email, userId: user.id });
+
+      res.json({ token, user, wallet });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message || 'Registration error.' });
     }
   });
 
