@@ -17,7 +17,32 @@ import { Transaction, BudgetCategory, Message, Subscription, BnplContract, BnplI
 
 async function startServer() {
   const app = express();
-  const PORT = 3000;
+  const PORT = parseInt(process.env.PORT ?? '3000', 10);
+  const API_TARGET = process.env.API_URL ?? 'http://localhost:4000';
+
+  // If API_URL environment variable is provided, proxy all /api requests to the API_TARGET
+  if (process.env.API_URL) {
+    app.use('/api', async (req: any, res: any) => {
+      const chunks: Buffer[] = [];
+      req.on('data', (c: Buffer) => chunks.push(c));
+      await new Promise(r => req.on('end', r));
+      const body = Buffer.concat(chunks);
+
+      try {
+        const headers: Record<string, string> = { 'content-type': 'application/json' };
+        if (req.headers.authorization) headers['authorization'] = req.headers.authorization;
+
+        const resp = await fetch(`${API_TARGET}/api${req.url}`, {
+          method: req.method,
+          headers,
+          body: body.length && req.method !== 'GET' && req.method !== 'HEAD' ? body : undefined
+        });
+        res.status(resp.status).json(await resp.json());
+      } catch {
+        res.status(502).json({ error: 'API server unreachable.' });
+      }
+    });
+  }
 
   // Middleware for parsing JSON
   app.use(express.json());
@@ -160,7 +185,7 @@ async function startServer() {
         targetPointer,
         numAmount,
         wallet.currency,
-        `Deposit of ${wallet.currency} ${numAmount} via PandaPay Interledger`
+        `Deposit of ${wallet.currency} ${numAmount} via Zen-i Interledger`
       );
 
       // 3. Increment ledger funds instantly inside the simulation
@@ -617,7 +642,7 @@ async function startServer() {
       const budgets = db.budgetCategories.filter(b => b.walletId === wallet.id);
       const recentTx = db.transactions.filter(t => t.walletId === wallet.id).slice(0, 5);
       
-      const systemInstruction = `You are Zen, the helpful, wise financial panda mascot of PandaPay 🐼. 
+      const systemInstruction = `You are Zen-i, the helpful, wise financial frog mascot of Zen-i 🐸. 
       You speak directly to the user in a cheerful, supportive, and clever manner.
       You have access to the user's wallet and budget context:
       - Wallet Balance: R ${wallet.balance.toFixed(2)}
@@ -1282,7 +1307,7 @@ async function startServer() {
   }
 
   app.listen(PORT, "0.0.0.0", () => {
-    console.log(`[PandaPay Backend] Live at http://localhost:${PORT}`);
+    console.log(`[PandaPay] Production/Development → http://localhost:${PORT}  API: ${process.env.API_URL ?? 'http://localhost:4000'}`);
   });
 }
 

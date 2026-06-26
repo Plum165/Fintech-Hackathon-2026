@@ -4,9 +4,10 @@ import {
   LayoutDashboard, ArrowDownCircle, ArrowUpCircle, List, 
   ChartPie, Sparkles, Settings, Bell, Mail, Key, User as UserIcon,
   HelpCircle, LogOut, CheckCircle, ShieldAlert, Sparkle, RefreshCw,
-  PiggyBank, ShieldCheck, CreditCard, Radio, ShieldAlert as ShieldAlertIcon, FileText, Percent
+  PiggyBank, ShieldCheck, CreditCard, Radio, ShieldAlert as ShieldAlertIcon, FileText, Percent,
+  Calendar, Clock
 } from 'lucide-react';
-import { User, Wallet } from './types';
+import { User, Wallet, BnplContract, BnplInstallment } from './types';
 import WalletCard from './components/WalletCard';
 import DepositForm from './components/DepositForm';
 import SendForm from './components/SendForm';
@@ -41,6 +42,21 @@ export default function App() {
   // Stats aggregation
   const [moneyIn, setMoneyIn] = useState(2150.00);
   const [moneyOut, setMoneyOut] = useState(1340.00);
+  const [contracts, setContracts] = useState<BnplContract[]>([]);
+
+  const fetchContracts = async (activeToken: string) => {
+    try {
+      const response = await fetch('/api/bnpl/contracts', {
+        headers: { 'Authorization': `Bearer ${activeToken}` }
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setContracts(data.contracts || []);
+      }
+    } catch (e) {
+      console.error('Failed to fetch contracts for dashboard:', e);
+    }
+  };
 
   const fetchSession = async (activeToken: string) => {
     try {
@@ -82,6 +98,7 @@ export default function App() {
     if (token) {
       fetchSession(token);
       fetchStats(token);
+      fetchContracts(token);
     }
   }, [token, refreshKey]);
 
@@ -135,6 +152,36 @@ export default function App() {
 
   const triggerRefresh = () => {
     setRefreshKey(prev => prev + 1);
+  };
+
+  const [isRepaying, setIsRepaying] = useState(false);
+  const [repayError, setRepayError] = useState('');
+  const [repaySuccess, setRepaySuccess] = useState('');
+
+  const handleDashboardRepay = async (contractId: string, installmentId: string) => {
+    if (!token) return;
+    setIsRepaying(true);
+    setRepayError('');
+    setRepaySuccess('');
+    try {
+      const response = await fetch(`/api/bnpl/repay/${contractId}/${installmentId}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setRepaySuccess('Installment successfully repaid!');
+        triggerRefresh();
+      } else {
+        setRepayError(data.error || 'Repayment failed.');
+      }
+    } catch (err) {
+      setRepayError('Connection failure during repayment.');
+    } finally {
+      setIsRepaying(false);
+    }
   };
 
   const handleAcceptConsent = async () => {
@@ -217,6 +264,46 @@ export default function App() {
       </div>
     );
   }
+
+  const getNextUpcomingPayment = () => {
+    const unpaid: { installment: BnplInstallment; contract: BnplContract }[] = [];
+    contracts.forEach(contract => {
+      contract.installments.forEach(inst => {
+        if (inst.status === 'pending' || inst.status === 'overdue') {
+          unpaid.push({ installment: inst, contract });
+        }
+      });
+    });
+
+    if (unpaid.length === 0) return null;
+
+    // Sort by due date ascending
+    unpaid.sort((a, b) => new Date(a.installment.dueDate).getTime() - new Date(b.installment.dueDate).getTime());
+    return unpaid[0];
+  };
+
+  const getDaysRemainingText = (dueDateString: string) => {
+    const due = new Date(dueDateString);
+    const now = new Date();
+    
+    due.setHours(0,0,0,0);
+    now.setHours(0,0,0,0);
+    
+    const diffTime = due.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays < 0) {
+      return { text: 'Overdue!', className: 'text-rose-700 bg-rose-50 border-rose-100 font-bold' };
+    } else if (diffDays === 0) {
+      return { text: 'Due today!', className: 'text-amber-700 bg-amber-50 border-amber-100 font-bold animate-pulse' };
+    } else if (diffDays === 1) {
+      return { text: 'Due tomorrow', className: 'text-amber-700 bg-amber-50 border-amber-100 font-medium' };
+    } else {
+      return { text: `Due in ${diffDays} days`, className: 'text-slate-500 bg-slate-50 border-slate-100' };
+    }
+  };
+
+  const nextUpcoming = getNextUpcomingPayment();
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-850 flex flex-col font-sans">
@@ -458,6 +545,76 @@ export default function App() {
                     <span className="text-xs font-bold text-slate-800 mt-2">Ask Zen</span>
                   </button>
                 </div>
+
+                {/* Next Upcoming Split Payment Banner */}
+                {nextUpcoming && (
+                  <div className="bg-white border border-slate-200 rounded-3xl p-5 shadow-xs relative overflow-hidden">
+                    <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+                      <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider font-sans flex items-center gap-1.5">
+                        <Calendar className="w-4 h-4 text-emerald-600" /> Next Upcoming Split Payment
+                      </h3>
+                      <button 
+                        onClick={() => setActiveTab('bnpl')} 
+                        className="text-xs text-[#35A127] hover:text-emerald-700 font-bold flex items-center gap-1 cursor-pointer bg-transparent border-0"
+                      >
+                        My Split Plans &rarr;
+                      </button>
+                    </div>
+
+                    {repayError && (
+                      <div className="p-3 bg-rose-50 border border-rose-100 text-rose-600 text-xs rounded-xl mb-3 font-medium">
+                        {repayError}
+                      </div>
+                    )}
+                    {repaySuccess && (
+                      <div className="p-3 bg-emerald-50 border border-emerald-100 text-emerald-600 text-xs rounded-xl mb-3 font-medium">
+                        {repaySuccess}
+                      </div>
+                    )}
+
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-emerald-50/20 border border-emerald-100/40 rounded-2xl p-4">
+                      <div className="flex items-start gap-3.5">
+                        <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs shrink-0 select-none">
+                          {nextUpcoming.contract.merchantName.substring(0, 2).toUpperCase()}
+                        </div>
+                        <div>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <h4 className="text-sm font-bold text-slate-800">{nextUpcoming.contract.merchantName}</h4>
+                            <span className={`text-[10px] px-2 py-0.5 rounded-full border ${getDaysRemainingText(nextUpcoming.installment.dueDate).className}`}>
+                              {getDaysRemainingText(nextUpcoming.installment.dueDate).text}
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-500 mt-1">
+                            Installment {nextUpcoming.installment.installmentNumber} of {nextUpcoming.contract.totalInstallments} • Due {new Date(nextUpcoming.installment.dueDate).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3.5 justify-between sm:justify-end border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-100">
+                        <div className="text-left sm:text-right font-mono">
+                          <span className="text-slate-450 text-[9px] uppercase tracking-wider block">Due Amount</span>
+                          <span className="text-sm font-bold text-slate-800">
+                            R {nextUpcoming.installment.amount.toFixed(2)}
+                          </span>
+                        </div>
+
+                        <button
+                          onClick={() => handleDashboardRepay(nextUpcoming.contract.id, nextUpcoming.installment.id)}
+                          disabled={isRepaying}
+                          className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold rounded-xl text-xs transition cursor-pointer flex items-center gap-1.5 shadow-xs min-h-[40px] border-0"
+                        >
+                          {isRepaying ? (
+                            <Clock className="w-3.5 h-3.5 animate-spin" />
+                          ) : (
+                            <>
+                              <CreditCard className="w-3.5 h-3.5" /> Repay Now
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Two Column details listing */}
                 <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
