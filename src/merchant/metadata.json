@@ -1,6 +1,6 @@
 {
-  "name": "PandaPay",
-  "description": "An elegant, production-ready fintech dashboard powered by the Interledger Protocol, smart budget tracking, and real-time AI financial insights with Zenny the mascot.",
+  "name": "Zen-i",
+  "description": "An interactive merchant platform for Apparel Co. to generate secure split-payment links, SMS notifications, and local client-side scannable QR codes using Zen-i.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
