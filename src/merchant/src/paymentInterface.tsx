@@ -27,7 +27,7 @@ import {
   Fingerprint,
   Smartphone,
   BookOpen,
-   QrCode,
+  QrCode,
   Send,
   Copy,
   Check,
@@ -76,7 +76,7 @@ interface PaymentRequest {
   clientSignedName?: string;
 }
 
-// Pre-seeded data
+// Pre-seeded Merchants
 const MERCHANTS: Merchant[] = [
   {
     id: "urban-threads",
@@ -177,7 +177,7 @@ export default function App() {
     }
   ]);
 
- // Merchant link generator states
+  // Merchant link generator states
   const [clientName, setClientName] = useState("");
   const [clientPhone, setClientPhone] = useState("");
   const [paymentMethodType, setPaymentMethodType] = useState<"sms" | "qr" | "link">("sms");
@@ -197,8 +197,8 @@ export default function App() {
   const [activeRequest, setActiveRequest] = useState<PaymentRequest | null>(paymentRequests[1]); // Preload pending one
   const [paymentOption, setPaymentOption] = useState<"bnpl" | "upfront">("bnpl");
   const [selectedBnplPlan, setSelectedBnplPlan] = useState<"payIn4" | "payIn3" | "sliceIt">("payIn4");
-
-  // State: BNPL Credit Application Form
+  
+  // Client credit check form state
   const [bnplStep, setBnplStep] = useState<"selection" | "applyForm" | "verifying" | "approved" | "declined">("selection");
   const [applicantName, setApplicantName] = useState("");
   const [applicantPhone, setApplicantPhone] = useState("");
@@ -207,8 +207,8 @@ export default function App() {
   const [isSigned, setIsSigned] = useState(false);
   const [signatureTyped, setSignatureTyped] = useState("");
   const [activeDrawTab, setActiveDrawTab] = useState<"type" | "draw">("type");
-
-  // State: Upfront Payment details
+  
+  // Upfront pay states
   const [cardName, setCardName] = useState("");
   const [cardNumber, setCardNumber] = useState("");
   const [cardExpiry, setCardExpiry] = useState("");
@@ -220,8 +220,6 @@ export default function App() {
   const [processingMessage, setProcessingMessage] = useState("");
   const [checkoutCompleted, setCheckoutCompleted] = useState(false);
   const [clientError, setClientError] = useState("");
-
-  // State: Completed receipt details
   const [completedReceipt, setCompletedReceipt] = useState<{
     orderId: string;
     date: string;
@@ -234,17 +232,11 @@ export default function App() {
     clientSignedName?: string;
   } | null>(null);
 
-  // State: ZenPay Customer Portal (Auth / Data)
-  //const [loans, setLoans] = useState<LoanPlan[]>(INITIAL_LOANS);
-  //const [transactions, setTransactions] = useState<Transaction[]>(INITIAL_TRANSACTIONS);
-  //const [portalFeedback, setPortalFeedback] = useState<string | null>(null);
-  //const [selectedPortalLoan, setSelectedPortalLoan] = useState<LoanPlan | null>(null);
-
-  // Signature Canvas Ref
+  // Signature canvas ref
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
 
-    // Sync client credentials when an active request loads
+  // Sync client credentials when an active request loads
   useEffect(() => {
     if (activeRequest) {
       setApplicantName(activeRequest.clientName);
@@ -282,7 +274,7 @@ export default function App() {
     setCartItems(prev => prev.filter(item => item.id !== id));
   };
 
-    // Mathematical calculations for current cart
+  // Mathematical calculations for current cart
   const subtotal = quickAmountMode === "inventory" 
     ? cartItems.reduce((acc, item) => acc + (item.price * item.qty), 0)
     : parseFloat(customAmount) || 0;
@@ -387,7 +379,7 @@ export default function App() {
         x: e.clientX - rect.left,
         y: e.clientY - rect.top
       };
-    };
+    }
   };
 
   const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
@@ -413,7 +405,6 @@ export default function App() {
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
     ctx.stroke();
-   // setIsSigned(true);
   };
 
   const stopDrawing = () => {
@@ -429,7 +420,7 @@ export default function App() {
     setIsSigned(false);
   };
 
-  // Auto-format card inputs
+  // Auto-format card numbers
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, "");
     const formatted = value.match(/.{1,4}/g)?.join(" ") || "";
@@ -450,14 +441,13 @@ export default function App() {
     setCardCvv(value.substring(0, 4));
   };
 
-  // Card Brand Detection
   const getCardBrand = () => {
     const cleaned = cardNumber.replace(/\s/g, "");
     if (cleaned.startsWith("4")) return "Visa";
     if (/^5[1-5]/.test(cleaned)) return "MasterCard";
     if (/^3[47]/.test(cleaned)) return "American Express";
     if (cleaned.startsWith("6")) return "Discover";
-     return "Credit Card";
+    return "Credit Card";
   };
 
   // Simulate client BNPL application check
@@ -485,7 +475,7 @@ export default function App() {
         setProcessingMessage(steps[currentStep]);
       } else {
         clearInterval(interval);
-               if (creditDecision === "approve" || creditDecision === "manual") {
+        if (creditDecision === "approve" || creditDecision === "manual") {
           setBnplStep("approved");
         } else {
           setBnplStep("declined");
@@ -494,24 +484,24 @@ export default function App() {
     }, 1000);
   };
 
-  // Handle Order Placement / Plan Execution
+  // Execute payment inside customer view
   const handleExecutePayment = () => {
-     if (!activeRequest) return;
+    if (!activeRequest) return;
+
     if (paymentOption === "bnpl") {
       if (bnplStep !== "approved") {
         setBnplStep("applyForm");
         return;
       }
-       if (activeDrawTab === "draw" && !isSigned) {
+      if (activeDrawTab === "draw" && !isSigned) {
         setClientError("Please sign the promissory note before finishing payment authorization.");
         return;
       }
-       if (activeDrawTab === "type" && !signatureTyped.trim()) {
+      if (activeDrawTab === "type" && !signatureTyped.trim()) {
         setClientError("Please type your electronic signature to agree.");
-        return
+        return;
       }
     } else {
-      // Upfront validations
       if (!cardName.trim() || cardNumber.length < 15 || !cardExpiry || cardCvv.length < 3) {
         setClientError("Please fill in valid card credentials to settle payment.");
         return;
@@ -896,30 +886,11 @@ export default function App() {
                               </div>
                               <div className="flex items-center gap-2">
                                 <div className="flex items-center gap-1 bg-slate-50 border border-slate-200 rounded px-1">
-                                  <button
-                                    onClick={() => updateQty(item.id, -1)}
-                                    className="text-slate-500 hover:text-black font-extrabold text-xs"
-                                    title="Decrease quantity"
-                                    aria-label="Decrease quantity"
-                                  >
-                                    -
-                                  </button>
+                                  <button type="button" onClick={() => updateQty(item.id, -1)} className="text-slate-500 hover:text-black font-extrabold text-xs" aria-label="Decrease quantity">-</button>
                                   <span className="text-xs font-bold px-1 w-4 text-center">{item.qty}</span>
-                                  <button
-                                    onClick={() => updateQty(item.id, 1)}
-                                    className="text-slate-500 hover:text-black font-extrabold text-xs"
-                                    title="Increase quantity"
-                                    aria-label="Increase quantity"
-                                  >
-                                    +
-                                  </button>
+                                  <button type="button" onClick={() => updateQty(item.id, 1)} className="text-slate-500 hover:text-black font-extrabold text-xs" aria-label="Increase quantity">+</button>
                                 </div>
-                                <button
-                                  onClick={() => removeItem(item.id)}
-                                  className="text-red-500 hover:text-red-700 transition-colors"
-                                  title="Remove item"
-                                  aria-label="Remove item"
-                                >
+                                <button type="button" onClick={() => removeItem(item.id)} className="text-red-500 hover:text-red-700 transition-colors" aria-label="Remove item">
                                   <Trash2 className="w-3.5 h-3.5" />
                                 </button>
                               </div>
@@ -1699,26 +1670,22 @@ export default function App() {
                                 <div className="space-y-3">
                                   <div className="grid grid-cols-2 gap-3">
                                     <div className="space-y-1">
-                                      <label htmlFor="applicant-name" className="text-[9px] font-extrabold text-slate-400 uppercase">Legal Name</label>
+                                      <label htmlFor="applicantName" className="text-[9px] font-extrabold text-slate-400 uppercase">Legal Name</label>
                                       <input
-                                        id="applicant-name"
+                                        id="applicantName"
                                         type="text"
                                         value={applicantName}
                                         onChange={(e) => setApplicantName(e.target.value)}
-                                        placeholder="Legal Name"
-                                        title="Legal Name"
                                         className="w-full border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs bg-slate-50 focus:outline-none"
                                       />
                                     </div>
                                     <div className="space-y-1">
-                                      <label htmlFor="applicant-phone" className="text-[9px] font-extrabold text-slate-400 uppercase">Mobile Phone</label>
+                                      <label htmlFor="applicantPhone" className="text-[9px] font-extrabold text-slate-400 uppercase">Mobile Phone</label>
                                       <input
-                                        id="applicant-phone"
+                                        id="applicantPhone"
                                         type="text"
                                         value={applicantPhone}
                                         onChange={(e) => setApplicantPhone(e.target.value)}
-                                        placeholder="Mobile Phone"
-                                        title="Mobile Phone"
                                         className="w-full border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs bg-slate-50 focus:outline-none"
                                       />
                                     </div>
@@ -1726,25 +1693,23 @@ export default function App() {
 
                                   <div className="grid grid-cols-2 gap-3">
                                     <div className="space-y-1">
-                                      <label htmlFor="applicant-ssn" className="text-[9px] font-extrabold text-slate-400 uppercase">National ID / SSN (Last 4)</label>
+                                      <label htmlFor="applicantSSN" className="text-[9px] font-extrabold text-slate-400 uppercase">National ID / SSN (Last 4)</label>
                                       <input
-                                        id="applicant-ssn"
+                                        id="applicantSSN"
                                         type="password"
                                         value={applicantSSN}
                                         onChange={(e) => setApplicantSSN(e.target.value.replace(/\D/g, "").substring(0, 4))}
                                         placeholder="••••"
-                                        title="National ID or last 4 of SSN"
                                         className="w-full border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs bg-slate-50 focus:outline-none font-mono"
                                       />
                                     </div>
                                     <div className="space-y-1">
-                                      <label htmlFor="applicant-dob" className="text-[9px] font-extrabold text-slate-400 uppercase">Date of Birth</label>
+                                      <label htmlFor="applicantDOB" className="text-[9px] font-extrabold text-slate-400 uppercase">Date of Birth</label>
                                       <input
-                                        id="applicant-dob"
+                                        id="applicantDOB"
                                         type="date"
                                         value={applicantDOB}
                                         onChange={(e) => setApplicantDOB(e.target.value)}
-                                        title="Date of Birth"
                                         className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-xs bg-slate-50 focus:outline-none"
                                       />
                                     </div>
@@ -1945,26 +1910,22 @@ export default function App() {
                               
                               <div className="space-y-2">
                                 <div className="space-y-1">
-                                  <label htmlFor="cardholder-name" className="text-[9px] font-extrabold text-slate-400 uppercase">Cardholder Name</label>
+                                  <label className="text-[9px] font-extrabold text-slate-400 uppercase">Cardholder Name</label>
                                   <input
-                                    id="cardholder-name"
                                     type="text"
                                     value={cardName}
                                     onChange={(e) => setCardName(e.target.value)}
-                                    title="Cardholder Name"
-                                    placeholder="John Doe"
+                                    placeholder="Enter cardholder name"
                                     className="w-full border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs bg-slate-50 focus:outline-none"
                                   />
                                 </div>
 
                                 <div className="space-y-1">
-                                  <label htmlFor="card-number" className="text-[9px] font-extrabold text-slate-400 uppercase">Card Number</label>
+                                  <label className="text-[9px] font-extrabold text-slate-400 uppercase">Card Number</label>
                                   <input
-                                    id="card-number"
                                     type="text"
                                     value={cardNumber}
                                     onChange={handleCardNumberChange}
-                                    title="Card Number"
                                     placeholder="4000 1234 5678 9010"
                                     className="w-full border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs bg-slate-50 focus:outline-none font-mono tracking-wider"
                                   />
@@ -1972,25 +1933,21 @@ export default function App() {
 
                                 <div className="grid grid-cols-2 gap-3">
                                   <div className="space-y-1">
-                                    <label htmlFor="card-expiry" className="text-[9px] font-extrabold text-slate-400 uppercase">Expiration</label>
+                                    <label className="text-[9px] font-extrabold text-slate-400 uppercase">Expiration</label>
                                     <input
-                                      id="card-expiry"
                                       type="text"
                                       value={cardExpiry}
                                       onChange={handleExpiryChange}
-                                      title="Expiration Date"
                                       placeholder="MM/YY"
                                       className="w-full border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs bg-slate-50 focus:outline-none font-mono"
                                     />
                                   </div>
                                   <div className="space-y-1">
-                                    <label htmlFor="card-cvv" className="text-[9px] font-extrabold text-slate-400 uppercase">CVV Code</label>
+                                    <label className="text-[9px] font-extrabold text-slate-400 uppercase">CVV Code</label>
                                     <input
-                                      id="card-cvv"
                                       type="password"
                                       value={cardCvv}
                                       onChange={handleCvvChange}
-                                      title="CVV Code"
                                       placeholder="•••"
                                       className="w-full border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs bg-slate-50 focus:outline-none font-mono"
                                     />
