@@ -1,62 +1,72 @@
-import { MascotProps } from '../types';
-import { motion } from 'motion/react';
+import React from "react";
+import { Sparkles, Smile, MessageSquare } from "lucide-react";
 
-export default function Mascot({ state, message, size = 'md' }: MascotProps) {
-  // Map mascot states to visual emojis and descriptive styles
-  const config = {
-    idle: { emoji: '🐼', color: 'bg-emerald-50 text-emerald-700 border-emerald-400', label: 'Healthy & Safe' },
-    happy: { emoji: '🎉', color: 'bg-teal-50 text-teal-800 border-teal-500', label: 'Payment Settled!' },
-    warning: { emoji: '⚠️', color: 'bg-amber-50 text-amber-800 border-amber-500', label: 'Budget Alert' },
-    sad: { emoji: '😢', color: 'bg-rose-50 text-rose-800 border-rose-500', label: 'Low Funds' },
-    thinking: { emoji: '🧠', color: 'bg-indigo-50 text-indigo-800 border-indigo-500', label: 'Zenny is thinking...' }
-  }[state] || { emoji: '🐼', color: 'bg-emerald-50 text-emerald-700 border-emerald-400', label: 'Idle' };
+interface MascotProps {
+  state: "happy" | "neutral" | "sad";
+  message: string;
+  size?: "sm" | "md" | "lg";
+}
 
-  const sizeClasses = {
-    sm: 'w-10 h-10 text-xl border',
-    md: 'w-16 h-16 text-3xl border-2',
-    lg: 'w-24 h-24 text-5xl border-3'
-  }[size];
+export default function Mascot({ state, message, size = "md" }: MascotProps) {
+  const getScale = () => {
+    switch (size) {
+      case "sm":
+        return "scale-90";
+      case "lg":
+        return "scale-110";
+      default:
+        return "scale-100";
+    }
+  };
 
   return (
-    <div className="flex flex-col items-center justify-center p-4 text-center rounded-xl transition-all duration-300">
-      {/* Animated Avatar Circle */}
-      <motion.div
-        animate={state === 'thinking' ? {
-          scale: [1, 1.08, 1],
-          rotate: [0, 5, -5, 0],
-        } : {
-          y: [0, -4, 0],
-        }}
-        transition={state === 'thinking' ? {
-          duration: 1.5,
-          repeat: Infinity,
-          ease: "easeInOut"
-        } : {
-          duration: 3,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-        className={`flex items-center justify-center rounded-full shadow-md ${sizeClasses} ${config.color} border-dashed`}
-      >
-        <span>{config.emoji}</span>
-      </motion.div>
-
-      {/* Speech bubble */}
-      {message && (
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.9, y: 5 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          className="relative mt-3 px-4 py-3 bg-slate-100 text-slate-700 border border-slate-200 rounded-2xl max-w-xs shadow-sm text-xs leading-relaxed"
-        >
-          {/* Bubble Arrow */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-full border-8 border-transparent border-b-slate-100"></div>
+    <div className={`flex flex-col items-center justify-center p-4 space-y-3 ${getScale()} transition-all duration-500`}>
+      {/* Animated Character */}
+      <div className="relative">
+        {/* Glow effect */}
+        <div className="absolute -inset-1 rounded-full bg-indigo-500/20 blur-md animate-pulse"></div>
+        
+        {/* Actual Character SVG/UI */}
+        <div className="relative w-16 h-16 bg-gradient-to-tr from-indigo-600 to-violet-500 rounded-2xl flex items-center justify-center shadow-lg border border-indigo-400/30 transform hover:scale-105 transition-transform duration-300">
+          {state === "happy" ? (
+            <div className="flex flex-col items-center space-y-0.5">
+              <Smile className="w-8 h-8 text-white animate-bounce" />
+              <div className="flex gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-ping"></span>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-300"></span>
+              </div>
+            </div>
+          ) : state === "sad" ? (
+            <div className="flex flex-col items-center space-y-1">
+              <span className="text-xl">😢</span>
+              <div className="w-6 h-1 bg-red-400 rounded-full"></div>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center space-y-1">
+              <span className="text-xl">😐</span>
+              <div className="w-6 h-1 bg-indigo-300 rounded-full"></div>
+            </div>
+          )}
           
-          <p className="font-semibold text-[10px] text-indigo-600 uppercase tracking-wider mb-1">
-            {config.label}
-          </p>
-          <p>{message}</p>
-        </motion.div>
-      )}
+          {/* Sparkles decoration for happy state */}
+          {state === "happy" && (
+            <>
+              <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-amber-400 animate-pulse" />
+              <Sparkles className="absolute -bottom-1 -left-1 w-3.5 h-3.5 text-amber-300 animate-pulse delay-75" />
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Mascot Speech Bubble */}
+      <div className="relative bg-indigo-50/80 border border-indigo-100 rounded-2xl px-4 py-3 max-w-xs shadow-sm">
+        {/* speech arrow */}
+        <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-b-[8px] border-b-indigo-50/80"></div>
+        
+        <p className="text-xs text-indigo-950 font-medium leading-relaxed text-center">
+          {message}
+        </p>
+      </div>
     </div>
   );
 }
