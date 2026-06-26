@@ -7,37 +7,37 @@ export default function Mascot({ state, message, size = 'md' }: MascotProps) {
     idle: { 
       emoji: '🐼', 
       color: 'bg-peach-50 text-peach-700 border-peach-300', 
-      label: 'Healthy & Safe',
-      particles: ['✨', '🌸', '✨']
+      label: 'Zen-i Serene',
+      particles: ['🍃', '🌿', '✨']
     },
     happy: { 
       emoji: '🐼', 
       color: 'bg-amber-50 text-amber-800 border-amber-300', 
-      label: 'Payment Settled!',
-      particles: ['🎉', '🎈', '✨', '⭐']
+      label: 'Flow Aligned!',
+      particles: ['🎉', '🍃', '✨', '⭐']
     },
     warning: { 
       emoji: '🐼', 
       color: 'bg-rose-50 text-rose-800 border-rose-300', 
-      label: 'Budget Alert',
-      particles: ['❗', '⚡', '⚠️']
+      label: 'Balance Alert',
+      particles: ['⚠️', '⚡', '💧']
     },
     sad: { 
       emoji: '🐼', 
       color: 'bg-stone-50 text-stone-700 border-stone-300', 
-      label: 'Low Funds',
+      label: 'Flow Dried Up',
       particles: ['💧', '🌧️', '💭']
     },
     thinking: { 
       emoji: '🐼', 
       color: 'bg-peach-100 text-peach-850 border-peach-400', 
-      label: 'Zen is thinking...',
-      particles: ['❓', '💡', '💭']
+      label: 'Zen-i Meditating...',
+      particles: ['💭', '💡', '🍃']
     }
   }[state] || { 
     emoji: '🐼', 
     color: 'bg-peach-50 text-peach-700 border-peach-300', 
-    label: 'Idle',
+    label: 'Zen-i',
     particles: []
   };
 

@@ -20,6 +20,7 @@ import SubscriptionsPanel from './components/SubscriptionsPanel';
 import ReserveBucketPanel from './components/ReserveBucketPanel';
 import KycVerificationPanel from './components/KycVerificationPanel';
 import BnplDashboardPanel from './components/BnplDashboardPanel';
+import ZenILogo from './components/ZenILogo';
 
 type Tab = 'dashboard' | 'deposit' | 'send' | 'transactions' | 'budget' | 'ai' | 'settings' | 'subscriptions' | 'reserve' | 'kyc' | 'bnpl';
 
@@ -167,12 +168,9 @@ export default function App() {
           className="w-full max-w-md bg-white border border-slate-200 rounded-3xl p-8 shadow-lg relative overflow-hidden text-slate-800 z-10"
         >
           {/* Logo */}
-          <div className="flex flex-col items-center text-center space-y-2 mb-8">
-            <div className="px-4 py-2 bg-slate-100 text-slate-800 font-bold rounded-full border border-slate-200 tracking-wider text-xs flex items-center gap-2">
-              <span className="text-peach-600">💳</span> PandaPay Interledger
-            </div>
-            <h2 className="text-xl font-bold font-sans text-slate-800">Access Your Payment Node</h2>
-            <p className="text-xs text-slate-500 max-w-xs">
+          <div className="flex flex-col items-center text-center space-y-4 mb-8">
+            <ZenILogo size="lg" />
+            <p className="text-xs text-slate-500 max-w-xs mt-2">
               Authenticate via single-step secure email and instantly resolve your custom open payment pointers.
             </p>
           </div>
@@ -213,7 +211,7 @@ export default function App() {
             <span className="font-mono bg-slate-50 px-2 py-1 rounded text-peach-700 font-bold">
               Demo credentials: mikaeelnaidoo2@gmail.com
             </span>
-            <p>PandaPay operates on the sandbox Interledger Open Payments network.</p>
+            <p>Zen-i operates on the sandbox Interledger Open Payments network.</p>
           </div>
         </motion.div>
       </div>
@@ -223,10 +221,16 @@ export default function App() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-850 flex flex-col font-sans">
       {/* Top Header Navigation */}
-      <header className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between shadow-xs shrink-0">
+      <header className="bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between shadow-xs shrink-0">
         <div className="flex items-center gap-3">
-          <div className="px-4 py-1.5 bg-slate-50 text-slate-800 text-xs font-bold rounded-full border border-slate-200 tracking-wider flex items-center gap-2">
-            <span className="text-peach-600">💳</span> PandaPay
+          <div className="flex items-center gap-2">
+            <ZenILogo size="sm" showText={false} />
+            <span className="font-extrabold font-sans tracking-tight text-slate-800 text-base">
+              Zen-<span className="text-[#35A127]">i</span>
+            </span>
+            <span className="text-[9px] font-mono text-slate-400 font-bold bg-slate-50 border border-slate-200 rounded-md px-1.5 py-0.5 uppercase tracking-wider">
+              Node
+            </span>
           </div>
         </div>
 
@@ -750,18 +754,18 @@ export default function App() {
           >
             <div className="text-center space-y-3">
               <span className="text-5xl inline-block animate-bounce">🐼</span>
-              <h2 className="text-xl font-bold text-slate-800 font-sans tracking-tight">Sign PandaPay Compliance Contract</h2>
+              <h2 className="text-xl font-bold text-slate-800 font-sans tracking-tight">Sign Zen-i Compliance Contract</h2>
               <p className="text-xs text-slate-500 leading-relaxed max-w-sm mx-auto">
-                Welcome to PandaPay! As an open payment node operator, South African fintech regulation requires digital consent signature to activate your wallet.
+                Welcome to Zen-i! As an open payment node operator, South African fintech regulation requires digital consent signature to activate your wallet.
               </p>
             </div>
 
             <div className="bg-slate-50 border border-slate-150 rounded-2xl p-4 space-y-3 font-mono text-[11px] text-slate-600 max-h-[180px] overflow-y-auto leading-relaxed">
               <p className="font-bold text-slate-800 border-b border-slate-200 pb-1.5 uppercase tracking-wider text-[10px]">TERMS OF DECENTRALIZED COMPLIANCE</p>
-              <p><strong>1. Automated Router Consent:</strong> You authorize PandaPay and the Interledger Protocol (ILP) to listen, route, and settle micro-payment pointer packets automatically.</p>
+              <p><strong>1. Automated Router Consent:</strong> You authorize Zen-i and the Interledger Protocol (ILP) to listen, route, and settle micro-payment pointer packets automatically.</p>
               <p><strong>2. Emergency Credit Underwriting:</strong> Subscriptions run on fallback credit coverage from partners if your balance is low. Outstanding balances accumulate 15% interest if not paid within 30 days.</p>
               <p><strong>3. Identity Verification:</strong> You consent to undergo standard KYC compliance (verification of government ID) to access high-volume limits and savings reserve accounts.</p>
-              <p><strong>4. AI Co-Pilot Optimization:</strong> Zen the Panda will analyze local transactions to supply real-time smart runway metrics and alerts.</p>
+              <p><strong>4. AI Co-Pilot Optimization:</strong> Zen-i the Wise Panda will analyze local transactions to supply real-time smart runway metrics and alerts.</p>
             </div>
 
             <div className="flex flex-col gap-2.5">
