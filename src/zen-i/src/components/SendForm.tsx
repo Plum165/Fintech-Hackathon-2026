@@ -134,14 +134,14 @@ export default function SendForm({ onSendComplete, token }: SendFormProps) {
     : parseFloat(amount).toFixed(2);
 
   return (
-    <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm relative overflow-hidden">
+    <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm relative overflow-hidden" id="send-form-card">
       <div className="flex items-center gap-2 mb-6">
         {(step === 2 || step === 3) && (
-          <button onClick={reset} className="p-1 text-slate-500 hover:text-slate-800 transition rounded-md hover:bg-slate-100">
+          <button onClick={reset} className="p-2 -ml-2 text-slate-500 hover:text-slate-800 transition rounded-xl hover:bg-slate-100 cursor-pointer min-w-[44px] min-h-[44px] flex items-center justify-center">
             <ArrowLeft className="w-5 h-5" />
           </button>
         )}
-        <h3 className="text-lg font-bold text-slate-800">
+        <h3 className="text-lg font-bold text-slate-850">
           {step === 1 && 'Initialize Outgoing Payment'}
           {step === 2 && 'Approve Payment'}
           {step === 3 && 'Confirm Approval'}
@@ -167,8 +167,8 @@ export default function SendForm({ onSendComplete, token }: SendFormProps) {
               <div className="flex justify-between items-center">
                 <label className="text-xs text-slate-500 font-medium">Recipient Pointer</label>
                 <button type="button" onClick={() => setShowScanner(!showScanner)}
-                  className="flex items-center gap-1 text-[10px] uppercase tracking-wider font-bold text-peach-700 hover:text-peach-800 transition cursor-pointer">
-                  <Camera className="w-3.5 h-3.5" /> {showScanner ? 'Close' : 'Scan QR'}
+                  className="flex items-center gap-1.5 py-1 px-2 text-[10px] uppercase tracking-wider font-bold text-peach-700 hover:text-peach-800 transition cursor-pointer min-h-[32px]">
+                  <Camera className="w-4 h-4" /> {showScanner ? 'Close' : 'Scan QR'}
                 </button>
               </div>
               {showScanner && (
@@ -205,7 +205,7 @@ export default function SendForm({ onSendComplete, token }: SendFormProps) {
             </div>
 
             <button type="submit" disabled={isLoading}
-              className="w-full flex items-center justify-center gap-1.5 py-3 px-4 bg-peach-600 hover:bg-peach-700 active:scale-98 disabled:opacity-50 text-white font-semibold rounded-xl text-xs transition mt-4 cursor-pointer shadow-sm">
+              className="w-full flex items-center justify-center gap-1.5 py-3.5 px-4 bg-peach-600 hover:bg-peach-700 active:scale-98 disabled:opacity-50 text-white font-bold rounded-xl text-xs transition mt-4 cursor-pointer shadow-sm min-h-[44px]">
               {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <>Get Quote & Continue <ArrowRight className="w-4 h-4" /></>}
             </button>
           </motion.form>
@@ -239,16 +239,16 @@ export default function SendForm({ onSendComplete, token }: SendFormProps) {
 
             {/* The approval button — opens the ILP wallet consent page in a new tab */}
             <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl space-y-3">
-              <p className="text-xs text-amber-800 font-semibold">
+              <p className="text-xs text-amber-800 font-semibold leading-relaxed">
                 This payment requires your wallet's approval. Click the button below to authorise it in your Interledger wallet, then return here to complete.
               </p>
               <button onClick={handleOpenApproval}
-                className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-xl transition shadow-sm cursor-pointer">
+                className="w-full flex items-center justify-center gap-2 py-3.5 px-4 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-xl transition shadow-sm cursor-pointer min-h-[44px]">
                 <ExternalLink className="w-4 h-4" /> Approve in Your Wallet
               </button>
             </div>
 
-            <button onClick={reset} className="w-full py-2 text-slate-400 hover:text-slate-600 text-xs font-semibold rounded-xl transition cursor-pointer">
+            <button onClick={reset} className="w-full py-3 text-slate-500 hover:text-slate-800 text-xs font-semibold rounded-xl transition cursor-pointer min-h-[44px]">
               Cancel
             </button>
           </motion.div>
@@ -262,7 +262,7 @@ export default function SendForm({ onSendComplete, token }: SendFormProps) {
             <div className="p-5 bg-emerald-50 border border-emerald-200 rounded-2xl text-center space-y-2">
               <ShieldCheck className="w-8 h-8 text-emerald-600 mx-auto" />
               <p className="text-sm font-bold text-emerald-800">Approved in your wallet?</p>
-              <p className="text-xs text-emerald-700">
+              <p className="text-xs text-emerald-700 leading-relaxed">
                 Once you've approved the payment in the Interledger wallet tab, click below to finalise the transfer.
               </p>
             </div>
@@ -275,11 +275,11 @@ export default function SendForm({ onSendComplete, token }: SendFormProps) {
             </div>
 
             <button onClick={handleExecute} disabled={isLoading}
-              className="w-full flex items-center justify-center gap-1.5 py-3 px-4 bg-peach-600 hover:bg-peach-700 disabled:opacity-50 text-white font-bold text-xs rounded-xl transition shadow-sm cursor-pointer">
+              className="w-full flex items-center justify-center gap-1.5 py-3.5 px-4 bg-peach-600 hover:bg-peach-700 disabled:opacity-50 text-white font-bold text-xs rounded-xl transition shadow-sm cursor-pointer min-h-[44px]">
               {isLoading ? <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</> : <><Send className="w-4 h-4" /> Complete Transfer</>}
             </button>
 
-            <button onClick={() => setStep(2)} className="w-full py-2 text-slate-400 hover:text-slate-600 text-xs font-semibold rounded-xl transition cursor-pointer">
+            <button onClick={() => setStep(2)} className="w-full py-3 text-slate-500 hover:text-slate-850 text-xs font-semibold rounded-xl transition cursor-pointer min-h-[44px]">
               Go Back
             </button>
           </motion.div>
@@ -302,7 +302,7 @@ export default function SendForm({ onSendComplete, token }: SendFormProps) {
                 </span>
               </div>
             </div>
-            <button onClick={reset} className="w-full py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition">
+            <button onClick={reset} className="w-full py-3.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition cursor-pointer min-h-[44px]">
               Make Another Transfer
             </button>
           </motion.div>
