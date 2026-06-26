@@ -4,6 +4,9 @@
  * Dev:  Vite standalone server with /api proxy → http://localhost:4000
  * Prod: Express static + raw-body proxy to the central API server.
  *
+ * The consolidated backend (src/server/) runs on port 4000 and handles
+ * ALL api routes. This file is ONLY a thin frontend dev/prod server.
+ *
  * Start the central API server first:
  *   cd src/server && npm run dev
  */
