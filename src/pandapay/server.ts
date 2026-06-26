@@ -858,8 +858,8 @@ async function startServer() {
       if (isNaN(numAmount) || numAmount <= 0) {
         return res.status(400).json({ error: 'Positive numeric purchase amount required.' });
       }
-      if (isNaN(numInstallments) || numInstallments < 2 || numInstallments > 6) {
-        return res.status(400).json({ error: 'Installments must be between 2 and 6.' });
+      if (isNaN(numInstallments) || numInstallments < 2 || numInstallments > 12) {
+        return res.status(400).json({ error: 'Installments must be between 2 and 12.' });
       }
 
       const session = (req as any).user;

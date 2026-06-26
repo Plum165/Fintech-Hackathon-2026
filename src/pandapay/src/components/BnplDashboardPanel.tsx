@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   CreditCard, Calendar, ShoppingBag, CheckCircle, Clock, 
-  ChevronDown, ChevronUp, ArrowRight, ArrowLeft, Plus, 
+  ChevronDown, ChevronUp, ArrowRight, ArrowLeft, Plus, Minus, 
   Percent, ShieldCheck, AlertCircle, Sparkles, Loader2, RefreshCw
 } from 'lucide-react';
 import Mascot from './Mascot';
@@ -602,92 +602,101 @@ export default function BnplDashboardPanel({ wallet, token, onUpdate }: BnplDash
             >
               <div className="text-center space-y-1">
                 <h3 className="text-sm font-bold text-slate-850">Select Splitting Terms</h3>
-                <p className="text-xs text-slate-500 font-sans">Choose how many splits you prefer. All are 100% interest-free.</p>
+                <p className="text-xs text-slate-500 font-sans">Choose or customize how many splits you prefer. All are 100% interest-free.</p>
               </div>
 
-              {/* Installments selection toggle */}
-              <div className="grid grid-cols-2 gap-4">
-                {[3, 4].map((num) => (
-                  <button
-                    key={num}
-                    type="button"
-                    onClick={() => setTotalInstallments(num)}
-                    className={`p-4 border rounded-2xl text-center transition flex flex-col items-center gap-1 cursor-pointer ${
-                      totalInstallments === num
-                        ? 'bg-peach-50 border-peach-300 text-peach-900 shadow-xs ring-2 ring-peach-100/50'
-                        : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
-                    }`}
-                  >
-                    <span className="text-sm font-bold block">{num} Interest-Free Payments</span>
-                    <span className="text-[10px] font-mono text-slate-500 block">
-                      R {(parsedAmt / num).toFixed(2)} each
+              {/* Installments selection toggle & Custom Picker */}
+              <div className="space-y-4">
+                <span className="text-[10px] uppercase font-mono tracking-wider font-bold text-slate-450 block">Quick Term Presets</span>
+                <div className="grid grid-cols-3 gap-3">
+                  {[3, 4, 6].map((num) => (
+                    <button
+                      key={num}
+                      type="button"
+                      onClick={() => setTotalInstallments(num)}
+                      className={`p-3 border rounded-xl text-center transition flex flex-col items-center gap-1 cursor-pointer ${
+                        totalInstallments === num
+                          ? 'bg-peach-50 border-peach-300 text-peach-900 shadow-xs ring-2 ring-peach-100/50'
+                          : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
+                      }`}
+                    >
+                      <span className="text-xs font-bold block">{num} Splits</span>
+                      <span className="text-[9px] font-mono text-slate-500 block">
+                        R {(parsedAmt / num).toFixed(2)} each
+                      </span>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Custom Stepper Panel */}
+                <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div>
+                    <span className="text-xs font-bold text-slate-800 block">Customize Splits Range</span>
+                    <span className="text-[10px] text-slate-450 font-sans">Select any number of installments between 2 and 12</span>
+                  </div>
+
+                  <div className="flex items-center gap-3 bg-white border border-slate-200 rounded-xl p-1.5 shadow-xs">
+                    <button
+                      type="button"
+                      disabled={totalInstallments <= 2}
+                      onClick={() => setTotalInstallments(prev => Math.max(2, prev - 1))}
+                      className="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 disabled:opacity-40 transition cursor-pointer"
+                      title="Decrease installments"
+                    >
+                      <Minus className="w-4 h-4" />
+                    </button>
+                    
+                    <span className="text-sm font-black font-mono px-3 text-slate-800 text-center min-w-[3rem]">
+                      {totalInstallments} <span className="text-[10px] font-normal text-slate-400">splits</span>
                     </span>
-                  </button>
-                ))}
+
+                    <button
+                      type="button"
+                      disabled={totalInstallments >= 12}
+                      onClick={() => setTotalInstallments(prev => Math.min(12, prev + 1))}
+                      className="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 disabled:opacity-40 transition cursor-pointer"
+                      title="Increase installments"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
               </div>
 
               {/* Beautiful payment timeline checklist visualization */}
-              <div className="border border-slate-150 rounded-2xl p-4 bg-slate-50 space-y-3.5">
-                <span className="text-[10px] uppercase font-mono tracking-wider font-bold text-slate-450 block">Payment Schedule & Milestones</span>
+              <div className="border border-slate-150 rounded-2xl p-4 bg-slate-50 space-y-3.5 max-h-[220px] overflow-y-auto">
+                <span className="text-[10px] uppercase font-mono tracking-wider font-bold text-slate-450 block sticky top-0 bg-slate-50 pb-1">Payment Schedule & Milestones ({totalInstallments} Splits)</span>
                 
                 <div className="space-y-4 relative pl-3.5 border-l border-peach-300/60 ml-1.5">
-                  {/* Upfront Payment */}
-                  <div className="relative">
-                    <span className="absolute -left-[19px] top-1 w-2.5 h-2.5 rounded-full bg-peach-600 ring-4 ring-peach-100" />
-                    <div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-slate-800">Split 1 (Upfront Pay Today)</span>
-                        <span className="text-xs font-bold text-slate-850 font-mono">
-                          R {singleSplit.toFixed(2)}
-                        </span>
-                      </div>
-                      <span className="text-[10px] text-emerald-600 font-medium">Charged immediately on approval</span>
-                    </div>
-                  </div>
-
-                  {/* Installment 2 */}
-                  <div className="relative">
-                    <span className="absolute -left-[19px] top-1 w-2.5 h-2.5 rounded-full bg-slate-300" />
-                    <div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-slate-700">Split 2 (In 30 Days)</span>
-                        <span className="text-xs font-bold text-slate-750 font-mono">
-                          R {singleSplit.toFixed(2)}
-                        </span>
-                      </div>
-                      <span className="text-[10px] text-slate-450">Due: {new Date(Date.now() + 3600000 * 24 * 30).toLocaleDateString()}</span>
-                    </div>
-                  </div>
-
-                  {/* Installment 3 */}
-                  <div className="relative">
-                    <span className="absolute -left-[19px] top-1 w-2.5 h-2.5 rounded-full bg-slate-300" />
-                    <div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-slate-700">Split 3 (In 60 Days)</span>
-                        <span className="text-xs font-bold text-slate-750 font-mono">
-                          R {singleSplit.toFixed(2)}
-                        </span>
-                      </div>
-                      <span className="text-[10px] text-slate-450">Due: {new Date(Date.now() + 3600000 * 24 * 60).toLocaleDateString()}</span>
-                    </div>
-                  </div>
-
-                  {/* Optional Installment 4 */}
-                  {totalInstallments === 4 && (
-                    <div className="relative">
-                      <span className="absolute -left-[19px] top-1 w-2.5 h-2.5 rounded-full bg-slate-300" />
-                      <div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-bold text-slate-700">Split 4 (In 90 Days)</span>
-                          <span className="text-xs font-bold text-slate-750 font-mono">
-                            R {singleSplit.toFixed(2)}
+                  {Array.from({ length: totalInstallments }).map((_, idx) => {
+                    const splitIndex = idx + 1;
+                    const isUpfront = splitIndex === 1;
+                    const daysOffset = (splitIndex - 1) * 30;
+                    return (
+                      <div key={splitIndex} className="relative">
+                        <span className={`absolute -left-[19px] top-1 w-2.5 h-2.5 rounded-full ${
+                          isUpfront ? 'bg-peach-600 ring-4 ring-peach-100' : 'bg-slate-300'
+                        }`} />
+                        <div>
+                          <div className="flex items-center justify-between">
+                            <span className={`text-xs font-bold ${isUpfront ? 'text-slate-800' : 'text-slate-700'}`}>
+                              Split {splitIndex} {isUpfront ? '(Upfront Pay Today)' : `(In ${daysOffset} Days)`}
+                            </span>
+                            <span className="text-xs font-bold text-slate-800 font-mono">
+                              R {singleSplit.toFixed(2)}
+                            </span>
+                          </div>
+                          <span className="text-[10px] block mt-0.5">
+                            {isUpfront ? (
+                              <span className="text-emerald-600 font-medium">Charged immediately on approval</span>
+                            ) : (
+                              <span className="text-slate-400">Due: {new Date(Date.now() + 3600000 * 24 * daysOffset).toLocaleDateString()}</span>
+                            )}
                           </span>
                         </div>
-                        <span className="text-[10px] text-slate-450">Due: {new Date(Date.now() + 3600000 * 24 * 90).toLocaleDateString()}</span>
                       </div>
-                    </div>
-                  )}
+                    );
+                  })}
                 </div>
               </div>
 
