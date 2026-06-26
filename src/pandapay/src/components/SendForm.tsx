@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowLeft, ArrowRight, Loader2, Sparkles, Send, CheckCircle2, Camera } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Loader2, Send, CheckCircle2, Camera, ExternalLink, ShieldCheck } from 'lucide-react';
 import Mascot from './Mascot';
 import QrCodeScanner from './QrCodeScanner';
 
@@ -9,292 +9,305 @@ interface SendFormProps {
   token: string;
 }
 
+// Pending grant data returned from /api/payments/send/initiate
+interface PendingPayment {
+  approvalUrl: string;
+  continueUri: string;
+  continueToken: string;
+  quote: {
+    id: string;
+    debitAmount: { value: string; assetCode: string; assetScale: number };
+    receiveAmount: { value: string; assetCode: string; assetScale: number };
+    expiresAt?: string;
+  };
+  destination: string;
+  description: string;
+}
+
+type Step = 1 | 2 | 3 | 4;
+
 export default function SendForm({ onSendComplete, token }: SendFormProps) {
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [step, setStep] = useState<Step>(1);
   const [destination, setDestination] = useState('liam');
   const [amount, setAmount] = useState('150');
   const [description, setDescription] = useState('Weekend dinner share');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [pending, setPending] = useState<PendingPayment | null>(null);
   const [successTx, setSuccessTx] = useState<any>(null);
   const [showScanner, setShowScanner] = useState(false);
 
-  const handleScanSuccess = (scannedValue: string) => {
-    // Strip pointer format e.g. $ilp.interledger-test.dev/nia or $nia to get username
-    let cleanVal = scannedValue;
-    if (cleanVal.includes('/')) {
-      const parts = cleanVal.split('/');
-      cleanVal = parts[parts.length - 1];
-    }
-    cleanVal = cleanVal.replace('$', '').trim().toLowerCase();
-    
-    setDestination(cleanVal);
+  const handleScanSuccess = (scanned: string) => {
+    let v = scanned;
+    if (v.includes('/')) v = v.split('/').pop() ?? v;
+    setDestination(v.replace('$', '').trim().toLowerCase());
     setShowScanner(false);
   };
 
-  const handleCreateQuote = async (e: React.FormEvent) => {
+  // Step 1 → 2: initiate the Open Payments flow (creates incoming payment, quote, and interactive grant)
+  const handleInitiate = async (e: React.FormEvent) => {
     e.preventDefault();
     const num = parseFloat(amount);
     if (!destination || isNaN(num) || num <= 0) {
-      setError('Please provide a destination pointer and positive amount.');
+      setError('Provide a destination pointer and a positive amount.');
       return;
     }
     setError('');
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/payments/quote', {
+      const res = await fetch('/api/payments/send/initiate', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ destination, amount })
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ destination, amount, description })
       });
-      const data = await response.json();
-      if (response.ok) {
+      const data = await res.json();
+      if (res.ok) {
+        setPending(data);
         setStep(2);
       } else {
-        setError(data.error || 'Failed to request Open Payments conversion quote.');
+        setError(data.error ?? 'Failed to initiate payment.');
       }
-    } catch (err) {
-      setError('Connection failure.');
+    } catch {
+      setError('Connection failure. Is the API server running?');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSendPayment = async () => {
+  // Opens the approval URL in a new tab
+  const handleOpenApproval = () => {
+    if (pending?.approvalUrl) {
+      window.open(pending.approvalUrl, '_blank', 'noopener,noreferrer');
+      setStep(3);
+    }
+  };
+
+  // Step 3 → 4: execute after the user has approved in their wallet
+  const handleExecute = async () => {
+    if (!pending) return;
     setIsLoading(true);
     setError('');
+
     try {
-      const response = await fetch('/api/payments/send', {
+      const res = await fetch('/api/payments/send/execute', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ destination, amount, description })
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          continueUri: pending.continueUri,
+          continueToken: pending.continueToken,
+          quoteId: pending.quote.id,
+          amount,
+          destination: pending.destination,
+          description: pending.description
+        })
       });
-      const data = await response.json();
-      if (response.ok) {
+      const data = await res.json();
+      if (res.ok) {
         setSuccessTx(data.transaction);
-        setStep(3);
+        setStep(4);
         onSendComplete(parseFloat(amount));
       } else {
-        setError(data.error || 'Outbound payment transfer failed.');
+        setError(data.error ?? 'Payment execution failed.');
       }
-    } catch (e) {
+    } catch {
       setError('Connection error.');
     } finally {
       setIsLoading(false);
     }
   };
 
+  const reset = () => {
+    setStep(1);
+    setAmount('150');
+    setPending(null);
+    setSuccessTx(null);
+    setError('');
+  };
+
+  const debitHuman = pending
+    ? (parseInt(pending.quote.debitAmount.value) / Math.pow(10, pending.quote.debitAmount.assetScale)).toFixed(2)
+    : parseFloat(amount).toFixed(2);
+
+  const receiveHuman = pending
+    ? (parseInt(pending.quote.receiveAmount.value) / Math.pow(10, pending.quote.receiveAmount.assetScale)).toFixed(2)
+    : parseFloat(amount).toFixed(2);
+
   return (
     <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm relative overflow-hidden">
       <div className="flex items-center gap-2 mb-6">
-        {step > 1 && step < 3 && (
-          <button
-            onClick={() => setStep(1)}
-            className="p-1 text-slate-500 hover:text-slate-800 transition rounded-md hover:bg-slate-100"
-          >
+        {(step === 2 || step === 3) && (
+          <button onClick={reset} className="p-1 text-slate-500 hover:text-slate-800 transition rounded-md hover:bg-slate-100">
             <ArrowLeft className="w-5 h-5" />
           </button>
         )}
         <h3 className="text-lg font-bold text-slate-800">
           {step === 1 && 'Initialize Outgoing Payment'}
-          {step === 2 && 'Approve Quote & Sign'}
-          {step === 3 && 'Transfer Settled Successfully'}
+          {step === 2 && 'Approve Payment'}
+          {step === 3 && 'Confirm Approval'}
+          {step === 4 && 'Transfer Settled Successfully'}
         </h3>
       </div>
 
       <AnimatePresence mode="wait">
+
+        {/* ── STEP 1: enter details ─────────────────────────────────── */}
         {step === 1 && (
           <motion.form
-            key="send-step1"
+            key="step1"
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 10 }}
-            onSubmit={handleCreateQuote}
+            onSubmit={handleInitiate}
             className="space-y-4"
           >
-            {error && (
-              <div className="p-3 bg-rose-50 border border-rose-200 text-rose-600 text-xs rounded-xl">
-                {error}
-              </div>
-            )}
+            {error && <div className="p-3 bg-rose-50 border border-rose-200 text-rose-600 text-xs rounded-xl">{error}</div>}
 
             <div className="space-y-1.5">
               <div className="flex justify-between items-center">
                 <label className="text-xs text-slate-500 font-medium">Recipient Pointer</label>
-                <button
-                  type="button"
-                  onClick={() => setShowScanner(!showScanner)}
-                  className="flex items-center gap-1 text-[10px] uppercase tracking-wider font-bold text-peach-700 hover:text-peach-800 transition cursor-pointer"
-                >
-                  <Camera className="w-3.5 h-3.5" /> {showScanner ? 'Close Scanner' : 'Scan Recipient QR'}
+                <button type="button" onClick={() => setShowScanner(!showScanner)}
+                  className="flex items-center gap-1 text-[10px] uppercase tracking-wider font-bold text-peach-700 hover:text-peach-800 transition cursor-pointer">
+                  <Camera className="w-3.5 h-3.5" /> {showScanner ? 'Close' : 'Scan QR'}
                 </button>
               </div>
-
               {showScanner && (
                 <div className="border border-slate-200 rounded-2xl overflow-hidden mb-3">
                   <QrCodeScanner onScan={handleScanSuccess} title="Scan Recipient Payment Pointer" />
                 </div>
               )}
-
               <div className="flex rounded-xl bg-slate-50 border border-slate-200 focus-within:border-peach-500 focus-within:ring-1 focus-within:ring-peach-500 transition overflow-hidden">
                 <span className="bg-slate-100 text-slate-500 px-3 py-3 text-xs font-mono border-r border-slate-200 flex items-center">
                   $ilp.interledger-test.dev/
                 </span>
-                <input
-                  type="text"
-                  value={destination}
-                  onChange={(e) => setDestination(e.target.value.toLowerCase().replace(/[^a-z0-9]/g, ''))}
+                <input type="text" value={destination}
+                  onChange={e => setDestination(e.target.value.toLowerCase().replace(/[^a-z0-9]/g, ''))}
                   className="bg-transparent text-slate-800 px-4 py-3 text-sm focus:outline-none flex-1 font-mono font-medium"
-                  placeholder="e.g. liam, nia, marco"
-                  required
-                />
+                  placeholder="e.g. liam, nia, marco" required />
               </div>
             </div>
 
             <div className="space-y-1.5">
               <label className="text-xs text-slate-500 font-medium">Send Amount (R)</label>
               <div className="flex rounded-xl bg-slate-50 border border-slate-200 focus-within:border-peach-500 focus-within:ring-1 focus-within:ring-peach-500 transition overflow-hidden">
-                <span className="bg-slate-100 text-slate-500 px-4 py-3 text-xs font-mono border-r border-slate-200 flex items-center font-medium">
-                  R
-                </span>
-                <input
-                  type="number"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
+                <span className="bg-slate-100 text-slate-500 px-4 py-3 text-xs font-mono border-r border-slate-200 flex items-center font-medium">R</span>
+                <input type="number" value={amount} onChange={e => setAmount(e.target.value)}
                   className="bg-transparent text-slate-800 px-4 py-3 text-sm focus:outline-none flex-1 font-mono font-bold"
-                  placeholder="0.00"
-                  required
-                />
+                  placeholder="0.00" required />
               </div>
             </div>
 
             <div className="space-y-1.5">
               <label className="text-xs text-slate-500 font-medium">Memo / Reference</label>
-              <input
-                type="text"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
+              <input type="text" value={description} onChange={e => setDescription(e.target.value)}
                 className="w-full bg-slate-50 border border-slate-200 text-slate-800 px-4 py-3 text-sm rounded-xl focus:outline-none focus:border-peach-500 focus:ring-1 focus:ring-peach-500 font-medium"
-                placeholder="e.g. share of lunch, rent share"
-              />
+                placeholder="e.g. share of lunch, rent" />
             </div>
 
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full flex items-center justify-center gap-1.5 py-3 px-4 bg-peach-600 hover:bg-peach-700 active:scale-98 text-white font-semibold rounded-xl text-xs transition mt-4 cursor-pointer shadow-sm"
-            >
-              {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <>Request Quote <ArrowRight className="w-4 h-4" /></>}
+            <button type="submit" disabled={isLoading}
+              className="w-full flex items-center justify-center gap-1.5 py-3 px-4 bg-peach-600 hover:bg-peach-700 active:scale-98 disabled:opacity-50 text-white font-semibold rounded-xl text-xs transition mt-4 cursor-pointer shadow-sm">
+              {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <>Get Quote & Continue <ArrowRight className="w-4 h-4" /></>}
             </button>
           </motion.form>
         )}
 
-        {step === 2 && (
-          <motion.div
-            key="send-step2"
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 10 }}
-            className="space-y-5"
-          >
-            {error && (
-              <div className="p-3 bg-rose-50 border border-rose-200 text-rose-600 text-xs rounded-xl">
-                {error}
-              </div>
-            )}
+        {/* ── STEP 2: show quote + approval button ─────────────────── */}
+        {step === 2 && pending && (
+          <motion.div key="step2" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }} className="space-y-5">
+            {error && <div className="p-3 bg-rose-50 border border-rose-200 text-rose-600 text-xs rounded-xl">{error}</div>}
 
             <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3 font-mono text-xs text-slate-600">
               <div className="flex justify-between border-b border-slate-200 pb-2">
-                <span className="text-slate-500">Target Receiver</span>
-                <span className="text-slate-800 text-right font-bold truncate max-w-[180px]">
-                  $ilp.interledger-test.dev/{destination}
-                </span>
+                <span className="text-slate-500">Sending to</span>
+                <span className="text-slate-800 font-bold truncate max-w-[180px]">$ilp.../{pending.destination}</span>
               </div>
               <div className="flex justify-between border-b border-slate-200 pb-2">
-                <span className="text-slate-500">Conversion Rate</span>
-                <span className="text-slate-800 font-bold">1.00 ZAR = 1.00 ZAR</span>
+                <span className="text-slate-500">You send</span>
+                <span className="text-slate-800 font-bold">R {debitHuman}</span>
               </div>
               <div className="flex justify-between border-b border-slate-200 pb-2">
-                <span className="text-slate-500">Amount to send</span>
-                <span className="text-slate-800 font-bold">R {parseFloat(amount).toFixed(2)}</span>
+                <span className="text-slate-500">They receive</span>
+                <span className="text-emerald-700 font-bold">R {receiveHuman}</span>
               </div>
-              <div className="flex justify-between pb-1">
-                <span className="text-slate-500">Open Quote Expiry</span>
-                <span className="text-amber-600 font-bold">10 minutes</span>
-              </div>
+              {pending.quote.expiresAt && (
+                <div className="flex justify-between pb-1">
+                  <span className="text-slate-500">Quote expires</span>
+                  <span className="text-amber-600 font-bold">10 min</span>
+                </div>
+              )}
             </div>
 
-            <div className="flex gap-3">
-              <button
-                onClick={() => setStep(1)}
-                className="flex-1 py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSendPayment}
-                disabled={isLoading}
-                className="flex-1 py-3 px-4 bg-peach-600 hover:bg-peach-700 disabled:bg-slate-100 disabled:text-slate-400 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition shadow-sm"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" /> Transferring...
-                  </>
-                ) : (
-                  <>
-                    Sign & Transfer <Send className="w-4 h-4" />
-                  </>
-                )}
+            {/* The approval button — opens the ILP wallet consent page in a new tab */}
+            <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl space-y-3">
+              <p className="text-xs text-amber-800 font-semibold">
+                This payment requires your wallet's approval. Click the button below to authorise it in your Interledger wallet, then return here to complete.
+              </p>
+              <button onClick={handleOpenApproval}
+                className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-xl transition shadow-sm cursor-pointer">
+                <ExternalLink className="w-4 h-4" /> Approve in Your Wallet
               </button>
             </div>
+
+            <button onClick={reset} className="w-full py-2 text-slate-400 hover:text-slate-600 text-xs font-semibold rounded-xl transition cursor-pointer">
+              Cancel
+            </button>
           </motion.div>
         )}
 
-        {step === 3 && (
-          <motion.div
-            key="send-step3"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="flex flex-col items-center space-y-4"
-          >
-            <Mascot 
-              state="happy" 
-              message={`Success! Sent R ${parseFloat(amount).toFixed(2)} to $ilp.../${destination}!`} 
-              size="lg" 
-            />
+        {/* ── STEP 3: user approved — complete the transfer ─────────── */}
+        {step === 3 && pending && (
+          <motion.div key="step3" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }} className="space-y-5">
+            {error && <div className="p-3 bg-rose-50 border border-rose-200 text-rose-600 text-xs rounded-xl">{error}</div>}
 
+            <div className="p-5 bg-emerald-50 border border-emerald-200 rounded-2xl text-center space-y-2">
+              <ShieldCheck className="w-8 h-8 text-emerald-600 mx-auto" />
+              <p className="text-sm font-bold text-emerald-800">Approved in your wallet?</p>
+              <p className="text-xs text-emerald-700">
+                Once you've approved the payment in the Interledger wallet tab, click below to finalise the transfer.
+              </p>
+            </div>
+
+            <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-2 font-mono text-xs text-slate-600">
+              <div className="flex justify-between">
+                <span>Sending</span>
+                <span className="font-bold text-slate-800">R {debitHuman} → $ilp.../{pending.destination}</span>
+              </div>
+            </div>
+
+            <button onClick={handleExecute} disabled={isLoading}
+              className="w-full flex items-center justify-center gap-1.5 py-3 px-4 bg-peach-600 hover:bg-peach-700 disabled:opacity-50 text-white font-bold text-xs rounded-xl transition shadow-sm cursor-pointer">
+              {isLoading ? <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</> : <><Send className="w-4 h-4" /> Complete Transfer</>}
+            </button>
+
+            <button onClick={() => setStep(2)} className="w-full py-2 text-slate-400 hover:text-slate-600 text-xs font-semibold rounded-xl transition cursor-pointer">
+              Go Back
+            </button>
+          </motion.div>
+        )}
+
+        {/* ── STEP 4: success ──────────────────────────────────────── */}
+        {step === 4 && (
+          <motion.div key="step4" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center space-y-4">
+            <Mascot state="happy" message={`Sent R ${debitHuman} to $ilp.../${destination}!`} size="lg" />
             <div className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col items-center text-center space-y-3">
               <div className="p-3 bg-emerald-50 text-emerald-600 rounded-full">
                 <CheckCircle2 className="w-10 h-10" />
               </div>
               <div>
                 <p className="text-xs text-slate-500 font-mono select-all truncate max-w-xs mb-1 font-medium">
-                  Ref: {successTx?.reference || 'N/A'}
+                  Ref: {successTx?.reference ?? 'N/A'}
                 </p>
                 <span className="text-[10px] uppercase font-mono tracking-widest text-emerald-700 font-bold bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
                   Transfer Settled
                 </span>
               </div>
             </div>
-
-            <button
-              onClick={() => {
-                setStep(1);
-                setAmount('100');
-              }}
-              className="w-full py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition"
-            >
+            <button onClick={reset} className="w-full py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition">
               Make Another Transfer
             </button>
           </motion.div>
         )}
+
       </AnimatePresence>
     </div>
   );

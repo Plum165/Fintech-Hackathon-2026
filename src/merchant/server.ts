@@ -1,63 +1,71 @@
 /**
- * Merchant frontend dev server.
+ * Merchant frontend server.
  *
- * API calls are proxied to the consolidated backend at http://localhost:4000.
- * Run the central server first: cd src/server && npm run dev
+ * Dev:  Vite standalone server with /api proxy → http://localhost:4000
+ * Prod: Express static + raw-body proxy to the central API server.
+ *
+ * Start the central API server first:
+ *   cd src/server && npm run dev
  */
 
-import express from 'express';
 import dotenv from 'dotenv';
-import { createServer as createViteServer } from 'vite';
-import path from 'path';
-
 dotenv.config();
 
-const PORT = 5689;
+const PORT = parseInt(process.env.PORT ?? '5689', 10);
 const API_TARGET = process.env.API_URL ?? 'http://localhost:4000';
 
 async function start() {
-  const app = express();
+  if (process.env.NODE_ENV === 'production') {
+    const { default: express } = await import('express');
+    const { default: path } = await import('path');
+    const { fileURLToPath } = await import('url');
 
-  if (process.env.NODE_ENV !== 'production') {
-    const vite = await createViteServer({
-      server: {
-        middlewareMode: true,
-        proxy: {
-          '/api': {
-            target: API_TARGET,
-            changeOrigin: true
-          }
-        }
-      },
-      appType: 'spa'
-    });
-    app.use(vite.middlewares);
-  } else {
-    const distPath = path.join(process.cwd(), 'dist');
+    const __dirname = path.dirname(fileURLToPath(import.meta.url));
+    const app = express();
+    const distPath = path.join(__dirname, 'dist');
+
     app.use(express.static(distPath));
-    app.use('/api', async (req, res) => {
-      const url = `${API_TARGET}${req.url}`;
+
+    // Proxy /api/* → central server
+    app.use('/api', async (req: any, res: any) => {
+      const chunks: Buffer[] = [];
+      req.on('data', (c: Buffer) => chunks.push(c));
+      await new Promise(r => req.on('end', r));
+      const body = Buffer.concat(chunks);
+
       try {
-        const resp = await fetch(url, {
+        const headers: Record<string, string> = { 'content-type': 'application/json' };
+        if (req.headers.authorization) headers['authorization'] = req.headers.authorization;
+
+        const resp = await fetch(`${API_TARGET}/api${req.url}`, {
           method: req.method,
-          headers: {
-            'content-type': 'application/json',
-            ...(req.headers.authorization ? { authorization: req.headers.authorization } : {})
-          },
-          body: ['GET', 'HEAD'].includes(req.method) ? undefined : JSON.stringify(req.body)
+          headers,
+          body: body.length && req.method !== 'GET' && req.method !== 'HEAD' ? body : undefined
         });
-        const data = await resp.json();
-        res.status(resp.status).json(data);
+        res.status(resp.status).json(await resp.json());
       } catch {
         res.status(502).json({ error: 'API server unreachable.' });
       }
     });
-    app.get('*', (_req, res) => res.sendFile(path.join(distPath, 'index.html')));
-  }
 
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`[Merchant Frontend] http://localhost:${PORT}  →  API: ${API_TARGET}`);
-  });
+    app.get('*', (_req: any, res: any) => res.sendFile(path.join(distPath, 'index.html')));
+    app.listen(PORT, '0.0.0.0', () =>
+      console.log(`[Merchant] Production → http://localhost:${PORT}  API: ${API_TARGET}`)
+    );
+  } else {
+    const { createServer } = await import('vite');
+    const server = await createServer({
+      server: {
+        port: PORT,
+        proxy: {
+          '/api': { target: API_TARGET, changeOrigin: true }
+        }
+      }
+    });
+    await server.listen();
+    console.log(`[Merchant] Dev → http://localhost:${PORT}  API: ${API_TARGET}`);
+    server.printUrls();
+  }
 }
 
 start();
