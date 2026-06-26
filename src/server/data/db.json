@@ -1,0 +1,59 @@
+{
+  "users": [
+    {
+      "id": "usr_o2rdf44ci",
+      "email": "test@example.com",
+      "name": "Test",
+      "consentAccepted": false,
+      "kycStatus": "unverified",
+      "createdAt": "2026-06-26T13:21:47.737Z"
+    }
+  ],
+  "wallets": [
+    {
+      "id": "wal_h5awpk2sh",
+      "userId": "usr_o2rdf44ci",
+      "username": "test",
+      "pointer": "$ilp.interledger-test.dev/test",
+      "balance": 1000,
+      "reserveBalance": 0,
+      "creditOwed": 0,
+      "creditLimit": 1500,
+      "accumulatedInterest": 0,
+      "confidenceScore": 600,
+      "currency": "ZAR",
+      "active": true,
+      "createdAt": "2026-06-26T13:21:47.741Z"
+    }
+  ],
+  "grants": [],
+  "incomingPayments": [],
+  "outgoingPayments": [],
+  "quotes": [],
+  "transactions": [],
+  "budgetCategories": [],
+  "budgetAllocations": [],
+  "aiConversations": [],
+  "auditLogs": [
+    {
+      "id": "log_8xq4rkzz3",
+      "action": "WALLET_CREATED",
+      "details": "Internal wallet for $ilp.interledger-test.dev/test created.",
+      "timestamp": "2026-06-26T13:21:47.743Z"
+    },
+    {
+      "id": "log_7lci50l7t",
+      "action": "USER_CREATED",
+      "details": "New user: test@example.com",
+      "timestamp": "2026-06-26T13:21:47.739Z"
+    },
+    {
+      "id": "log_init",
+      "action": "SYSTEM_STARTUP",
+      "details": "PandaPay consolidated API server initialised.",
+      "timestamp": "2026-06-26T13:21:18.578Z"
+    }
+  ],
+  "subscriptions": [],
+  "bnplContracts": []
+}
