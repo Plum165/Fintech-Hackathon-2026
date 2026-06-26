@@ -96,3 +96,10 @@ coverage/
 .env
 .env.local
 .env.*.local
+
+# ==========================
+# Cryptographic keys
+# ==========================
+# Never commit private keys — the example file (private.key.example) is safe to commit.
+private.key
+*.pem
