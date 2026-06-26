@@ -133,6 +133,58 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
+app.post('/api/auth/register', async (req, res) => {
+  try {
+    const { email, name, username } = req.body as { email?: string; name?: string; username?: string };
+    if (!email || !name || !username) {
+      res.status(400).json({ error: 'Email, full name, and wallet username are all required.' }); return;
+    }
+
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanName = name.trim();
+    const cleanUsername = username.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+
+    if (!cleanEmail.includes('@')) {
+      res.status(400).json({ error: 'Please enter a valid email address.' }); return;
+    }
+    if (cleanUsername.length < 3) {
+      res.status(400).json({ error: 'Wallet username must be at least 3 alphanumeric characters.' }); return;
+    }
+
+    const db = Database.read();
+
+    if (db.users.find(u => u.email.toLowerCase() === cleanEmail)) {
+      res.status(400).json({ error: 'This email is already registered. Sign in instead.' }); return;
+    }
+
+    const targetPointer = WalletService.generatePointer(cleanUsername);
+    if (db.wallets.find(w => w.pointer.toLowerCase() === targetPointer.toLowerCase() || w.username.toLowerCase() === cleanUsername)) {
+      res.status(400).json({ error: 'That wallet username is already taken. Please choose another.' }); return;
+    }
+
+    const user = {
+      id: 'usr_' + Math.random().toString(36).substr(2, 9),
+      email: cleanEmail,
+      name: cleanName,
+      consentAccepted: false,
+      kycStatus: 'unverified' as const,
+      createdAt: new Date().toISOString()
+    };
+    db.users.push(user);
+    Database.write(db);
+    Database.log('USER_REGISTERED', `New user: ${cleanEmail} → ${targetPointer}`);
+
+    const wallet = await WalletService.getOrCreateWallet(user.id, cleanUsername);
+
+    const token = 'token_' + Math.random().toString(36).substr(2, 16);
+    authTokens.set(token, { email: user.email, userId: user.id });
+
+    res.status(201).json({ token, user, wallet });
+  } catch (e: any) {
+    res.status(500).json({ error: e.message ?? 'Registration failed.' });
+  }
+});
+
 app.get('/api/auth/me', authenticate, async (req, res) => {
   try {
     const { userId } = (req as any).user;
