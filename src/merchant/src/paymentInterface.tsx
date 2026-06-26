@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import QRCode from "qrcode";
-import SendForm from "./components/SendForm";
 import {
   CreditCard,
   ShieldCheck,
@@ -132,16 +131,6 @@ export default function App() {
   const [customAmount, setCustomAmount] = useState<string>("");
   const [customReason, setCustomReason] = useState("");
   
-  // Tab Navigation & Full-Stack Wallet Integration States
-  const [activeTab, setActiveTab] = useState<"pos" | "send">("pos");
-  const [ilpToken, setIlpToken] = useState("merchant-test-token-za-2026");
-  const [outgoingTransfers, setOutgoingTransfers] = useState<{ id: string; amount: number; date: string }[]>([]);
-
-  const handleSendComplete = (amount: number) => {
-    const today = new Date().toISOString().split('T')[0];
-    const transId = "TX-" + Math.floor(100000 + Math.random() * 900000);
-    setOutgoingTransfers(prev => [{ id: transId, amount, date: today }, ...prev]);
-  };
 
   // Feedback States
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -374,33 +363,7 @@ export default function App() {
           </div>
         </div>
 
-        {/* Dynamic Navigation Tabs */}
-        <div className="flex flex-wrap border-b border-slate-200/80 gap-2">
-          <button
-            onClick={() => setActiveTab("pos")}
-            className={`pb-4 px-5 font-black text-xs uppercase tracking-wider border-b-2 transition-all flex items-center gap-2 min-h-[44px] cursor-pointer ${
-              activeTab === "pos"
-                ? "border-indigo-600 text-indigo-700"
-                : "border-transparent text-slate-500 hover:text-slate-800"
-            }`}
-          >
-            <Store className="w-4 h-4" />
-            Point of Sale & Invoices
-          </button>
-          <button
-            onClick={() => setActiveTab("send")}
-            className={`pb-4 px-5 font-black text-xs uppercase tracking-wider border-b-2 transition-all flex items-center gap-2 min-h-[44px] cursor-pointer ${
-              activeTab === "send"
-                ? "border-indigo-600 text-indigo-700"
-                : "border-transparent text-slate-500 hover:text-slate-800"
-            }`}
-          >
-            <Send className="w-4 h-4" />
-            Outgoing Wallet Transfers (ILP)
-          </button>
-        </div>
-
-        {activeTab === "pos" ? (
+ 
           /* MERCHANT TERMINAL PANEL */
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           
@@ -923,69 +886,10 @@ export default function App() {
 
           </div>
 
-        </div>
-        ) : (
-          /* OUTGOING WALLET TRANSFERS (ILP) */
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            {/* Outgoing Payment form section */}
-            <div className="lg:col-span-7 space-y-6">
-              <SendForm onSendComplete={handleSendComplete} token={ilpToken} />
-            </div>
+       </div>
+           
 
-            {/* Outgoing Settings & Ledger Section */}
-            <div className="lg:col-span-5 space-y-6">
-              {/* Configuration panel */}
-              <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
-                <span className="text-[10px] font-extrabold text-indigo-600 uppercase tracking-wider block mb-1">Gateway Authentication</span>
-                <h4 className="text-sm font-bold text-slate-800">Interledger API Credentials</h4>
-                <p className="text-xs text-slate-500 mt-1 mb-4">
-                  Define your secret authorization bearer token for local Open Payments transaction validation.
-                </p>
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Authorization Token</label>
-                  <input
-                    type="password"
-                    value={ilpToken}
-                    onChange={(e) => setIlpToken(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 text-slate-800 px-4 py-3 text-xs rounded-xl focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 font-mono font-bold"
-                    placeholder="Enter ILP bearer token..."
-                  />
-                </div>
-              </div>
-
-              {/* Recent Transfers panel */}
-              <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
-                <span className="text-[10px] font-extrabold text-emerald-600 uppercase tracking-wider block mb-1">Instant Settlement Feed</span>
-                <h4 className="text-sm font-bold text-slate-800">Recent Outgoing Transfers</h4>
-                <p className="text-xs text-slate-500 mt-1 mb-4">
-                  Real-time Interledger transaction ledger for the active business session.
-                </p>
-
-                {outgoingTransfers.length === 0 ? (
-                  <div className="p-8 border border-dashed border-slate-200 rounded-2xl text-center space-y-2">
-                    <p className="text-xs text-slate-400 font-bold">No active transfers dispatched</p>
-                    <p className="text-[10px] text-slate-400">Initiate an ILP outgoing payment above to populate session logs.</p>
-                  </div>
-                ) : (
-                  <div className="space-y-3 max-h-[250px] overflow-y-auto pr-1">
-                    {outgoingTransfers.map((tx) => (
-                      <div key={tx.id} className="flex justify-between items-center p-3 bg-slate-50 border border-slate-200/60 rounded-xl">
-                        <div className="text-left">
-                          <span className="font-mono text-[10px] font-black text-indigo-900 block">{tx.id}</span>
-                          <span className="text-[9px] text-slate-400 font-bold uppercase">{tx.date}</span>
-                        </div>
-                        <div className="text-right">
-                          <span className="text-xs font-black text-slate-800 block">R{tx.amount.toFixed(2)}</span>
-                          <span className="text-[8px] bg-emerald-50 text-emerald-700 font-black px-2 py-0.5 rounded border border-emerald-100 uppercase tracking-wider">Settled</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
+      
 
       </div>
 
