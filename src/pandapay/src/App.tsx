@@ -19,10 +19,9 @@ import Mascot from './components/Mascot';
 import SubscriptionsPanel from './components/SubscriptionsPanel';
 import ReserveBucketPanel from './components/ReserveBucketPanel';
 import KycVerificationPanel from './components/KycVerificationPanel';
-import WebMonetizationPanel from './components/WebMonetizationPanel';
 import BnplDashboardPanel from './components/BnplDashboardPanel';
 
-type Tab = 'dashboard' | 'deposit' | 'send' | 'transactions' | 'budget' | 'ai' | 'settings' | 'subscriptions' | 'reserve' | 'kyc' | 'monetization' | 'bnpl';
+type Tab = 'dashboard' | 'deposit' | 'send' | 'transactions' | 'budget' | 'ai' | 'settings' | 'subscriptions' | 'reserve' | 'kyc' | 'bnpl';
 
 export default function App() {
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
@@ -326,15 +325,6 @@ export default function App() {
                 }`}
               >
                 <PiggyBank className="w-4 h-4 text-peach-700" /> Locked Reserves
-              </button>
-
-              <button
-                onClick={() => setActiveTab('monetization')}
-                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition cursor-pointer text-left ${
-                  activeTab === 'monetization' ? 'bg-peach-55 text-peach-850 font-bold border border-peach-200 shadow-xs' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
-                }`}
-              >
-                <Radio className="w-4 h-4 text-peach-700 animate-pulse" /> Monetized Articles
               </button>
 
               <button
@@ -691,18 +681,6 @@ export default function App() {
                 className="max-w-xl mx-auto"
               >
                 <KycVerificationPanel user={user} wallet={wallet} token={token} onKycComplete={triggerRefresh} />
-              </motion.div>
-            )}
-
-            {/* TAB: WEB MONETIZATION ARTICLES */}
-            {activeTab === 'monetization' && (
-              <motion.div
-                key="monetization-view"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                <WebMonetizationPanel wallet={wallet} token={token} onPaymentStreamed={triggerRefresh} />
               </motion.div>
             )}
           </AnimatePresence>

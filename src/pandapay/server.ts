@@ -1090,56 +1090,6 @@ async function startServer() {
   });
 
   // ==========================================
-  // WEB MONETIZATION MICROPAYMENTS STREAM
-  // ==========================================
-  app.post("/api/monetization/stream", authenticate, async (req, res) => {
-    try {
-      const { amount, publisher } = req.body;
-      const numAmount = parseFloat(amount || 0.05); // defaults to 5 cents a second stream
-
-      const session = (req as any).user;
-      const db = Database.read();
-      const wallet = db.wallets.find(w => w.userId === session.userId);
-      if (!wallet) return res.status(404).json({ error: 'Wallet not found.' });
-
-      if (wallet.balance < numAmount) {
-        return res.status(400).json({ error: 'Insufficient wallet balance for monetization stream.' });
-      }
-
-      wallet.balance -= numAmount;
-      
-      // Update tech budget slightly
-      const budgets = db.budgetCategories.filter(b => b.walletId === wallet.id);
-      const techBudget = budgets.find(b => b.id === 'bc_tech');
-      if (techBudget) {
-        techBudget.allocated = Math.min(techBudget.limit, techBudget.allocated + numAmount);
-      }
-
-      // Add a silent microtransaction
-      const transaction: Transaction = {
-        id: 'tx_wm_' + Math.random().toString(36).substr(2, 12),
-        walletId: wallet.id,
-        type: 'send',
-        direction: 'out',
-        amount: numAmount,
-        currency: wallet.currency,
-        counterparty: publisher || '$ilp.interledger-test.dev/news-publisher',
-        reference: 'web_monetization_stream',
-        status: 'completed',
-        category: 'Tech & subscriptions',
-        createdAt: new Date().toISOString()
-      };
-
-      db.transactions.unshift(transaction);
-      Database.write(db);
-
-      res.json({ success: true, wallet, transaction });
-    } catch (e: any) {
-      res.status(500).json({ error: e.message });
-    }
-  });
-
-  // ==========================================
   // TIME TRAVEL BILLING CYCLE SIMULATOR
   // ==========================================
   app.post("/api/simulation/timetravel", authenticate, async (req, res) => {
