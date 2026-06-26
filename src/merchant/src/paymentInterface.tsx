@@ -338,11 +338,7 @@ export default function PaymentInterface() {
               <p className="text-[10px] uppercase font-bold text-slate-400">Merchant Account ID</p>
               <p className="text-xs font-mono font-bold text-slate-700">MID-99218-ZAR</p>
             </div>
-            <div className="h-8 w-[1px] bg-slate-200 hidden sm:block"></div>
-            <div className="flex bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-xs font-bold text-slate-600 items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-              Live Link Server
-            </div>
+          
           </div>
         </div>
 
