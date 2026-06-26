@@ -22,9 +22,11 @@ export function getOPClient(): Promise<AuthenticatedClient> {
 async function _createClient(): Promise<AuthenticatedClient> {
   const walletAddress = process.env.SERVER_WALLET_ADDRESS;
   const keyId = process.env.KEY_ID;
+  // PRIVATE_KEY_PATH resolves from CWD (wherever `npm run dev` is invoked).
+  // Fallback walks up from src/server/services/interledger/ to src/server/.
   const privateKeyPath = process.env.PRIVATE_KEY_PATH
     ? path.resolve(process.env.PRIVATE_KEY_PATH)
-    : path.join(__dirname, '../../../private.key');
+    : path.join(__dirname, '../../private.key');
 
   if (!walletAddress || !keyId) {
     throw new Error(
