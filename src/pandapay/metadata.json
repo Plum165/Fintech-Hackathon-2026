@@ -1,0 +1,10 @@
+{
+  "name": "Remix: PandaPay",
+  "description": "An elegant, production-ready fintech dashboard powered by the Interledger Protocol, smart budget tracking, and real-time AI financial insights with Zen the mascot.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
