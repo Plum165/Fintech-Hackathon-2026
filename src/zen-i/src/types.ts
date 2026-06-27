@@ -163,11 +163,12 @@ export interface BnplContract {
   walletId: string;
   merchantName: string;
   merchantLogo?: string;
+  merchantPointer?: string;
   purchaseAmount: number;
   remainingAmount: number;
   currency: string;
   totalInstallments: number;
-  status: 'active' | 'completed' | 'overdue';
+  status: 'pending' | 'active' | 'completed' | 'overdue';
   createdAt: string;
   installments: BnplInstallment[];
 }

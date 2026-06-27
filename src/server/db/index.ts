@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 import type {
   User, Wallet, Grant, IncomingPayment, OutgoingPayment,
   Quote, Transaction, BudgetCategory, BudgetAllocation,
-  AIConversation, AuditLog, Subscription, BnplContract
+  AIConversation, AuditLog, Subscription, BnplContract, PaymentRequest
 } from '../types.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -25,6 +25,7 @@ export interface DatabaseSchema {
   auditLogs: AuditLog[];
   subscriptions: Subscription[];
   bnplContracts: BnplContract[];
+  paymentRequests: PaymentRequest[];
   sessions: Record<string, { email: string; userId: string }>;
 }
 
@@ -49,6 +50,7 @@ const defaultDb: DatabaseSchema = {
   ],
   subscriptions: [],
   bnplContracts: [],
+  paymentRequests: [],
   sessions: {}
 };
 
@@ -73,6 +75,7 @@ export class Database {
       // Ensure new collections exist on older DB files
       parsed.subscriptions ??= [];
       parsed.bnplContracts ??= [];
+      parsed.paymentRequests ??= [];
       parsed.sessions ??= {};
       return parsed;
     } catch {

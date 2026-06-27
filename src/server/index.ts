@@ -27,7 +27,7 @@ import { OutgoingPaymentService } from './services/interledger/OutgoingPaymentSe
 import { QuoteService } from './services/interledger/QuoteService.js';
 import { AIService } from './services/AIService.js';
 import { isOPConfigured } from './services/interledger/client.js';
-import type { Transaction, BudgetCategory, BnplInstallment, BnplContract, Subscription } from './types.js';
+import type { Transaction, BudgetCategory, BnplInstallment, BnplContract, Subscription, PaymentRequest } from './types.js';
 
 const app = express();
 const PORT = parseInt(process.env.PORT ?? '4000', 10);
@@ -1001,7 +1001,7 @@ app.get('/api/bnpl/contracts', authenticate, async (req, res) => {
 
 app.post('/api/bnpl/checkout', authenticate, async (req, res) => {
   try {
-    const { merchantName, purchaseAmount, totalInstallments } = req.body;
+    const { merchantName, purchaseAmount, totalInstallments, merchantPointer } = req.body;
     if (!merchantName || !purchaseAmount || !totalInstallments) {
       res.status(400).json({ error: 'merchantName, purchaseAmount, and totalInstallments required.' }); return;
     }
@@ -1028,26 +1028,19 @@ app.post('/api/bnpl/checkout', authenticate, async (req, res) => {
       }); return;
     }
 
-    wallet.balance -= installmentAmt;
-
-    const firstTxId = 'tx_bnpl_' + Math.random().toString(36).substr(2, 9);
+    // Build installments schedule (first starts as pending, rest as future)
     const installments: BnplInstallment[] = [
       {
         id: 'inst_' + Math.random().toString(36).substr(2, 9),
         installmentNumber: 1,
         amount: installmentAmt,
         dueDate: new Date().toISOString(),
-        status: 'paid',
-        paidAt: new Date().toISOString(),
-        transactionId: firstTxId
+        status: 'pending'
       }
     ];
-
     let remaining = numAmount - installmentAmt;
     for (let i = 2; i <= numInstallments; i++) {
-      const amt = i === numInstallments
-        ? Math.round(remaining * 100) / 100
-        : installmentAmt;
+      const amt = i === numInstallments ? Math.round(remaining * 100) / 100 : installmentAmt;
       remaining -= amt;
       installments.push({
         id: 'inst_' + Math.random().toString(36).substr(2, 9),
@@ -1058,20 +1051,67 @@ app.post('/api/bnpl/checkout', authenticate, async (req, res) => {
       });
     }
 
+    const contractId = 'bnpl_' + Math.random().toString(36).substr(2, 9);
     const contract: BnplContract = {
-      id: 'bnpl_' + Math.random().toString(36).substr(2, 9),
+      id: contractId,
       walletId: wallet.id,
       merchantName,
+      merchantPointer: merchantPointer || undefined,
       purchaseAmount: numAmount,
       remainingAmount: Math.round((numAmount - installmentAmt) * 100) / 100,
       currency: wallet.currency,
       totalInstallments: numInstallments,
-      status: 'active',
+      status: 'pending',
       createdAt: new Date().toISOString(),
       installments
     };
-
     db.bnplContracts.push(contract);
+    Database.write(db);
+
+    // If merchant has an ILP pointer and OP is configured, run real payment flow
+    if (merchantPointer && isOPConfigured()) {
+      try {
+        const destUrl = WalletService.toUrl(merchantPointer);
+        console.log('[BNPL/checkout] ILP flow — dest:', destUrl, 'amount:', installmentAmt);
+
+        const incoming = await IncomingPaymentService.create(destUrl, installmentAmt, wallet.currency, 2);
+        console.log('[BNPL/checkout] Incoming payment created:', incoming.id);
+
+        const quote = await QuoteService.create(incoming.id, installmentAmt, wallet.currency, 2);
+        console.log('[BNPL/checkout] Quote created:', quote.id);
+
+        const pending = await OutgoingPaymentService.initiateGrant(installmentAmt, wallet.currency, 2);
+        console.log('[BNPL/checkout] Interactive grant pending, approvalUrl:', pending.approvalUrl);
+
+        res.json({
+          success: true,
+          contract,
+          pendingApproval: true,
+          isSimulation: pending.continueUri.startsWith('sim://'),
+          approvalUrl: pending.approvalUrl,
+          continueUri: pending.continueUri,
+          continueToken: pending.continueToken,
+          quoteId: quote.id,
+          installmentAmount: installmentAmt
+        });
+        return;
+      } catch (opErr: any) {
+        console.warn('[BNPL/checkout] ILP initiate failed, falling back to local:', opErr.message);
+        // Fall through to local payment below
+      }
+    }
+
+    // Local payment path (no pointer, OP not configured, or ILP failed)
+    const firstTxId = 'tx_bnpl_' + Math.random().toString(36).substr(2, 9);
+    wallet.balance -= installmentAmt;
+    contract.status = 'active';
+    installments[0].status = 'paid';
+    installments[0].paidAt = new Date().toISOString();
+    installments[0].transactionId = firstTxId;
+
+    wallet.confidenceScore = Math.min(1000, wallet.confidenceScore + 10);
+    applyBudget(db.budgetCategories.filter(b => b.walletId === wallet.id), 'General', installmentAmt);
+
     db.transactions.unshift({
       id: firstTxId,
       walletId: wallet.id,
@@ -1086,18 +1126,84 @@ app.post('/api/bnpl/checkout', authenticate, async (req, res) => {
       createdAt: new Date().toISOString()
     });
 
-    wallet.confidenceScore = Math.min(1000, wallet.confidenceScore + 10);
-    applyBudget(
-      db.budgetCategories.filter(b => b.walletId === wallet.id),
-      'General',
-      installmentAmt
-    );
-
     Database.write(db);
     Database.log('BNPL_CREATED', `${merchantName} R ${numAmount} in ${numInstallments} splits.`);
-    res.json({ success: true, contract, wallet });
+    res.json({ success: true, contract, wallet, pendingApproval: false });
   } catch (e: any) {
     res.status(500).json({ error: e.message });
+  }
+});
+
+/**
+ * POST /api/bnpl/execute
+ * Finalises an ILP outgoing payment for a BNPL first installment after the
+ * user has approved the interactive grant in their wallet.
+ */
+app.post('/api/bnpl/execute', authenticate, async (req, res) => {
+  try {
+    const { contractId, continueUri, continueToken, quoteId, installmentAmount } = req.body as {
+      contractId?: string;
+      continueUri?: string;
+      continueToken?: string;
+      quoteId?: string;
+      installmentAmount?: number | string;
+    };
+
+    if (!contractId || !continueUri || !continueToken || !quoteId) {
+      res.status(400).json({ error: 'contractId, continueUri, continueToken and quoteId required.' }); return;
+    }
+
+    const { userId } = (req as any).user;
+    const db = Database.read();
+    const wallet = db.wallets.find(w => w.userId === userId);
+    if (!wallet) { res.status(404).json({ error: 'Wallet not found.' }); return; }
+
+    const contract = db.bnplContracts.find(c => c.id === contractId && c.walletId === wallet.id);
+    if (!contract) { res.status(404).json({ error: 'Contract not found.' }); return; }
+
+    const numAmount = parseFloat(String(installmentAmount ?? contract.installments[0]?.amount ?? 0));
+    if (wallet.balance < numAmount) {
+      res.status(400).json({ error: 'Insufficient balance for first installment.' }); return;
+    }
+
+    const outgoing = await OutgoingPaymentService.execute(continueUri, continueToken, quoteId, `BNPL Split 1/${contract.totalInstallments} — ${contract.merchantName}`);
+    console.log('[BNPL/execute] Outgoing payment:', outgoing.id, 'failed:', outgoing.failed);
+
+    if (!outgoing.failed) {
+      const firstTxId = 'tx_bnpl_' + Math.random().toString(36).substr(2, 9);
+      contract.status = 'active';
+      const firstInst = contract.installments[0];
+      if (firstInst) {
+        firstInst.status = 'paid';
+        firstInst.paidAt = new Date().toISOString();
+        firstInst.transactionId = firstTxId;
+      }
+
+      wallet.balance -= numAmount;
+      wallet.confidenceScore = Math.min(1000, wallet.confidenceScore + 10);
+      applyBudget(db.budgetCategories.filter(b => b.walletId === wallet.id), 'General', numAmount);
+
+      db.transactions.unshift({
+        id: firstTxId,
+        walletId: wallet.id,
+        type: 'send',
+        direction: 'out',
+        amount: numAmount,
+        currency: wallet.currency,
+        counterparty: contract.merchantName,
+        reference: `BNPL Split 1/${contract.totalInstallments}`,
+        status: 'completed',
+        category: 'General',
+        createdAt: new Date().toISOString()
+      });
+
+      Database.write(db);
+      Database.log('BNPL_CREATED', `ILP: ${contract.merchantName} R ${contract.purchaseAmount} in ${contract.totalInstallments} splits.`);
+    }
+
+    res.json({ success: !outgoing.failed, contract, wallet, outgoingPaymentId: outgoing.id });
+  } catch (e: any) {
+    res.status(500).json({ error: e.message ?? 'BNPL execution failed.' });
   }
 });
 
@@ -1149,6 +1255,61 @@ app.post('/api/bnpl/repay/:contractId/:installmentId', authenticate, async (req,
     Database.write(db);
     Database.log('BNPL_REPAY', `R ${inst.amount} for ${contract.merchantName}.`);
     res.json({ success: true, contract, wallet });
+  } catch (e: any) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// ============================================================================
+// MERCHANT PAYMENT REQUESTS  (/pay/:id flow)
+// ============================================================================
+
+/**
+ * POST /api/pay/create
+ * Merchant creates a payment request — returns a short PAY-XXXXXX ID.
+ * The QR code links to {frontend_origin}/pay/{id}.
+ */
+app.post('/api/pay/create', async (req, res) => {
+  try {
+    const { merchantName, merchantPointer, itemDescription, amount, currency, splits } = req.body;
+    if (!merchantName || !itemDescription || !amount) {
+      res.status(400).json({ error: 'merchantName, itemDescription and amount required.' }); return;
+    }
+    const numAmount = parseFloat(amount);
+    if (isNaN(numAmount) || numAmount <= 0) {
+      res.status(400).json({ error: 'Positive amount required.' }); return;
+    }
+    const id = 'PAY-' + Math.floor(100000 + Math.random() * 900000);
+    const request = {
+      id,
+      merchantName,
+      merchantPointer: merchantPointer || '',
+      itemDescription,
+      amount: numAmount,
+      currency: currency || 'ZAR',
+      splits: parseInt(splits ?? '3') || 3,
+      createdAt: new Date().toISOString()
+    };
+    const db = Database.read();
+    db.paymentRequests.push(request);
+    Database.write(db);
+    res.json({ id, request });
+  } catch (e: any) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+/**
+ * GET /api/pay/:id
+ * Public lookup — returns the payment request so the frontend can pre-fill checkout.
+ */
+app.get('/api/pay/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const db = Database.read();
+    const request = db.paymentRequests.find(r => r.id === id);
+    if (!request) { res.status(404).json({ error: 'Payment request not found.' }); return; }
+    res.json({ request });
   } catch (e: any) {
     res.status(500).json({ error: e.message });
   }

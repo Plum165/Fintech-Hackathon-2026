@@ -5,7 +5,7 @@ import {
   ChartPie, Sparkles, Settings, Bell, Mail, Key, User as UserIcon,
   HelpCircle, LogOut, CheckCircle, ShieldAlert, Sparkle, RefreshCw,
   PiggyBank, ShieldCheck, CreditCard, Radio, ShieldAlert as ShieldAlertIcon, FileText, Percent,
-  Calendar, Clock
+  Calendar, Clock, Store
 } from 'lucide-react';
 import { User, Wallet, BnplContract, BnplInstallment } from './types';
 import WalletCard from './components/WalletCard';
@@ -21,16 +21,61 @@ import SubscriptionsPanel from './components/SubscriptionsPanel';
 import ReserveBucketPanel from './components/ReserveBucketPanel';
 import KycVerificationPanel from './components/KycVerificationPanel';
 import BnplDashboardPanel from './components/BnplDashboardPanel';
+import MerchantQrPanel from './components/MerchantQrPanel';
 import ZenILogo from './components/ZenILogo';
 
-type Tab = 'dashboard' | 'deposit' | 'send' | 'transactions' | 'budget' | 'ai' | 'subscriptions' | 'reserve' | 'bnpl';
+type Tab = 'dashboard' | 'deposit' | 'send' | 'transactions' | 'budget' | 'ai' | 'subscriptions' | 'reserve' | 'bnpl' | 'merchant';
+
+interface BnplPrefill {
+  merchantName?: string;
+  merchantPointer?: string;
+  itemDescription?: string;
+  amount?: string;
+  splits?: number;
+}
 
 export default function App() {
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
   const [user, setUser] = useState<User | null>(null);
   const [wallet, setWallet] = useState<Wallet | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
-  
+  const [bnplPrefill, setBnplPrefill] = useState<BnplPrefill | null>(null);
+
+  // Handle /pay/PAY-XXXXXX path or ?mode=merchant on load
+  useEffect(() => {
+    const pathname = window.location.pathname;
+    const params = new URLSearchParams(window.location.search);
+
+    const payMatch = pathname.match(/^\/pay\/(PAY-\d+)$/i);
+    if (payMatch) {
+      const payId = payMatch[1].toUpperCase();
+      // Fetch payment request details from server
+      fetch(`/api/pay/${payId}`)
+        .then(r => r.json())
+        .then(data => {
+          if (data.request) {
+            setBnplPrefill({
+              merchantName: data.request.merchantName,
+              merchantPointer: data.request.merchantPointer || undefined,
+              itemDescription: data.request.itemDescription,
+              amount: String(data.request.amount),
+              splits: data.request.splits,
+            });
+            setActiveTab('bnpl');
+          }
+        })
+        .catch(err => console.warn('[pay] Could not load payment request:', err));
+      // Clean up the URL — show root path
+      window.history.replaceState({}, '', '/');
+      return;
+    }
+
+    if (params.get('mode') === 'merchant') {
+      setActiveTab('merchant');
+      window.history.replaceState({}, '', '/');
+    }
+  }, []);
+
   // Login input state
   const [email, setEmail] = useState('');
   const [authError, setAuthError] = useState('');
@@ -574,6 +619,15 @@ export default function App() {
               </button>
 
               <button
+                onClick={() => setActiveTab('merchant')}
+                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition cursor-pointer text-left ${
+                  activeTab === 'merchant' ? 'bg-violet-50 text-violet-850 font-bold border border-violet-200 shadow-xs' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+                }`}
+              >
+                <Store className="w-4 h-4 text-violet-600" /> Merchant Portal
+              </button>
+
+              <button
                 onClick={() => setActiveTab('reserve')}
                 className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition cursor-pointer text-left ${
                   activeTab === 'reserve' ? 'bg-peach-55 text-peach-850 font-bold border border-peach-200 shadow-xs' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
@@ -910,7 +964,19 @@ export default function App() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               >
-                <BnplDashboardPanel wallet={wallet} token={token} onUpdate={triggerRefresh} />
+                <BnplDashboardPanel wallet={wallet} token={token} onUpdate={triggerRefresh} prefill={bnplPrefill} />
+              </motion.div>
+            )}
+
+            {/* TAB: MERCHANT PORTAL VIEW */}
+            {activeTab === 'merchant' && (
+              <motion.div
+                key="merchant-view"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <MerchantQrPanel />
               </motion.div>
             )}
 

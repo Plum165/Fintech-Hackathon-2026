@@ -136,6 +136,17 @@ export interface Subscription {
   createdAt: string;
 }
 
+export interface PaymentRequest {
+  id: string;
+  merchantName: string;
+  merchantPointer: string;
+  itemDescription: string;
+  amount: number;
+  currency: string;
+  splits: number;
+  createdAt: string;
+}
+
 export interface BnplInstallment {
   id: string;
   installmentNumber: number;
@@ -151,11 +162,12 @@ export interface BnplContract {
   walletId: string;
   merchantName: string;
   merchantLogo?: string;
+  merchantPointer?: string;
   purchaseAmount: number;
   remainingAmount: number;
   currency: string;
   totalInstallments: number;
-  status: 'active' | 'completed' | 'overdue';
+  status: 'pending' | 'active' | 'completed' | 'overdue';
   createdAt: string;
   installments: BnplInstallment[];
 }
