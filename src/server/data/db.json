@@ -31,7 +31,7 @@
       "userId": "usr_o2rdf44ci",
       "username": "test",
       "pointer": "$ilp.interledger-test.dev/test",
-      "balance": 1000,
+      "balance": 5000,
       "reserveBalance": 0,
       "creditOwed": 0,
       "creditLimit": 1500,
@@ -46,7 +46,7 @@
       "userId": "usr_hq5kpatlw",
       "username": "mikaeelnaidoo2",
       "pointer": "$ilp.interledger-test.dev/mikaeelnaidoo2",
-      "balance": 46,
+      "balance": 5000,
       "reserveBalance": 0,
       "creditOwed": 0,
       "creditLimit": 1500,
@@ -61,12 +61,12 @@
       "userId": "usr_yc8unprkh",
       "username": "testers",
       "pointer": "$ilp.interledger-test.dev/testers",
-      "balance": 75.33000000000001,
+      "balance": 4808.33,
       "reserveBalance": 0,
       "creditOwed": 0,
       "creditLimit": 1500,
       "accumulatedInterest": 0,
-      "confidenceScore": 630,
+      "confidenceScore": 640,
       "currency": "ZAR",
       "active": true,
       "createdAt": "2026-06-27T08:52:38.250Z"
@@ -77,6 +77,45 @@
   "outgoingPayments": [],
   "quotes": [],
   "transactions": [
+    {
+      "id": "tx_bnpl_8cg59x5dj",
+      "walletId": "wal_2ghxetyg8",
+      "type": "send",
+      "direction": "out",
+      "amount": 191.67,
+      "currency": "ZAR",
+      "counterparty": "Takealot Tech",
+      "reference": "BNPL Split 1/3",
+      "status": "completed",
+      "category": "General",
+      "createdAt": "2026-06-27T12:36:44.213Z"
+    },
+    {
+      "id": "tx_12ynt5iii",
+      "walletId": "wal_2ghxetyg8",
+      "type": "deposit",
+      "direction": "in",
+      "amount": 100,
+      "currency": "ZAR",
+      "counterparty": "Deposit via ILP",
+      "reference": "ref_dep_5mqytyn",
+      "status": "completed",
+      "category": "General",
+      "createdAt": "2026-06-27T12:32:52.084Z"
+    },
+    {
+      "id": "tx_yvsf5g626",
+      "walletId": "wal_2ghxetyg8",
+      "type": "deposit",
+      "direction": "in",
+      "amount": 300,
+      "currency": "ZAR",
+      "counterparty": "Deposit via ILP",
+      "reference": "ref_dep_lo7khpe",
+      "status": "completed",
+      "category": "General",
+      "createdAt": "2026-06-27T12:31:08.873Z"
+    },
     {
       "id": "tx_bnpl_0y7y9mhm6",
       "walletId": "wal_2ghxetyg8",
@@ -434,6 +473,24 @@
   "aiConversations": [],
   "auditLogs": [
     {
+      "id": "log_yy8tn8a1e",
+      "action": "BNPL_CREATED",
+      "details": "ILP: Takealot Tech R 575 in 3 splits.",
+      "timestamp": "2026-06-27T12:36:44.221Z"
+    },
+    {
+      "id": "log_494k9nu9d",
+      "action": "DEPOSIT",
+      "details": "R 100 deposited to $ilp.interledger-test.dev/testers",
+      "timestamp": "2026-06-27T12:32:52.090Z"
+    },
+    {
+      "id": "log_7v1ee5iof",
+      "action": "DEPOSIT",
+      "details": "R 300 deposited to $ilp.interledger-test.dev/testers",
+      "timestamp": "2026-06-27T12:31:08.884Z"
+    },
+    {
       "id": "log_63er3xoa0",
       "action": "BNPL_CREATED",
       "details": "ILP: Takealot Tech R 575 in 3 splits.",
@@ -728,6 +785,43 @@
           "installmentNumber": 3,
           "amount": 191.66,
           "dueDate": "2026-08-26T11:44:30.203Z",
+          "status": "pending"
+        }
+      ]
+    },
+    {
+      "id": "bnpl_wwupnt4on",
+      "walletId": "wal_2ghxetyg8",
+      "merchantName": "Takealot Tech",
+      "merchantPointer": "rands",
+      "purchaseAmount": 575,
+      "remainingAmount": 383.33,
+      "currency": "ZAR",
+      "totalInstallments": 3,
+      "status": "active",
+      "createdAt": "2026-06-27T12:36:24.235Z",
+      "installments": [
+        {
+          "id": "inst_q2yzmtiu1",
+          "installmentNumber": 1,
+          "amount": 191.67,
+          "dueDate": "2026-06-27T12:36:24.234Z",
+          "status": "paid",
+          "paidAt": "2026-06-27T12:36:44.213Z",
+          "transactionId": "tx_bnpl_8cg59x5dj"
+        },
+        {
+          "id": "inst_3jnt5ky8q",
+          "installmentNumber": 2,
+          "amount": 191.67,
+          "dueDate": "2026-07-27T12:36:24.234Z",
+          "status": "pending"
+        },
+        {
+          "id": "inst_bbpojyfnp",
+          "installmentNumber": 3,
+          "amount": 191.66,
+          "dueDate": "2026-08-26T12:36:24.235Z",
           "status": "pending"
         }
       ]
