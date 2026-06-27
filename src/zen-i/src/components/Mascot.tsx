@@ -7,7 +7,7 @@ export default function Mascot({ state, message, size = 'md' }: MascotProps) {
     idle: { 
       emoji: '🐼', 
       color: 'bg-peach-50 text-peach-700 border-peach-300', 
-      label: 'Zen-i Serene',
+      label: 'Zenny Serene',
       particles: ['🍃', '🌿', '✨']
     },
     happy: { 
@@ -31,13 +31,13 @@ export default function Mascot({ state, message, size = 'md' }: MascotProps) {
     thinking: { 
       emoji: '🐼', 
       color: 'bg-peach-100 text-peach-850 border-peach-400', 
-      label: 'Zen-i Meditating...',
+      label: 'Zenny Meditating...',
       particles: ['💭', '💡', '🍃']
     }
   }[state] || { 
     emoji: '🐼', 
     color: 'bg-peach-50 text-peach-700 border-peach-300', 
-    label: 'Zen-i',
+    label: 'Zenny',
     particles: []
   };
 
