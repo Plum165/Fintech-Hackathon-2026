@@ -265,7 +265,7 @@ export default function ConfidenceScoreBreakdown({ wallet, isOpen, onClose }: Co
                   <BarChart3 className="w-4 h-4 text-peach-700" /> Scoring Engine Foundations
                 </h4>
                 <p className="text-xs text-slate-500 leading-relaxed">
-                  Unlike outdated credit scores, PandaPay Interledger AI uses instant, real-time transaction streaming indicators. Students, gig workers, and scholarship recipients are evaluated based on <strong>financial discipline</strong> rather than raw wealth.
+                  Unlike outdated credit scores, Zen-i Interledger AI uses instant, real-time transaction streaming indicators. Students, gig workers, and scholarship recipients are evaluated based on <strong>financial discipline</strong> rather than raw wealth.
                 </p>
                 
                 {/* Visual scorecard table highlights */}

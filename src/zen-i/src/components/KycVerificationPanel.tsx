@@ -119,7 +119,7 @@ export default function KycVerificationPanel({ user, wallet, token, onKycComplet
             </div>
             <div>
               <h4 className="text-sm font-bold text-emerald-950">Verification Complete</h4>
-              <p className="text-[11px] text-emerald-700 font-medium font-sans mt-0.5">Your PandaPay payment node has passed AML & CTF verification checks.</p>
+              <p className="text-[11px] text-emerald-700 font-medium font-sans mt-0.5">Your Zen-i payment node has passed AML & CTF verification checks.</p>
             </div>
           </div>
 
@@ -129,7 +129,7 @@ export default function KycVerificationPanel({ user, wallet, token, onKycComplet
             <div className="grid grid-cols-2 gap-4 text-xs">
               <div>
                 <p className="text-slate-400 font-semibold uppercase text-[9px] font-mono">Full Legal Name</p>
-                <p className="text-slate-800 font-bold mt-0.5">{user?.kycDetails?.fullName || 'Corazon Smith'}</p>
+                <p className="text-slate-800 font-bold mt-0.5">{user?.kycDetails?.fullName || 'Mikaeel Naidoo'}</p>
               </div>
               <div>
                 <p className="text-slate-400 font-semibold uppercase text-[9px] font-mono">Document Type</p>
@@ -137,7 +137,7 @@ export default function KycVerificationPanel({ user, wallet, token, onKycComplet
               </div>
               <div>
                 <p className="text-slate-400 font-semibold uppercase text-[9px] font-mono">ID / Passport Reference</p>
-                <p className="text-slate-800 font-bold mt-0.5">{user?.kycDetails?.idNumber || '9504235123081'}</p>
+                <p className="text-slate-800 font-bold mt-0.5">{user?.kycDetails?.idNumber || '9805125123081'}</p>
               </div>
               <div>
                 <p className="text-slate-400 font-semibold uppercase text-[9px] font-mono">Issuing Jurisdiction</p>

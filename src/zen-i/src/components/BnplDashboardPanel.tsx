@@ -187,17 +187,59 @@ export default function BnplDashboardPanel({ wallet, token, onUpdate }: BnplDash
   const totalPurchaseValue = contracts.reduce((sum, c) => sum + c.purchaseAmount, 0);
   const totalRemainingDebt = contracts.reduce((sum, c) => sum + c.remainingAmount, 0);
 
+  // Identify next upcoming payment across all contracts
+  const getNextUpcomingPayment = () => {
+    const unpaid: { installment: BnplInstallment; contract: BnplContract }[] = [];
+    contracts.forEach(contract => {
+      contract.installments.forEach(inst => {
+        if (inst.status === 'pending' || inst.status === 'overdue') {
+          unpaid.push({ installment: inst, contract });
+        }
+      });
+    });
+
+    if (unpaid.length === 0) return null;
+
+    // Sort by due date ascending
+    unpaid.sort((a, b) => new Date(a.installment.dueDate).getTime() - new Date(b.installment.dueDate).getTime());
+    return unpaid[0];
+  };
+
+  const getDaysRemainingText = (dueDateString: string) => {
+    const due = new Date(dueDateString);
+    const now = new Date();
+    
+    // Strip hours for pure calendar date comparison
+    due.setHours(0,0,0,0);
+    now.setHours(0,0,0,0);
+    
+    const diffTime = due.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays < 0) {
+      return { text: 'Overdue!', className: 'text-rose-700 bg-rose-50 border-rose-100 font-bold' };
+    } else if (diffDays === 0) {
+      return { text: 'Due today!', className: 'text-amber-700 bg-amber-50 border-amber-100 font-bold animate-pulse' };
+    } else if (diffDays === 1) {
+      return { text: 'Due tomorrow', className: 'text-amber-700 bg-amber-50 border-amber-100 font-medium' };
+    } else {
+      return { text: `Due in ${diffDays} days`, className: 'text-slate-500 bg-slate-50 border-slate-100' };
+    }
+  };
+
+  const nextUpcoming = getNextUpcomingPayment();
+
   return (
     <div id="bnpl-dashboard-panel" className="space-y-6">
       {/* Intro Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200">
         <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-peach-50 flex items-center justify-center text-peach-700 shrink-0">
+          <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-700 shrink-0">
             <Percent className="w-6 h-6 animate-pulse" />
           </div>
           <div>
             <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-              Panda BNPL Splits <span className="text-[10px] bg-peach-100 text-peach-800 px-2 py-0.5 rounded-full uppercase tracking-wider font-bold">Interest-Free</span>
+              Zen-i BNPL Splits <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full uppercase tracking-wider font-bold">Interest-Free</span>
             </h2>
             <p className="text-xs text-slate-500 leading-relaxed font-sans">
               Buy now, pay later! Split your purchases into 3 or 4 interest-free installments, settled automatically using secure Interledger Open Payments.
@@ -215,9 +257,9 @@ export default function BnplDashboardPanel({ wallet, token, onUpdate }: BnplDash
       <div className="flex border-b border-slate-200">
         <button
           onClick={() => { setActiveSubTab('my-plans'); setError(''); setSuccessMsg(''); }}
-          className={`px-5 py-3 text-xs font-bold transition flex items-center gap-2 border-b-2 cursor-pointer ${
+          className={`px-5 py-3 text-xs font-bold transition flex items-center gap-2 border-b-2 cursor-pointer focus:outline-none ${
             activeSubTab === 'my-plans'
-              ? 'border-peach-600 text-peach-850'
+              ? 'border-emerald-600 text-slate-800'
               : 'border-transparent text-slate-500 hover:text-slate-700'
           }`}
         >
@@ -225,9 +267,9 @@ export default function BnplDashboardPanel({ wallet, token, onUpdate }: BnplDash
         </button>
         <button
           onClick={() => { setActiveSubTab('new-checkout'); setStep(1); setError(''); setSuccessMsg(''); }}
-          className={`px-5 py-3 text-xs font-bold transition flex items-center gap-2 border-b-2 cursor-pointer ${
+          className={`px-5 py-3 text-xs font-bold transition flex items-center gap-2 border-b-2 cursor-pointer focus:outline-none ${
             activeSubTab === 'new-checkout'
-              ? 'border-peach-600 text-peach-850'
+              ? 'border-emerald-600 text-slate-800'
               : 'border-transparent text-slate-500 hover:text-slate-700'
           }`}
         >
@@ -237,14 +279,14 @@ export default function BnplDashboardPanel({ wallet, token, onUpdate }: BnplDash
 
       {/* Alerts */}
       {error && (
-        <div className="bg-rose-50 border border-rose-100 rounded-2xl p-4 flex items-start gap-2 text-xs text-rose-700 leading-relaxed">
+        <div role="alert" className="bg-rose-50 border border-rose-100 rounded-2xl p-4 flex items-start gap-2 text-xs text-rose-700 leading-relaxed">
           <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
           <span>{error}</span>
         </div>
       )}
 
       {successMsg && step !== 4 && (
-        <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-4 flex items-start gap-2 text-xs text-emerald-800 leading-relaxed">
+        <div role="alert" className="bg-emerald-50 border border-emerald-100 rounded-2xl p-4 flex items-start gap-2 text-xs text-emerald-800 leading-relaxed">
           <CheckCircle className="w-4 h-4 shrink-0 mt-0.5" />
           <span>{successMsg}</span>
         </div>
@@ -270,11 +312,11 @@ export default function BnplDashboardPanel({ wallet, token, onUpdate }: BnplDash
             <div className="bg-white border border-slate-200 rounded-2xl p-4 flex items-center justify-between">
               <div className="space-y-1">
                 <span className="text-[10px] uppercase font-mono tracking-wider font-bold text-slate-400 block">Remaining Split Balance</span>
-                <span className="text-xl font-bold text-peach-750 font-mono">
+                <span className="text-xl font-bold text-emerald-800 font-mono">
                   {wallet?.currency} {totalRemainingDebt.toFixed(2)}
                 </span>
               </div>
-              <div className="bg-peach-50 p-2.5 rounded-xl text-peach-700">
+              <div className="bg-emerald-50 p-2.5 rounded-xl text-emerald-700">
                 <CreditCard className="w-5 h-5" />
               </div>
             </div>
@@ -290,6 +332,68 @@ export default function BnplDashboardPanel({ wallet, token, onUpdate }: BnplDash
                 <ShieldCheck className="w-5 h-5" />
               </div>
             </div>
+          </div>
+
+          {/* NEXT UPCOMING PAYMENT ALERT SECTION */}
+          <div className="bg-white border border-slate-200 rounded-3xl p-5 shadow-xs relative overflow-hidden">
+            <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+              <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider font-sans flex items-center gap-1.5">
+                <Calendar className="w-4 h-4 text-emerald-600" /> Next Upcoming Split Payment
+              </h3>
+              <span className="text-[9px] font-mono text-slate-400 font-bold uppercase bg-slate-50 border border-slate-200 rounded px-1.5 py-0.5">
+                Queue status
+              </span>
+            </div>
+
+            {nextUpcoming ? (
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-emerald-50/30 border border-emerald-100/50 rounded-2xl p-4">
+                <div className="flex items-start gap-3.5">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-xs shrink-0 select-none">
+                    {nextUpcoming.contract.merchantName.substring(0, 2).toUpperCase()}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h4 className="text-sm font-bold text-slate-800">{nextUpcoming.contract.merchantName}</h4>
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full border ${getDaysRemainingText(nextUpcoming.installment.dueDate).className}`}>
+                        {getDaysRemainingText(nextUpcoming.installment.dueDate).text}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-500 mt-1">
+                      Installment {nextUpcoming.installment.installmentNumber} of {nextUpcoming.contract.totalInstallments} • Due {new Date(nextUpcoming.installment.dueDate).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3.5 justify-between sm:justify-end border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-100">
+                  <div className="text-left sm:text-right font-mono">
+                    <span className="text-slate-450 text-[9px] uppercase tracking-wider block">Due Amount</span>
+                    <span className="text-sm font-bold text-slate-800">
+                      R {nextUpcoming.installment.amount.toFixed(2)}
+                    </span>
+                  </div>
+
+                  <button
+                    onClick={() => handleRepay(nextUpcoming.contract.id, nextUpcoming.installment.id)}
+                    disabled={isLoading}
+                    className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-200 disabled:text-slate-450 text-white font-bold rounded-xl text-xs transition cursor-pointer flex items-center gap-1.5 shadow-xs min-h-[40px]"
+                  >
+                    {isLoading ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <>
+                        <CreditCard className="w-3.5 h-3.5" /> Repay Now
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-6 bg-slate-50 border border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center gap-1">
+                <span className="text-2xl">🌱</span>
+                <p className="text-xs font-semibold text-slate-700">All Caught Up!</p>
+                <p className="text-[10px] text-slate-400">You have no pending or overdue split installments due next.</p>
+              </div>
+            )}
           </div>
 
           {/* List of active/inactive contracts */}
@@ -314,7 +418,7 @@ export default function BnplDashboardPanel({ wallet, token, onUpdate }: BnplDash
                 </p>
                 <button
                   onClick={() => { setActiveSubTab('new-checkout'); setStep(1); }}
-                  className="px-4 py-2 text-xs font-bold text-white bg-peach-600 hover:bg-peach-700 rounded-xl transition cursor-pointer"
+                  className="px-4 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition cursor-pointer min-h-[44px]"
                 >
                   Start First Split Plan
                 </button>
@@ -333,7 +437,7 @@ export default function BnplDashboardPanel({ wallet, token, onUpdate }: BnplDash
                         className="p-5 flex items-center justify-between gap-4 cursor-pointer"
                       >
                         <div className="flex items-center gap-3.5">
-                          <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 font-bold font-sans text-xs">
+                          <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 font-bold font-sans text-xs select-none">
                             {contract.merchantName.substring(0, 2).toUpperCase()}
                           </div>
                           <div>
@@ -423,14 +527,14 @@ export default function BnplDashboardPanel({ wallet, token, onUpdate }: BnplDash
 
                                       <div>
                                         {inst.status === 'paid' ? (
-                                          <span className="text-[10px] font-bold text-emerald-600 flex items-center gap-1 bg-emerald-50 border border-emerald-100 px-2 py-1 rounded-xl">
+                                          <span className="text-[10px] font-bold text-emerald-600 flex items-center gap-1 bg-emerald-50 border border-emerald-100 px-2 py-1 rounded-xl select-none">
                                             <CheckCircle className="w-3.5 h-3.5" /> Settled
                                           </span>
                                         ) : (
                                           <button
                                             onClick={() => handleRepay(contract.id, inst.id)}
                                             disabled={isLoading}
-                                            className="px-3 py-1.5 bg-peach-600 hover:bg-peach-700 disabled:bg-slate-200 disabled:text-slate-450 text-white font-bold rounded-lg text-[10px] uppercase tracking-wide transition cursor-pointer flex items-center gap-1"
+                                            className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-200 disabled:text-slate-450 text-white font-bold rounded-lg text-[10px] uppercase tracking-wide transition cursor-pointer flex items-center gap-1 min-h-[32px] focus:outline-none focus:ring-2 focus:ring-emerald-500"
                                           >
                                             {isLoading ? (
                                               <Loader2 className="w-3 h-3 animate-spin" />
@@ -479,7 +583,7 @@ export default function BnplDashboardPanel({ wallet, token, onUpdate }: BnplDash
                   <div className="flex flex-col items-center gap-1.5">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border transition ${
                       isCurrent 
-                        ? 'bg-peach-600 text-white border-peach-600 shadow-md ring-4 ring-peach-100'
+                        ? 'bg-emerald-600 text-white border-emerald-600 shadow-md ring-4 ring-emerald-100'
                         : isActive
                           ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                           : 'bg-slate-50 text-slate-400 border-slate-200'
@@ -487,7 +591,7 @@ export default function BnplDashboardPanel({ wallet, token, onUpdate }: BnplDash
                       {s === 4 || (s < step) ? <CheckCircle className="w-4 h-4" /> : s}
                     </div>
                     <span className={`text-[10px] font-bold ${
-                      isCurrent ? 'text-peach-800' : isActive ? 'text-emerald-700' : 'text-slate-400'
+                      isCurrent ? 'text-emerald-800' : isActive ? 'text-emerald-700' : 'text-slate-400'
                     }`}>
                       {s === 1 ? 'Merchant' : s === 2 ? 'Schedule' : s === 3 ? 'Sign Contract' : 'Activated'}
                     </span>
@@ -527,9 +631,9 @@ export default function BnplDashboardPanel({ wallet, token, onUpdate }: BnplDash
                       key={m.name}
                       type="button"
                       onClick={() => setSelectedMerchant(m.name)}
-                      className={`p-3.5 border rounded-2xl text-left flex items-center gap-2.5 transition cursor-pointer ${
+                      className={`p-3.5 border rounded-2xl text-left flex items-center gap-2.5 transition cursor-pointer focus:outline-none ${
                         selectedMerchant === m.name 
-                          ? 'bg-peach-50 border-peach-300 text-peach-900 shadow-xs ring-2 ring-peach-100/50' 
+                          ? 'bg-emerald-50 border-emerald-300 text-emerald-900 shadow-xs ring-2 ring-emerald-100/50' 
                           : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
                       }`}
                     >
@@ -548,7 +652,7 @@ export default function BnplDashboardPanel({ wallet, token, onUpdate }: BnplDash
                     value={customMerchant}
                     onChange={(e) => setCustomMerchant(e.target.value)}
                     placeholder="Enter online store name (e.g. Zando)"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-peach-500 focus:ring-1 focus:ring-peach-500 transition font-mono"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition font-mono"
                   />
                 </div>
               )}
@@ -560,13 +664,13 @@ export default function BnplDashboardPanel({ wallet, token, onUpdate }: BnplDash
                   value={itemDescription}
                   onChange={(e) => setItemDescription(e.target.value)}
                   placeholder="e.g. Leather Jacket & Sneakers"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-peach-500 focus:ring-1 focus:ring-peach-500 transition font-medium"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition font-medium font-sans"
                 />
               </div>
 
               <div className="space-y-1.5">
                 <label className="text-xs text-slate-500 font-bold font-sans">Total Purchase Amount</label>
-                <div className="flex rounded-xl bg-slate-50 border border-slate-200 focus-within:border-peach-500 focus-within:ring-1 focus-within:ring-peach-500 transition overflow-hidden">
+                <div className="flex rounded-xl bg-slate-50 border border-slate-200 focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/20 transition overflow-hidden">
                   <span className="bg-slate-100 text-slate-500 px-4 py-3 text-xs font-mono border-r border-slate-200 flex items-center font-bold">
                     {wallet?.currency}
                   </span>
@@ -579,14 +683,14 @@ export default function BnplDashboardPanel({ wallet, token, onUpdate }: BnplDash
                   />
                 </div>
                 <div className="text-[10px] text-slate-450 leading-relaxed font-sans mt-1">
-                  Panda Splits requires a minimum purchase checkout of R 150.00 up to a maximum of R 5,000.00.
+                  Zen-i Splits requires a minimum purchase checkout of R 150.00 up to a maximum of R 5,000.00.
                 </div>
               </div>
 
               <button
                 type="button"
                 onClick={nextStep}
-                className="w-full py-3 px-4 bg-peach-600 hover:bg-peach-700 text-white font-bold rounded-xl text-xs transition shadow-md flex items-center justify-center gap-1.5 cursor-pointer mt-4"
+                className="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition shadow-md flex items-center justify-center gap-1.5 cursor-pointer mt-4 min-h-[44px] focus:outline-none focus:ring-2 focus:ring-emerald-500"
               >
                 Continue to Payment Schedule <ArrowRight className="w-4 h-4" />
               </button>
@@ -607,22 +711,22 @@ export default function BnplDashboardPanel({ wallet, token, onUpdate }: BnplDash
 
               {/* Installments selection toggle & Custom Picker */}
               <div className="space-y-4">
-                <span className="text-[10px] uppercase font-mono tracking-wider font-bold text-slate-450 block">Quick Term Presets</span>
+                <span className="text-[10px] uppercase font-mono tracking-wider font-bold text-slate-450 block font-sans">Quick Term Presets</span>
                 <div className="grid grid-cols-3 gap-3">
                   {[3, 4, 6].map((num) => (
                     <button
                       key={num}
                       type="button"
                       onClick={() => setTotalInstallments(num)}
-                      className={`p-3 border rounded-xl text-center transition flex flex-col items-center gap-1 cursor-pointer ${
+                      className={`p-3 border rounded-xl text-center transition flex flex-col items-center gap-1 cursor-pointer focus:outline-none ${
                         totalInstallments === num
-                          ? 'bg-peach-50 border-peach-300 text-peach-900 shadow-xs ring-2 ring-peach-100/50'
+                          ? 'bg-emerald-50 border-emerald-300 text-emerald-900 shadow-xs ring-2 ring-emerald-100/50'
                           : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
                       }`}
                     >
                       <span className="text-xs font-bold block">{num} Splits</span>
                       <span className="text-[9px] font-mono text-slate-500 block">
-                        R {(parsedAmt / num).toFixed(2)} each
+                        R {(parsedAmt / num).toFixed(2)}
                       </span>
                     </button>
                   ))}
@@ -667,7 +771,7 @@ export default function BnplDashboardPanel({ wallet, token, onUpdate }: BnplDash
               <div className="border border-slate-150 rounded-2xl p-4 bg-slate-50 space-y-3.5 max-h-[220px] overflow-y-auto">
                 <span className="text-[10px] uppercase font-mono tracking-wider font-bold text-slate-450 block sticky top-0 bg-slate-50 pb-1">Payment Schedule & Milestones ({totalInstallments} Splits)</span>
                 
-                <div className="space-y-4 relative pl-3.5 border-l border-peach-300/60 ml-1.5">
+                <div className="space-y-4 relative pl-3.5 border-l border-emerald-300/60 ml-1.5">
                   {Array.from({ length: totalInstallments }).map((_, idx) => {
                     const splitIndex = idx + 1;
                     const isUpfront = splitIndex === 1;
@@ -675,10 +779,10 @@ export default function BnplDashboardPanel({ wallet, token, onUpdate }: BnplDash
                     return (
                       <div key={splitIndex} className="relative">
                         <span className={`absolute -left-[19px] top-1 w-2.5 h-2.5 rounded-full ${
-                          isUpfront ? 'bg-peach-600 ring-4 ring-peach-100' : 'bg-slate-300'
+                          isUpfront ? 'bg-emerald-600 ring-4 ring-emerald-100' : 'bg-slate-300'
                         }`} />
                         <div>
-                          <div className="flex items-center justify-between">
+                          <div className="flex items-center justify-between font-sans">
                             <span className={`text-xs font-bold ${isUpfront ? 'text-slate-800' : 'text-slate-700'}`}>
                               Split {splitIndex} {isUpfront ? '(Upfront Pay Today)' : `(In ${daysOffset} Days)`}
                             </span>
@@ -688,9 +792,9 @@ export default function BnplDashboardPanel({ wallet, token, onUpdate }: BnplDash
                           </div>
                           <span className="text-[10px] block mt-0.5">
                             {isUpfront ? (
-                              <span className="text-emerald-600 font-medium">Charged immediately on approval</span>
+                              <span className="text-emerald-600 font-semibold font-sans">Charged immediately on approval</span>
                             ) : (
-                              <span className="text-slate-400">Due: {new Date(Date.now() + 3600000 * 24 * daysOffset).toLocaleDateString()}</span>
+                              <span className="text-slate-400 font-sans">Due: {new Date(Date.now() + 3600000 * 24 * daysOffset).toLocaleDateString()}</span>
                             )}
                           </span>
                         </div>
@@ -704,14 +808,14 @@ export default function BnplDashboardPanel({ wallet, token, onUpdate }: BnplDash
                 <button
                   type="button"
                   onClick={prevStep}
-                  className="w-1/3 py-3 text-slate-500 hover:text-slate-800 font-bold text-xs border border-slate-200 hover:bg-slate-50 rounded-xl transition cursor-pointer flex items-center justify-center gap-1"
+                  className="w-1/3 py-3.5 text-slate-500 hover:text-slate-800 font-bold text-xs border border-slate-200 hover:bg-slate-50 rounded-xl transition cursor-pointer flex items-center justify-center gap-1 min-h-[44px] focus:outline-none focus:ring-2 focus:ring-slate-300"
                 >
                   <ArrowLeft className="w-4 h-4" /> Back
                 </button>
                 <button
                   type="button"
                   onClick={nextStep}
-                  className="flex-1 py-3 bg-peach-600 hover:bg-peach-700 text-white font-bold rounded-xl text-xs transition shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="flex-1 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition shadow-md flex items-center justify-center gap-1.5 cursor-pointer min-h-[44px] focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 >
                   Continue to Signature <ArrowRight className="w-4 h-4" />
                 </button>
@@ -727,18 +831,18 @@ export default function BnplDashboardPanel({ wallet, token, onUpdate }: BnplDash
               className="space-y-4"
             >
               <div className="text-center space-y-1">
-                <h3 className="text-sm font-bold text-slate-850 flex items-center justify-center gap-1.5 text-peach-800">
+                <h3 className="text-sm font-bold text-slate-850 flex items-center justify-center gap-1.5 text-emerald-850">
                   <ShieldCheck className="w-5 h-5 text-emerald-600" /> Sign Split Purchase Agreement
                 </h3>
                 <p className="text-xs text-slate-500 font-sans">Underwritten securely by the South African Interledger Syndicate.</p>
               </div>
 
               {/* Contract terms card */}
-              <div className="p-4 border border-slate-150 bg-slate-50 rounded-2xl space-y-3 font-mono text-[10px] text-slate-650 max-h-[160px] overflow-y-auto leading-relaxed">
+              <div className="p-4 border border-slate-150 bg-slate-50 rounded-2xl space-y-3 font-mono text-[10px] text-slate-600 max-h-[160px] overflow-y-auto leading-relaxed">
                 <p className="font-bold text-slate-800 uppercase tracking-wider text-[9px] border-b border-slate-200 pb-1 flex items-center gap-1.5">
                   📄 INTERLEDGER OPEN PAYMENT COMPLIANCE CONTRACT
                 </p>
-                <p><strong>1. Purchase Splitting:</strong> The operator authorizes PandaPay to split the total checkout balance of R {parsedAmt.toFixed(2)} with {selectedMerchant === 'Custom' ? customMerchant : selectedMerchant}.</p>
+                <p><strong>1. Purchase Splitting:</strong> The operator authorizes Zen-i to split the total checkout balance of R {parsedAmt.toFixed(2)} with {selectedMerchant === 'Custom' ? customMerchant : selectedMerchant}.</p>
                 <p><strong>2. Immediate Collateral Debit:</strong> I consent to pay <strong>R {singleSplit.toFixed(2)}</strong> immediately upon final activation to cover Split 1.</p>
                 <p><strong>3. Auto-Settle Milestones:</strong> Subsequent installments will be automatically settled from the operator's ledger balance on schedule. If balances are insufficient, outstanding elements will transition to fallback credit reserves with standard overdraft rates.</p>
                 <p><strong>4. Credit Confidence:</strong> Timely payments increase financial confidence scores, opening savings pools and higher transaction allowances.</p>
@@ -750,7 +854,7 @@ export default function BnplDashboardPanel({ wallet, token, onUpdate }: BnplDash
                   type="checkbox"
                   checked={consentChecked}
                   onChange={(e) => setConsentChecked(e.target.checked)}
-                  className="mt-0.5 rounded border-slate-300 text-peach-600 focus:ring-peach-500 transition cursor-pointer"
+                  className="mt-0.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 transition cursor-pointer focus:outline-none"
                 />
                 <span className="text-xs text-slate-500 font-sans leading-relaxed select-none">
                   I read, understood, and accept the Interledger compliant terms and payment splitting regulations.
@@ -764,8 +868,8 @@ export default function BnplDashboardPanel({ wallet, token, onUpdate }: BnplDash
                   type="text"
                   value={electronicSignature}
                   onChange={(e) => setElectronicSignature(e.target.value)}
-                  placeholder="e.g. Corazon Smith"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs text-slate-850 placeholder-slate-400 focus:outline-none focus:border-peach-500 focus:ring-1 focus:ring-peach-500 transition font-mono"
+                  placeholder="e.g. Mikaeel Naidoo"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs text-slate-850 placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition font-mono"
                 />
                 <span className="text-[9px] text-slate-400 block font-sans">
                   By typing your full name, you execute a digital compliant signature agreeing to automatic Interledger billing.
@@ -773,7 +877,7 @@ export default function BnplDashboardPanel({ wallet, token, onUpdate }: BnplDash
               </div>
 
               {/* Summary table */}
-              <div className="bg-peach-50/40 border border-peach-100 p-3.5 rounded-xl text-xs space-y-1 font-sans">
+              <div className="bg-emerald-50/40 border border-emerald-100 p-3.5 rounded-xl text-xs space-y-1 font-sans">
                 <div className="flex justify-between">
                   <span className="text-slate-500">Upfront Pay Today:</span>
                   <span className="font-bold text-slate-800 font-mono">R {singleSplit.toFixed(2)}</span>
@@ -782,7 +886,7 @@ export default function BnplDashboardPanel({ wallet, token, onUpdate }: BnplDash
                   <span className="text-slate-500">Total remaining splits:</span>
                   <span className="font-bold text-slate-800 font-mono">{totalInstallments - 1} Payments</span>
                 </div>
-                <div className="flex justify-between border-t border-peach-200/50 pt-1.5 mt-1 text-peach-900 font-bold">
+                <div className="flex justify-between border-t border-emerald-200/50 pt-1.5 mt-1 text-emerald-950 font-bold">
                   <span>Future Splits Balance:</span>
                   <span className="font-mono">R {(parsedAmt - singleSplit).toFixed(2)}</span>
                 </div>
@@ -793,7 +897,7 @@ export default function BnplDashboardPanel({ wallet, token, onUpdate }: BnplDash
                 <button
                   type="button"
                   onClick={prevStep}
-                  className="w-1/3 py-3 text-slate-500 hover:text-slate-800 font-bold text-xs border border-slate-200 hover:bg-slate-50 rounded-xl transition cursor-pointer"
+                  className="w-1/3 py-3.5 text-slate-500 hover:text-slate-800 font-bold text-xs border border-slate-200 hover:bg-slate-50 rounded-xl transition cursor-pointer min-h-[44px] focus:outline-none focus:ring-2 focus:ring-slate-300"
                 >
                   Back
                 </button>
@@ -801,7 +905,7 @@ export default function BnplDashboardPanel({ wallet, token, onUpdate }: BnplDash
                   type="button"
                   onClick={handleCreateCheckout}
                   disabled={isLoading}
-                  className="flex-1 py-3 bg-peach-600 hover:bg-peach-700 disabled:bg-slate-200 disabled:text-slate-450 text-white font-bold rounded-xl text-xs transition shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="flex-1 py-3.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-200 disabled:text-slate-450 text-white font-bold rounded-xl text-xs transition shadow-md flex items-center justify-center gap-1.5 cursor-pointer min-h-[44px] focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 >
                   {isLoading ? (
                     <>
@@ -809,7 +913,7 @@ export default function BnplDashboardPanel({ wallet, token, onUpdate }: BnplDash
                     </>
                   ) : (
                     <>
-                      <Sparkles className="w-4 h-4 text-amber-300" /> Sign & Pay Upfront
+                      <Sparkles className="w-4 h-4 text-emerald-200" /> Sign & Pay Upfront
                     </>
                   )}
                 </button>
@@ -833,13 +937,13 @@ export default function BnplDashboardPanel({ wallet, token, onUpdate }: BnplDash
               </div>
 
               {/* Elegant Ticket Summary layout */}
-              <div className="border border-dashed border-slate-350 bg-slate-50 rounded-3xl p-5 text-left text-xs space-y-3 relative overflow-hidden font-sans">
+              <div className="border border-dashed border-slate-300 bg-slate-50 rounded-3xl p-5 text-left text-xs space-y-3 relative overflow-hidden font-sans">
                 <span className="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white border-r border-slate-200" />
                 <span className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white border-l border-slate-200" />
 
                 <div className="flex justify-between text-[10px] uppercase font-mono tracking-widest text-slate-400 font-bold border-b border-slate-150 pb-2">
-                  <span>Panda Splits Ticket</span>
-                  <span className="text-peach-700">Approved</span>
+                  <span>Zen-i Splits Ticket</span>
+                  <span className="text-emerald-700 font-bold">Approved</span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-y-2.5 pt-1">
@@ -863,7 +967,7 @@ export default function BnplDashboardPanel({ wallet, token, onUpdate }: BnplDash
 
                 <div className="pt-2 border-t border-dashed border-slate-200 flex justify-between items-center text-xs">
                   <span className="text-slate-500 font-bold">Compliant Electronic Signature:</span>
-                  <span className="font-mono text-slate-800 font-bold italic">{electronicSignature}</span>
+                  <span className="font-mono text-slate-850 font-bold italic">{electronicSignature}</span>
                 </div>
               </div>
 
@@ -871,7 +975,7 @@ export default function BnplDashboardPanel({ wallet, token, onUpdate }: BnplDash
                 <button
                   type="button"
                   onClick={resetCheckoutForm}
-                  className="px-6 py-3 bg-peach-600 hover:bg-peach-700 text-white font-bold rounded-xl text-xs transition shadow-md cursor-pointer"
+                  className="px-6 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition shadow-md cursor-pointer min-h-[44px] focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 >
                   Go to Split Dashboard
                 </button>

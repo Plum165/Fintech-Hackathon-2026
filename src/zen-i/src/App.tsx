@@ -119,7 +119,7 @@ export default function App() {
     const isValidEmail = inputVal.includes('@');
 
     if (!isPointer && !isValidEmail) {
-      setAuthError('Please enter a valid email address or Interledger payment pointer (e.g. $corazon or you@example.com).');
+      setAuthError('Please enter a valid email address or Interledger payment pointer (e.g. $mikaeel or you@example.com).');
       return;
     }
 
@@ -609,7 +609,7 @@ export default function App() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h2 className="text-xl md:text-2xl font-bold text-slate-800 flex items-center gap-2">
-                Good morning, <span className="text-peach-700">{user?.name || 'Corazon'}</span> 👋
+                Good morning, <span className="text-peach-700">{user?.name || 'Mikaeel'}</span> 👋
               </h2>
               <p className="text-xs text-slate-500 font-medium font-sans">Welcome back to your Interledger terminal node.</p>
             </div>
@@ -802,7 +802,7 @@ export default function App() {
                 className="max-w-xl mx-auto"
               >
                 <DepositForm 
-                  currentUsername={wallet?.username || 'corazon'} 
+                  currentUsername={wallet?.username || 'mikaeel'} 
                   onDepositComplete={triggerRefresh} 
                   token={token} 
                 />
