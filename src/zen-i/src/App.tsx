@@ -423,13 +423,7 @@ export default function App() {
             </button>
           </div>
 
-          {/* Seed demo instructions */}
-          <div className="mt-6 pt-6 border-t border-slate-100 text-[10px] text-slate-500 text-center flex flex-col items-center space-y-1.5">
-            <span className="font-mono bg-slate-50 px-2 py-1 rounded text-peach-700 font-bold">
-              Demo credentials: mikaeelnaidoo2@gmail.com
-            </span>
-            <p>Zen-i operates on the sandbox Interledger Open Payments network.</p>
-          </div>
+
         </motion.div>
       </div>
     );
