@@ -20,7 +20,7 @@
       "id": "usr_yc8unprkh",
       "email": "rashaadsm2004@gmail.com",
       "name": "Misha",
-      "consentAccepted": false,
+      "consentAccepted": true,
       "kycStatus": "unverified",
       "createdAt": "2026-06-27T08:52:38.244Z"
     }
@@ -61,12 +61,12 @@
       "userId": "usr_yc8unprkh",
       "username": "testers",
       "pointer": "$ilp.interledger-test.dev/testers",
-      "balance": 1000,
+      "balance": 600,
       "reserveBalance": 0,
       "creditOwed": 0,
       "creditLimit": 1500,
       "accumulatedInterest": 0,
-      "confidenceScore": 600,
+      "confidenceScore": 610,
       "currency": "ZAR",
       "active": true,
       "createdAt": "2026-06-27T08:52:38.250Z"
@@ -77,6 +77,227 @@
   "outgoingPayments": [],
   "quotes": [],
   "transactions": [
+    {
+      "id": "tx_bnpl_801a4tsge",
+      "walletId": "wal_2ghxetyg8",
+      "type": "send",
+      "direction": "out",
+      "amount": 400,
+      "currency": "ZAR",
+      "counterparty": "Takealot Tech",
+      "reference": "BNPL Split 1/3",
+      "status": "completed",
+      "category": "General",
+      "createdAt": "2026-06-27T11:00:52.773Z"
+    },
+    {
+      "id": "tx_29fjsbua8",
+      "walletId": "wal_2ghxetyg8",
+      "type": "send",
+      "direction": "out",
+      "amount": 150,
+      "currency": "ZAR",
+      "counterparty": "$ilp.interledger-test.dev/rands",
+      "reference": "ref_snd_c9ibzlw",
+      "status": "completed",
+      "category": "General",
+      "createdAt": "2026-06-27T10:59:15.539Z"
+    },
+    {
+      "id": "tx_nb5unl6wo",
+      "walletId": "wal_2ghxetyg8",
+      "type": "send",
+      "direction": "out",
+      "amount": 150,
+      "currency": "ZAR",
+      "counterparty": "$ilp.interledger-test.dev/rands",
+      "reference": "ref_snd_wenfnx1",
+      "status": "completed",
+      "category": "General",
+      "createdAt": "2026-06-27T10:58:22.275Z"
+    },
+    {
+      "id": "tx_i9e8hg0nc",
+      "walletId": "wal_2ghxetyg8",
+      "type": "send",
+      "direction": "out",
+      "amount": 150,
+      "currency": "ZAR",
+      "counterparty": "$ilp.interledger-test.dev/rands",
+      "reference": "ref_snd_c8ild24",
+      "status": "completed",
+      "category": "General",
+      "createdAt": "2026-06-27T10:46:56.175Z"
+    },
+    {
+      "id": "tx_jdm331mdl",
+      "walletId": "wal_2ghxetyg8",
+      "type": "send",
+      "direction": "out",
+      "amount": 150,
+      "currency": "ZAR",
+      "counterparty": "$ilp.interledger-test.dev/rands",
+      "reference": "ref_snd_bulrhzu",
+      "status": "completed",
+      "category": "General",
+      "createdAt": "2026-06-27T10:45:31.396Z"
+    },
+    {
+      "id": "tx_hyizlgunk",
+      "walletId": "wal_2ghxetyg8",
+      "type": "send",
+      "direction": "out",
+      "amount": 150,
+      "currency": "ZAR",
+      "counterparty": "$ilp.interledger-test.dev/rands",
+      "reference": "ref_snd_b41cufu",
+      "status": "completed",
+      "category": "General",
+      "createdAt": "2026-06-27T10:33:48.901Z"
+    },
+    {
+      "id": "tx_ygeu42xz4",
+      "walletId": "wal_2ghxetyg8",
+      "type": "deposit",
+      "direction": "in",
+      "amount": 100,
+      "currency": "ZAR",
+      "counterparty": "Deposit via ILP",
+      "reference": "ref_dep_n0s5yn8",
+      "status": "completed",
+      "category": "General",
+      "createdAt": "2026-06-27T10:32:39.190Z"
+    },
+    {
+      "id": "tx_3p3l56mhg",
+      "walletId": "wal_2ghxetyg8",
+      "type": "deposit",
+      "direction": "in",
+      "amount": 50,
+      "currency": "ZAR",
+      "counterparty": "Deposit via ILP",
+      "reference": "ref_dep_hebwr6a",
+      "status": "completed",
+      "category": "General",
+      "createdAt": "2026-06-27T10:26:41.770Z"
+    },
+    {
+      "id": "tx_pqb979fe0",
+      "walletId": "wal_2ghxetyg8",
+      "type": "deposit",
+      "direction": "in",
+      "amount": 100,
+      "currency": "ZAR",
+      "counterparty": "Deposit via ILP",
+      "reference": "ref_dep_xpdx637",
+      "status": "completed",
+      "category": "General",
+      "createdAt": "2026-06-27T10:23:42.947Z"
+    },
+    {
+      "id": "tx_gpy795dt8",
+      "walletId": "wal_2ghxetyg8",
+      "type": "send",
+      "direction": "out",
+      "amount": 150,
+      "currency": "ZAR",
+      "counterparty": "$ilp.interledger-test.dev/enti",
+      "reference": "ref_snd_varxne8",
+      "status": "completed",
+      "category": "General",
+      "createdAt": "2026-06-27T10:18:05.344Z"
+    },
+    {
+      "id": "tx_eebd85g7x",
+      "walletId": "wal_2ghxetyg8",
+      "type": "send",
+      "direction": "out",
+      "amount": 150,
+      "currency": "ZAR",
+      "counterparty": "$ilp.interledger-test.dev/enti",
+      "reference": "ref_snd_qn7c9w7",
+      "status": "completed",
+      "category": "General",
+      "createdAt": "2026-06-27T10:14:24.265Z"
+    },
+    {
+      "id": "tx_6tb5z5yxr",
+      "walletId": "wal_2ghxetyg8",
+      "type": "send",
+      "direction": "out",
+      "amount": 150,
+      "currency": "ZAR",
+      "counterparty": "$ilp.interledger-test.dev/enti",
+      "reference": "ref_snd_8w5bru0",
+      "status": "completed",
+      "category": "General",
+      "createdAt": "2026-06-27T10:13:42.727Z"
+    },
+    {
+      "id": "tx_fthptfevh",
+      "walletId": "wal_2ghxetyg8",
+      "type": "send",
+      "direction": "out",
+      "amount": 150,
+      "currency": "ZAR",
+      "counterparty": "$ilp.interledger-test.dev/enti",
+      "reference": "ref_snd_xaztdlb",
+      "status": "completed",
+      "category": "General",
+      "createdAt": "2026-06-27T10:11:59.525Z"
+    },
+    {
+      "id": "tx_1z06uguvb",
+      "walletId": "wal_2ghxetyg8",
+      "type": "send",
+      "direction": "out",
+      "amount": 150,
+      "currency": "ZAR",
+      "counterparty": "$ilp.interledger-test.dev/mozar",
+      "reference": "ref_snd_bqkmjo2",
+      "status": "completed",
+      "category": "General",
+      "createdAt": "2026-06-27T10:11:01.340Z"
+    },
+    {
+      "id": "tx_58il52h2g",
+      "walletId": "wal_2ghxetyg8",
+      "type": "send",
+      "direction": "out",
+      "amount": 150,
+      "currency": "ZAR",
+      "counterparty": "$ilp.interledger-test.dev/mozar",
+      "reference": "ref_snd_qnfrcyj",
+      "status": "completed",
+      "category": "General",
+      "createdAt": "2026-06-27T10:09:45.681Z"
+    },
+    {
+      "id": "tx_hut03lmlr",
+      "walletId": "wal_2ghxetyg8",
+      "type": "send",
+      "direction": "out",
+      "amount": 150,
+      "currency": "ZAR",
+      "counterparty": "$ilp.interledger-test.dev/mozar",
+      "reference": "ref_snd_1cd6icn",
+      "status": "completed",
+      "category": "General",
+      "createdAt": "2026-06-27T10:09:35.488Z"
+    },
+    {
+      "id": "tx_lxq39d2cp",
+      "walletId": "wal_2ghxetyg8",
+      "type": "send",
+      "direction": "out",
+      "amount": 150,
+      "currency": "ZAR",
+      "counterparty": "$ilp.interledger-test.dev/tests",
+      "reference": "ref_snd_p7fuufg",
+      "status": "completed",
+      "category": "General",
+      "createdAt": "2026-06-27T09:47:09.808Z"
+    },
     {
       "id": "tx_gv75c9wrg",
       "walletId": "wal_g4pl61w2a",
@@ -174,6 +395,114 @@
   "aiConversations": [],
   "auditLogs": [
     {
+      "id": "log_y48ebb9yx",
+      "action": "BNPL_CREATED",
+      "details": "Takealot Tech R 1200 in 3 splits.",
+      "timestamp": "2026-06-27T11:00:52.783Z"
+    },
+    {
+      "id": "log_x03lexoqt",
+      "action": "SEND",
+      "details": "Sent R 150 to $ilp.interledger-test.dev/rands (ILP: https://ilp.interledger-test.dev/f537937b-7016-481b-b655-9f0d1014822c/outgoing-payments/0de53acf-0364-4c7f-ae85-031a0400956a)",
+      "timestamp": "2026-06-27T10:59:15.544Z"
+    },
+    {
+      "id": "log_jtsk4tjth",
+      "action": "SEND",
+      "details": "Sent R 150 to $ilp.interledger-test.dev/rands (ILP: https://ilp.interledger-test.dev/f537937b-7016-481b-b655-9f0d1014822c/outgoing-payments/0842b1e8-0361-46d5-b7be-1f37c7205675)",
+      "timestamp": "2026-06-27T10:58:22.431Z"
+    },
+    {
+      "id": "log_bt6sewvgg",
+      "action": "SEND",
+      "details": "Sent R 150 to $ilp.interledger-test.dev/rands (ILP: https://ilp.interledger-test.dev/outgoing-payments/sim_o0hl5vvde)",
+      "timestamp": "2026-06-27T10:46:56.179Z"
+    },
+    {
+      "id": "log_nhz732n5v",
+      "action": "SEND",
+      "details": "Sent R 150 to $ilp.interledger-test.dev/rands (ILP: https://ilp.interledger-test.dev/outgoing-payments/sim_4791d7giq)",
+      "timestamp": "2026-06-27T10:45:31.403Z"
+    },
+    {
+      "id": "log_uqzdw33w4",
+      "action": "SEND",
+      "details": "Sent R 150 to $ilp.interledger-test.dev/rands (ILP: https://ilp.interledger-test.dev/outgoing-payments/sim_k7adxczmn)",
+      "timestamp": "2026-06-27T10:33:48.908Z"
+    },
+    {
+      "id": "log_dzrgt0tv9",
+      "action": "DEPOSIT",
+      "details": "R 100 deposited to $ilp.interledger-test.dev/testers",
+      "timestamp": "2026-06-27T10:32:39.198Z"
+    },
+    {
+      "id": "log_pylzptfhk",
+      "action": "DEPOSIT",
+      "details": "R 50 deposited to $ilp.interledger-test.dev/testers",
+      "timestamp": "2026-06-27T10:26:41.777Z"
+    },
+    {
+      "id": "log_x3f4vea4f",
+      "action": "DEPOSIT",
+      "details": "R 100 deposited to $ilp.interledger-test.dev/testers",
+      "timestamp": "2026-06-27T10:23:42.974Z"
+    },
+    {
+      "id": "log_34tq2hkdu",
+      "action": "SEND",
+      "details": "Sent R 150 to $ilp.interledger-test.dev/enti (ILP: https://ilp.interledger-test.dev/outgoing-payments/sim_13tuzxil0)",
+      "timestamp": "2026-06-27T10:18:05.350Z"
+    },
+    {
+      "id": "log_9y7gq3u08",
+      "action": "SEND",
+      "details": "Sent R 150 to $ilp.interledger-test.dev/enti (ILP: https://ilp.interledger-test.dev/outgoing-payments/sim_o0361qp8k)",
+      "timestamp": "2026-06-27T10:14:24.270Z"
+    },
+    {
+      "id": "log_rqt5joaax",
+      "action": "SEND",
+      "details": "Sent R 150 to $ilp.interledger-test.dev/enti (ILP: https://ilp.interledger-test.dev/outgoing-payments/sim_rklxkb86r)",
+      "timestamp": "2026-06-27T10:13:42.730Z"
+    },
+    {
+      "id": "log_gcn67w1mx",
+      "action": "SEND",
+      "details": "Sent R 150 to $ilp.interledger-test.dev/enti (ILP: https://ilp.interledger-test.dev/outgoing-payments/sim_xigya5idr)",
+      "timestamp": "2026-06-27T10:11:59.531Z"
+    },
+    {
+      "id": "log_iusf6drmx",
+      "action": "SEND",
+      "details": "Sent R 150 to $ilp.interledger-test.dev/mozar (ILP: https://ilp.interledger-test.dev/outgoing-payments/sim_ci3lpcpg6)",
+      "timestamp": "2026-06-27T10:11:01.343Z"
+    },
+    {
+      "id": "log_l3rizbeed",
+      "action": "SEND",
+      "details": "Sent R 150 to $ilp.interledger-test.dev/mozar (ILP: https://ilp.interledger-test.dev/outgoing-payments/sim_rx5h5r0c6)",
+      "timestamp": "2026-06-27T10:09:45.687Z"
+    },
+    {
+      "id": "log_48m5d45z5",
+      "action": "SEND",
+      "details": "Sent R 150 to $ilp.interledger-test.dev/mozar (ILP: https://ilp.interledger-test.dev/outgoing-payments/sim_fz1ineson)",
+      "timestamp": "2026-06-27T10:09:35.492Z"
+    },
+    {
+      "id": "log_qgfvxd5dt",
+      "action": "SEND",
+      "details": "Sent R 150 to $ilp.interledger-test.dev/tests (ILP: https://ilp.interledger-test.dev/outgoing-payments/sim_valpq2ady)",
+      "timestamp": "2026-06-27T09:47:09.811Z"
+    },
+    {
+      "id": "log_u2uaxvzsw",
+      "action": "CONSENT_ACCEPTED",
+      "details": "rashaadsm2004@gmail.com accepted data privacy consent.",
+      "timestamp": "2026-06-27T09:01:34.399Z"
+    },
+    {
       "id": "log_wvm7783ha",
       "action": "WALLET_CREATED",
       "details": "Internal wallet for $ilp.interledger-test.dev/testers created.",
@@ -235,6 +564,48 @@
     }
   ],
   "subscriptions": [],
-  "bnplContracts": [],
-  "sessions": {}
+  "bnplContracts": [
+    {
+      "id": "bnpl_6so1xt09j",
+      "walletId": "wal_2ghxetyg8",
+      "merchantName": "Takealot Tech",
+      "purchaseAmount": 1200,
+      "remainingAmount": 800,
+      "currency": "ZAR",
+      "totalInstallments": 3,
+      "status": "active",
+      "createdAt": "2026-06-27T11:00:52.773Z",
+      "installments": [
+        {
+          "id": "inst_gu3mvujlm",
+          "installmentNumber": 1,
+          "amount": 400,
+          "dueDate": "2026-06-27T11:00:52.773Z",
+          "status": "paid",
+          "paidAt": "2026-06-27T11:00:52.773Z",
+          "transactionId": "tx_bnpl_801a4tsge"
+        },
+        {
+          "id": "inst_nr77g91cb",
+          "installmentNumber": 2,
+          "amount": 400,
+          "dueDate": "2026-07-27T11:00:52.773Z",
+          "status": "pending"
+        },
+        {
+          "id": "inst_3fo8byfdg",
+          "installmentNumber": 3,
+          "amount": 400,
+          "dueDate": "2026-08-26T11:00:52.773Z",
+          "status": "pending"
+        }
+      ]
+    }
+  ],
+  "sessions": {
+    "token_wpxa2s487eg": {
+      "email": "rashaadsm2004@gmail.com",
+      "userId": "usr_yc8unprkh"
+    }
+  }
 }

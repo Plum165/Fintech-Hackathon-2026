@@ -3,12 +3,14 @@ import { Database } from '../../db/index.js';
 import type { Wallet } from '../../types.js';
 
 export class WalletService {
-  /** Convert a $-prefixed payment pointer or username to a full wallet URL. */
+  /** Convert a $-prefixed payment pointer or plain username to a full wallet URL. */
   static toUrl(pointerOrUsername: string): string {
     const s = pointerOrUsername.trim();
     if (s.startsWith('https://') || s.startsWith('http://')) return s;
-    const clean = s.startsWith('$') ? s.slice(1) : s;
-    return `https://ilp.interledger-test.dev/${clean}`;
+    // $-pointer already contains the full host: $host/path → https://host/path
+    if (s.startsWith('$')) return `https://${s.slice(1)}`;
+    // Plain username (no domain) → default to ILP test network
+    return `https://ilp.interledger-test.dev/${s}`;
   }
 
   /** Generate a $-style pointer for a given username. */
