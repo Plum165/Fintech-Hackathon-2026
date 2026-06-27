@@ -247,8 +247,6 @@ export default function App() {
       if (response.ok) {
         setUser(prev => prev ? { ...prev, consentAccepted: true } : null);
         triggerRefresh();
-      } else if (response.status === 401) {
-        handleLogout();
       }
     } catch (err) {
       console.error('Consent error:', err);
@@ -624,7 +622,7 @@ export default function App() {
           {/* Mini Sidebar Mascot widget */}
           <div className="bg-slate-50 border border-slate-200/60 rounded-2xl p-4 text-center mt-auto">
             <span className="text-2xl inline-block mb-1">🐼</span>
-            <h5 className="text-[11px] font-bold text-slate-755">Zen the companion</h5>
+            <h5 className="text-[11px] font-bold text-slate-755">Zenny the companion</h5>
             <p className="text-[10px] text-slate-500 mt-1 leading-normal">
               Need saving tips? Click 'AI Insights' to ask me anything.
             </p>
@@ -708,7 +706,7 @@ export default function App() {
                     <div className="p-3 bg-teal-50 text-teal-600 rounded-xl group-hover:scale-105 transition">
                       <Sparkles className="w-5 h-5" />
                     </div>
-                    <span className="text-xs font-bold text-slate-800 mt-2">Ask Zen</span>
+                    <span className="text-xs font-bold text-slate-800 mt-2">Ask Zenny</span>
                   </button>
                 </div>
 
@@ -912,7 +910,7 @@ export default function App() {
               >
                 <div>
                   <h3 className="text-sm font-bold text-slate-800">Financial Smart Assistant</h3>
-                  <p className="text-xs text-slate-500 mt-1 font-medium font-sans">Converse with Zen for tailored spending advice and categorized accounts reports.</p>
+                  <p className="text-xs text-slate-500 mt-1 font-medium font-sans">Converse with Zenny for tailored spending advice and categorized accounts reports.</p>
                 </div>
                 <AIChatPanel token={token} />
               </motion.div>
@@ -1088,7 +1086,7 @@ export default function App() {
               <p><strong>1. Automated Router Consent:</strong> You authorize Zen-i and the Interledger Protocol (ILP) to listen, route, and settle micro-payment pointer packets automatically.</p>
               <p><strong>2. Emergency Credit Underwriting:</strong> Subscriptions run on fallback credit coverage from partners if your balance is low. Outstanding balances accumulate 15% interest if not paid within 30 days.</p>
               <p><strong>3. Identity Verification:</strong> You consent to undergo standard KYC compliance (verification of government ID) to access high-volume limits and savings reserve accounts.</p>
-              <p><strong>4. AI Co-Pilot Optimization:</strong> Zen-i the Wise Panda will analyze local transactions to supply real-time smart runway metrics and alerts.</p>
+              <p><strong>4. AI Co-Pilot Optimization:</strong> Zenny the Wise Panda will analyze local transactions to supply real-time smart runway metrics and alerts.</p>
             </div>
 
             <div className="flex flex-col gap-2.5">
