@@ -12,7 +12,7 @@ export default function AIChatPanel({ token }: AIChatPanelProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'model',
-      content: 'Hello Corazon! I am Zenny 🐼, your Interledger accounting companion. Ask me anything about your active limits, transactions, or general budget savings advice!',
+      content: 'Hello Mikaeel! I am Zenny 🐼, your Interledger accounting companion. Ask me anything about your active limits, transactions, or general budget savings advice!',
       timestamp: new Date().toISOString()
     }
   ]);

@@ -19,7 +19,7 @@ Guided by **Zen the Panda** 🐼, our embedded financial assistant, PandaPay bri
 * *Automated AI Transaction Categorization*: Direct natural language description parser that automatically routes every outbound payment to its corresponding budget category.
 * *Real-time Spending Meters*: Interactive gauge indicators that visualize the remaining runway for your monthly limits.
 
-#### 💬 "Consult Zen" AI Financial Mascot (Gemini 3.5)
+### 💬 "Consult Zen" AI Financial Mascot (Gemini 3.5)
 * *Contextual Conversation*: Zen 🐼 has complete awareness of your current wallet balance, ledger transactions, and spending targets to provide hyper-personalized saving suggestions.
 * **Proactive Runway Insights**: Automated smart summaries parsing your current spending behaviors to alert you of potential budget overshoots.
 
@@ -66,7 +66,7 @@ PandaPay strictly decouples private API operations from the client browser:
                                        ▼
                   ┌──────────────────────────────────────────┐
                   │          Express Backend Router          │
-                  │       [Port 5689 / Node.js ESM]          │
+                  │       [Port 3000 / Node.js ESM]          │
                   └────┬───────────────────────────────┬─────┘
                        │                               │
                        ▼                               ▼
@@ -97,7 +97,7 @@ Boot both the Express server and Vite middleware simultaneously:
 ```bash
 npm run dev
 ```
-The application will be accessible locally on [http://localhost:5689](http://localhost:5689).
+The application will be accessible locally on [http://localhost:3000](http://localhost:3000).
 
 ### 4. Build for Production
 Bundle the client SPA and compile the TypeScript backend:

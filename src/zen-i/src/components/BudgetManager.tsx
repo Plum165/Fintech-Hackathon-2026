@@ -187,7 +187,7 @@ export default function BudgetManager({ token, refreshKey, onBudgetUpdated, wall
           message={
             usedRatio >= 85 
               ? "Oops! We are consuming too much budget fast. Let's tighten our subscriptions!" 
-              : "Excellent job Corazon! Our spending ratios look healthy this month."
+              : "Excellent job Mikaeel! Our spending ratios look healthy this month."
           } 
           size="lg"
         />
