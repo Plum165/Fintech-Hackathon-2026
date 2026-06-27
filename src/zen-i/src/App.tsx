@@ -23,7 +23,7 @@ import KycVerificationPanel from './components/KycVerificationPanel';
 import BnplDashboardPanel from './components/BnplDashboardPanel';
 import ZenILogo from './components/ZenILogo';
 
-type Tab = 'dashboard' | 'deposit' | 'send' | 'transactions' | 'budget' | 'ai' | 'settings' | 'subscriptions' | 'reserve' | 'kyc' | 'bnpl';
+type Tab = 'dashboard' | 'deposit' | 'send' | 'transactions' | 'budget' | 'ai' | 'subscriptions' | 'reserve' | 'bnpl';
 
 export default function App() {
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
@@ -591,32 +591,6 @@ export default function App() {
                 <Sparkles className="w-4 h-4 text-peach-700" /> AI Insights
               </button>
             </div>
-
-            <div className="space-y-1">
-              <span className="text-[10px] uppercase font-mono tracking-widest text-slate-400 font-bold px-3">Compliance</span>
-
-              <button
-                onClick={() => setActiveTab('kyc')}
-                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition cursor-pointer text-left ${
-                  activeTab === 'kyc' ? 'bg-peach-55 text-peach-850 font-bold border border-peach-200 shadow-xs' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
-                }`}
-              >
-                <ShieldCheck className="w-4 h-4 text-peach-700" /> KYC Identity ({user?.kycStatus === 'verified' ? 'Verified' : 'Incomplete'})
-              </button>
-            </div>
-
-            <div className="space-y-1">
-              <span className="text-[10px] uppercase font-mono tracking-widest text-slate-400 font-bold px-3">Account</span>
-
-              <button
-                onClick={() => setActiveTab('settings')}
-                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition cursor-pointer text-left ${
-                  activeTab === 'settings' ? 'bg-peach-55 text-peach-850 font-bold border border-peach-200 shadow-xs' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
-                }`}
-              >
-                <Settings className="w-4 h-4 text-peach-700" /> Node Settings
-              </button>
-            </div>
           </div>
 
           {/* Mini Sidebar Mascot widget */}
@@ -916,49 +890,6 @@ export default function App() {
               </motion.div>
             )}
 
-            {/* TAB: SETTINGS VIEW */}
-            {activeTab === 'settings' && (
-              <motion.div
-                key="settings-view"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="max-w-2xl bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-6 font-mono text-xs text-slate-700"
-              >
-                <div>
-                  <h3 className="text-sm font-bold text-slate-800 font-sans">Node Settings & Auditing</h3>
-                  <p className="text-xs text-slate-500 font-sans mt-1 font-medium">Manage private keys, grants, and Interledger identities securely.</p>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="p-4 bg-slate-50 border border-slate-150 rounded-2xl space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-505">Node Public Key</span>
-                      <span className="text-emerald-600 font-semibold select-all">pk_live_093847291a8291...</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-505">Security Grants</span>
-                      <span className="text-slate-700 font-semibold">AES-256 GCM Authorized</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-505">Active Wallet Username</span>
-                      <span className="text-emerald-600 font-semibold">${wallet?.username}</span>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-between items-center p-3 bg-rose-50 border border-rose-100 rounded-xl">
-                    <span className="text-rose-600 font-bold font-sans">Clear Local Credentials</span>
-                    <button
-                      onClick={handleLogout}
-                      className="flex items-center gap-1.5 py-1.5 px-3 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg cursor-pointer transition"
-                    >
-                      <LogOut className="w-3.5 h-3.5" /> Logout
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-
             {/* TAB: SUBSCRIPTIONS VIEW */}
             {activeTab === 'subscriptions' && (
               <motion.div
@@ -996,18 +927,6 @@ export default function App() {
               </motion.div>
             )}
 
-            {/* TAB: KYC COMPLIANCE VIEW */}
-            {activeTab === 'kyc' && (
-              <motion.div
-                key="kyc-view"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="max-w-xl mx-auto"
-              >
-                <KycVerificationPanel user={user} wallet={wallet} token={token} onKycComplete={triggerRefresh} />
-              </motion.div>
-            )}
           </AnimatePresence>
         </main>
       </div>
