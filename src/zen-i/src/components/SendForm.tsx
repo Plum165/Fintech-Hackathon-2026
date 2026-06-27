@@ -14,6 +14,7 @@ interface PendingPayment {
   approvalUrl: string;
   continueUri: string;
   continueToken: string;
+  isSimulation: boolean;
   quote: {
     id: string;
     debitAmount: { value: string; assetCode: string; assetScale: number };
@@ -75,9 +76,13 @@ export default function SendForm({ onSendComplete, token }: SendFormProps) {
     }
   };
 
-  // Opens the approval URL in a new tab
+  // Opens the approval URL in a new tab (real ILP) or skips straight to confirm (simulation)
   const handleOpenApproval = () => {
-    if (pending?.approvalUrl) {
+    if (!pending) return;
+    if (pending.isSimulation) {
+      // No real consent needed in simulation — advance directly to confirm step
+      setStep(3);
+    } else if (pending.approvalUrl) {
       window.open(pending.approvalUrl, '_blank', 'noopener,noreferrer');
       setStep(3);
     }
@@ -290,16 +295,25 @@ export default function SendForm({ onSendComplete, token }: SendFormProps) {
               )}
             </div>
 
-            {/* The approval button — opens the ILP wallet consent page in a new tab */}
-            <div className="p-4 bg-emerald-50/50 border border-emerald-100 rounded-2xl space-y-3">
-              <p className="text-xs text-emerald-800 font-semibold leading-relaxed">
-                This payment requires your wallet's approval. Click the button below to authorize it in your Interledger wallet, then return here to complete.
-              </p>
-              <button 
+            {/* Approval step — real wallet consent or simulation skip */}
+            <div className={`p-4 rounded-2xl space-y-3 border ${pending.isSimulation ? 'bg-slate-50 border-slate-200' : 'bg-emerald-50/50 border-emerald-100'}`}>
+              {pending.isSimulation ? (
+                <p className="text-xs text-slate-600 font-semibold leading-relaxed">
+                  Running in <span className="text-amber-600">simulation mode</span> — no real wallet approval needed. Click below to continue.
+                </p>
+              ) : (
+                <p className="text-xs text-emerald-800 font-semibold leading-relaxed">
+                  This payment requires your wallet's approval. Click below to authorize it in your Interledger wallet, then return here to complete.
+                </p>
+              )}
+              <button
                 onClick={handleOpenApproval}
-                className="w-full flex items-center justify-center gap-2 py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition shadow-sm cursor-pointer min-h-[44px] focus:outline-none focus:ring-2 focus:ring-emerald-500 border-0"
+                className={`w-full flex items-center justify-center gap-2 py-3.5 px-4 text-white font-bold text-xs rounded-xl transition shadow-sm cursor-pointer min-h-[44px] focus:outline-none focus:ring-2 border-0 ${pending.isSimulation ? 'bg-slate-600 hover:bg-slate-700 focus:ring-slate-500' : 'bg-emerald-600 hover:bg-emerald-700 focus:ring-emerald-500'}`}
               >
-                <ExternalLink className="w-4 h-4" /> Approve in Your Wallet
+                {pending.isSimulation
+                  ? <><CheckCircle2 className="w-4 h-4" /> Continue (Simulation)</>
+                  : <><ExternalLink className="w-4 h-4" /> Approve in Your Wallet</>
+                }
               </button>
             </div>
 

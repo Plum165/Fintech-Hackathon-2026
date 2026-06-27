@@ -91,8 +91,43 @@ function authenticate(
   next();
 }
 
-// ── Startup log ─────────────────────────────────────────────────────────────
-console.log(`[PandaPay Server] Open Payments: ${isOPConfigured() ? 'LIVE (real ILP)' : 'SIMULATION'}`);
+// ── Startup log + OP credential validation ───────────────────────────────────
+const _opLive = isOPConfigured();
+console.log(`[PandaPay Server] Open Payments: ${_opLive ? 'LIVE (real ILP)' : 'SIMULATION'}`);
+if (_opLive) {
+  WalletService.getServerWallet()
+    .then(w => console.log(`[PandaPay Server] Server wallet: ${w.id}`))
+    .catch(err => console.error(`[PandaPay Server] ⚠ Wallet validation failed: ${err.message}`));
+}
+
+// ============================================================================
+// HEALTH
+// ============================================================================
+
+app.get('/api/health', async (_req, res) => {
+  const live = isOPConfigured();
+  const status: Record<string, unknown> = {
+    status: 'ok',
+    opMode: live ? 'live' : 'simulation',
+    walletAddress: process.env.SERVER_WALLET_ADDRESS ?? '(not set)',
+    keyId: process.env.KEY_ID
+      ? (process.env.KEY_ID === 'YOUR_KEY_ID_HERE' ? '(placeholder)' : '✓ set')
+      : '(not set)',
+    privateKey: live ? '✓ found' : '(not present — running in simulation)'
+  };
+
+  if (live) {
+    try {
+      const w = await WalletService.getServerWallet();
+      status.walletValidation = `✓ reachable (${w.id})`;
+    } catch (e: any) {
+      status.walletValidation = `✗ ${e.message}`;
+      status.opMode = 'degraded';
+    }
+  }
+
+  res.json(status);
+});
 
 // ============================================================================
 // AUTH
@@ -278,14 +313,20 @@ app.post('/api/payments/deposit', authenticate, async (req, res) => {
     const wallet = db.wallets.find(w => w.userId === userId);
     if (!wallet) { res.status(404).json({ error: 'Wallet not found.' }); return; }
 
-    // Create an incoming payment on the SERVER wallet (funds arrive here)
-    const serverWallet = await WalletService.getServerWallet();
-    const incoming = await IncomingPaymentService.create(
-      serverWallet.id,
-      numAmount,
-      wallet.currency,
-      2 // ZAR uses scale 2
-    );
+    // Create an incoming payment on the SERVER wallet (funds arrive here).
+    // Falls back to a simulated ID if the OP network is unreachable.
+    let incomingId: string, paymentUrl: string;
+    try {
+      const serverWallet = await WalletService.getServerWallet();
+      const incoming = await IncomingPaymentService.create(serverWallet.id, numAmount, wallet.currency, 2);
+      incomingId = incoming.id;
+      paymentUrl = incoming.paymentUrl;
+    } catch (opErr: any) {
+      console.warn('[PandaPay] Deposit OP error, using simulation fallback:', opErr.message);
+      const sid = 'sim_' + Math.random().toString(36).substr(2, 9);
+      incomingId = `https://ilp.interledger-test.dev/incoming-payments/${sid}`;
+      paymentUrl = incomingId;
+    }
 
     // Credit internal balance immediately (simulating receipt)
     await WalletService.updateBalance(wallet.id, numAmount, 'add');
@@ -314,9 +355,9 @@ app.post('/api/payments/deposit', authenticate, async (req, res) => {
     res.json({
       transaction,
       paymentPointer: wallet.pointer,
-      paymentUrl: incoming.paymentUrl,
+      paymentUrl,
       qrCode: qrData,
-      incomingPaymentId: incoming.id
+      incomingPaymentId: incomingId
     });
   } catch (e: any) {
     res.status(500).json({ error: e.message ?? 'Deposit failed.' });
@@ -363,28 +404,58 @@ app.post('/api/payments/send/initiate', authenticate, async (req, res) => {
     const destPointer = WalletService.generatePointer(destination);
     const destUrl = WalletService.toUrl(destPointer);
 
-    // Step 3: incoming payment on receiver's wallet
-    const incoming = await IncomingPaymentService.createOpen(destUrl);
+    let incoming: Awaited<ReturnType<typeof IncomingPaymentService.createOpen>>;
+    let quote: Awaited<ReturnType<typeof QuoteService.create>>;
+    let pending: { approvalUrl: string; continueUri: string; continueToken: string };
+    let isSimulation = false;
 
-    // Step 5: quote on server's wallet
-    const quote = await QuoteService.create(
-      incoming.id,
-      numAmount,
-      wallet.currency,
-      2
-    );
+    console.log(`[send/initiate] isOPConfigured=${isOPConfigured()} dest=${destUrl}`);
+    try {
+      // Steps 3–6: real Open Payments flow
+      console.log('[send/initiate] Step 3 — createOpen incoming payment on', destUrl);
+      incoming = await IncomingPaymentService.createOpen(destUrl);
+      console.log('[send/initiate] Step 3 OK — incoming.id:', incoming.id);
 
-    // Step 6: interactive outgoing-payment grant (button-based consent)
-    const pending = await OutgoingPaymentService.initiateGrant(
-      numAmount,
-      wallet.currency,
-      2
-    );
+      console.log('[send/initiate] Step 5 — create quote');
+      quote = await QuoteService.create(incoming.id, numAmount, wallet.currency, 2);
+      console.log('[send/initiate] Step 5 OK — quote.id:', quote.id);
+
+      console.log('[send/initiate] Step 6 — request interactive grant');
+      pending = await OutgoingPaymentService.initiateGrant(numAmount, wallet.currency, 2);
+      console.log('[send/initiate] Step 6 OK — approvalUrl:', pending.approvalUrl);
+
+      // If initiateGrant returned a sim URI (OP not configured), mark as simulation
+      if (pending.continueUri.startsWith('sim://')) isSimulation = true;
+    } catch (opErr: any) {
+      // OP network unavailable or destination wallet not found — fall back to simulation
+      console.warn('[send/initiate] OP error at step above ↑');
+      console.warn('  message :', opErr.message);
+      console.warn('  stack   :', opErr.stack?.split('\n').slice(0, 4).join('\n'));
+      isSimulation = true;
+      const sid = Math.random().toString(36).substr(2, 9);
+      incoming = {
+        id: `https://ilp.interledger-test.dev/incoming-payments/sim_${sid}`,
+        paymentUrl: `https://ilp.interledger-test.dev/incoming-payments/sim_${sid}`
+      };
+      const cents = Math.round(numAmount * 100).toString();
+      quote = {
+        id: `https://ilp.interledger-test.dev/quotes/sim_${sid}`,
+        debitAmount: { value: cents, assetCode: wallet.currency, assetScale: 2 },
+        receiveAmount: { value: cents, assetCode: wallet.currency, assetScale: 2 },
+        expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString()
+      };
+      pending = {
+        approvalUrl: '',
+        continueUri: 'sim://continue',
+        continueToken: 'sim_continue_' + Math.random().toString(36).substr(2, 12)
+      };
+    }
 
     res.json({
       approvalUrl: pending.approvalUrl,
       continueUri: pending.continueUri,
       continueToken: pending.continueToken,
+      isSimulation,
       quote: {
         id: quote.id,
         debitAmount: quote.debitAmount,

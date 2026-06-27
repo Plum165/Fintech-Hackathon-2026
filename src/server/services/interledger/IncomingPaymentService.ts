@@ -3,7 +3,7 @@ import { GrantService } from './GrantService.js';
 import { WalletService } from './WalletService.js';
 
 const INCOMING_ACCESS = [
-  { type: 'incoming-payment' as const, actions: ['create' as const, 'read' as const, 'complete' as const] }
+  { type: 'incoming-payment' as const, actions: ['create' as const, 'read' as const] }
 ];
 
 export interface CreatedIncomingPayment {
@@ -15,11 +15,6 @@ export interface CreatedIncomingPayment {
 export class IncomingPaymentService {
   /**
    * Create an incoming payment on a wallet with a fixed receive amount.
-   *
-   * @param walletPointerOrUrl - The target wallet ($ pointer or https URL)
-   * @param amount             - Human-readable amount (e.g. 10.00 for R10)
-   * @param assetCode          - e.g. "ZAR"
-   * @param assetScale         - Decimal places (2 for ZAR/USD)
    */
   static async create(
     walletPointerOrUrl: string,
@@ -38,18 +33,14 @@ export class IncomingPaymentService {
 
     const walletInfo = await WalletService.discover(walletUrl);
     const token = await GrantService.requestNonInteractive(walletInfo.authServer, INCOMING_ACCESS);
-    const client = await getOPClient();
-
     const valueString = Math.round(amount * Math.pow(10, assetScale)).toString();
 
+    const client = await getOPClient();
     const payment = await client.incomingPayment.create(
       { url: walletInfo.resourceServer, accessToken: token },
-      {
-        walletAddress: walletInfo.id,
-        incomingAmount: { value: valueString, assetCode, assetScale }
-      }
+      { walletAddress: walletInfo.id, incomingAmount: { value: valueString, assetCode, assetScale } }
     );
-
+    console.log('[IncomingPaymentService.create] Created:', payment.id);
     return { id: payment.id, paymentUrl: payment.id, expiresAt: payment.expiresAt };
   }
 
@@ -67,15 +58,19 @@ export class IncomingPaymentService {
       return { id, paymentUrl: id };
     }
 
+    console.log('[IncomingPaymentService.createOpen] Discovering wallet:', walletUrl);
     const walletInfo = await WalletService.discover(walletUrl);
-    const token = await GrantService.requestNonInteractive(walletInfo.authServer, INCOMING_ACCESS);
-    const client = await getOPClient();
+    console.log('[IncomingPaymentService.createOpen] authServer:', walletInfo.authServer, 'resourceServer:', walletInfo.resourceServer);
 
+    const token = await GrantService.requestNonInteractive(walletInfo.authServer, INCOMING_ACCESS);
+    console.log('[IncomingPaymentService.createOpen] Grant token received, creating incoming payment...');
+
+    const client = await getOPClient();
     const payment = await client.incomingPayment.create(
       { url: walletInfo.resourceServer, accessToken: token },
       { walletAddress: walletInfo.id }
     );
-
+    console.log('[IncomingPaymentService.createOpen] Created:', payment.id);
     return { id: payment.id, paymentUrl: payment.id, expiresAt: payment.expiresAt };
   }
 }

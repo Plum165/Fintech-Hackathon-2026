@@ -12,8 +12,6 @@ export interface OutgoingPaymentResult {
 export class OutgoingPaymentService {
   /**
    * Step 1 of the send flow: request the interactive outgoing-payment grant.
-   * Returns the `approvalUrl` for the frontend "Approve" button and the
-   * continuation tokens needed to complete the payment once approved.
    */
   static async initiateGrant(
     debitAmountHuman: number,
@@ -42,9 +40,7 @@ export class OutgoingPaymentService {
   }
 
   /**
-   * Step 2 of the send flow: after the user has approved the grant in their
-   * wallet (via the button that opened approvalUrl), finalise the grant and
-   * execute the outgoing payment on the ILP network.
+   * Step 2 of the send flow: finalise the grant and execute the outgoing payment.
    */
   static async execute(
     continueUri: string,
@@ -61,22 +57,24 @@ export class OutgoingPaymentService {
       };
     }
 
+    console.log('[OutgoingPaymentService.execute] Continuing grant:', continueUri);
     const accessToken = await GrantService.continueGrant(continueUri, continueToken);
+    console.log('[OutgoingPaymentService.execute] Grant continued, creating outgoing payment');
+
     const serverWallet = await WalletService.getServerWallet();
+
     const client = await getOPClient();
+    const paymentInput: Record<string, unknown> = { walletAddress: serverWallet.id, quoteId };
+    if (description) paymentInput.metadata = { description };
 
     const payment = await client.outgoingPayment.create(
       { url: serverWallet.resourceServer, accessToken },
-      {
-        walletAddress: serverWallet.id,
-        quoteId,
-        metadata: description ? { description } : undefined
-      }
+      paymentInput as Parameters<typeof client.outgoingPayment.create>[1]
     );
-
+    console.log('[OutgoingPaymentService.execute] Payment created:', payment.id, 'failed:', payment.failed);
     return {
       id: payment.id,
-      failed: payment.failed,
+      failed: payment.failed ?? false,
       debitAmount: payment.debitAmount,
       receiveAmount: payment.receiveAmount
     };

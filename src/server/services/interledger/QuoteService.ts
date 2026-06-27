@@ -16,11 +16,6 @@ export interface OPQuote {
 export class QuoteService {
   /**
    * Create a quote on the server's wallet to price a payment.
-   *
-   * @param incomingPaymentId - Full incoming payment URL from IncomingPaymentService
-   * @param debitAmountHuman  - Amount the sender pays (human-readable, e.g. 10.00 for R10)
-   * @param assetCode         - Sender asset code, e.g. "ZAR"
-   * @param assetScale        - Sender decimal places (2 for ZAR)
    */
   static async create(
     incomingPaymentId: string,
@@ -49,12 +44,9 @@ export class QuoteService {
 
     const serverWallet = await WalletService.getServerWallet();
     const token = await GrantService.requestNonInteractive(serverWallet.authServer, QUOTE_ACCESS);
+    const valueString = Math.round(debitAmountHuman * Math.pow(10, assetScale)).toString();
+
     const client = await getOPClient();
-
-    const valueString = Math.round(
-      debitAmountHuman * Math.pow(10, assetScale)
-    ).toString();
-
     const quote = await client.quote.create(
       { url: serverWallet.resourceServer, accessToken: token },
       {
@@ -64,7 +56,7 @@ export class QuoteService {
         debitAmount: { value: valueString, assetCode, assetScale }
       }
     );
-
+    console.log('[QuoteService] Quote created:', quote.id);
     return {
       id: quote.id,
       debitAmount: quote.debitAmount,
