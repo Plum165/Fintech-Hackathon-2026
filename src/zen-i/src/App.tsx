@@ -247,6 +247,8 @@ export default function App() {
       if (response.ok) {
         setUser(prev => prev ? { ...prev, consentAccepted: true } : null);
         triggerRefresh();
+      } else if (response.status === 401) {
+        handleLogout();
       }
     } catch (err) {
       console.error('Consent error:', err);

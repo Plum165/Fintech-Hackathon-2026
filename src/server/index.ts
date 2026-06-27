@@ -58,8 +58,18 @@ app.use(cors(_corsOptions));
 app.options('*', cors(_corsOptions)); // handle preflight for all routes
 app.use(express.json());
 
-// ── Auth (in-memory session map) ────────────────────────────────────────────
-const authTokens = new Map<string, { email: string; userId: string }>();
+// ── Auth sessions ────────────────────────────────────────────────────────────
+// Kept in-memory for speed, persisted to db.json so restarts don't invalidate tokens.
+const authTokens = new Map<string, { email: string; userId: string }>(
+  Object.entries(Database.read().sessions ?? {})
+);
+
+function persistSession(token: string, session: { email: string; userId: string }) {
+  authTokens.set(token, session);
+  const db = Database.read();
+  db.sessions[token] = session;
+  Database.write(db);
+}
 
 function authenticate(
   req: express.Request,
@@ -128,7 +138,7 @@ app.post('/api/auth/login', async (req, res) => {
     const wallet = await WalletService.getOrCreateWallet(user.id, username);
 
     const token = 'token_' + Math.random().toString(36).substr(2, 16);
-    authTokens.set(token, { email: user.email, userId: user.id });
+    persistSession(token, { email: user.email, userId: user.id });
 
     res.json({ token, user, wallet });
   } catch (e: any) {
@@ -180,7 +190,7 @@ app.post('/api/auth/register', async (req, res) => {
     const wallet = await WalletService.getOrCreateWallet(user.id, cleanUsername);
 
     const token = 'token_' + Math.random().toString(36).substr(2, 16);
-    authTokens.set(token, { email: user.email, userId: user.id });
+    persistSession(token, { email: user.email, userId: user.id });
 
     res.status(201).json({ token, user, wallet });
   } catch (e: any) {

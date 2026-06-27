@@ -25,6 +25,7 @@ export interface DatabaseSchema {
   auditLogs: AuditLog[];
   subscriptions: Subscription[];
   bnplContracts: BnplContract[];
+  sessions: Record<string, { email: string; userId: string }>;
 }
 
 const defaultDb: DatabaseSchema = {
@@ -47,7 +48,8 @@ const defaultDb: DatabaseSchema = {
     }
   ],
   subscriptions: [],
-  bnplContracts: []
+  bnplContracts: [],
+  sessions: {}
 };
 
 function initDb() {
@@ -71,6 +73,7 @@ export class Database {
       // Ensure new collections exist on older DB files
       parsed.subscriptions ??= [];
       parsed.bnplContracts ??= [];
+      parsed.sessions ??= {};
       return parsed;
     } catch {
       return { ...defaultDb };

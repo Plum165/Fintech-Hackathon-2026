@@ -15,6 +15,14 @@
       "consentAccepted": true,
       "kycStatus": "unverified",
       "createdAt": "2026-06-26T19:28:55.022Z"
+    },
+    {
+      "id": "usr_yc8unprkh",
+      "email": "rashaadsm2004@gmail.com",
+      "name": "Misha",
+      "consentAccepted": false,
+      "kycStatus": "unverified",
+      "createdAt": "2026-06-27T08:52:38.244Z"
     }
   ],
   "wallets": [
@@ -47,6 +55,21 @@
       "currency": "ZAR",
       "active": true,
       "createdAt": "2026-06-26T19:28:55.032Z"
+    },
+    {
+      "id": "wal_2ghxetyg8",
+      "userId": "usr_yc8unprkh",
+      "username": "testers",
+      "pointer": "$ilp.interledger-test.dev/testers",
+      "balance": 1000,
+      "reserveBalance": 0,
+      "creditOwed": 0,
+      "creditLimit": 1500,
+      "accumulatedInterest": 0,
+      "confidenceScore": 600,
+      "currency": "ZAR",
+      "active": true,
+      "createdAt": "2026-06-27T08:52:38.250Z"
     }
   ],
   "grants": [],
@@ -151,6 +174,18 @@
   "aiConversations": [],
   "auditLogs": [
     {
+      "id": "log_wvm7783ha",
+      "action": "WALLET_CREATED",
+      "details": "Internal wallet for $ilp.interledger-test.dev/testers created.",
+      "timestamp": "2026-06-27T08:52:38.254Z"
+    },
+    {
+      "id": "log_nlgkir70s",
+      "action": "USER_REGISTERED",
+      "details": "New user: rashaadsm2004@gmail.com → $ilp.interledger-test.dev/testers",
+      "timestamp": "2026-06-27T08:52:38.246Z"
+    },
+    {
       "id": "log_18fcumlm0",
       "action": "SUBSCRIPTION_CREATED",
       "details": "Netflix  R 159 monthly",
@@ -200,5 +235,6 @@
     }
   ],
   "subscriptions": [],
-  "bnplContracts": []
+  "bnplContracts": [],
+  "sessions": {}
 }
