@@ -1,0 +1,267 @@
+{
+  "users": [
+    {
+      "id": "usr_corazon",
+      "email": "mikaeelnaidoo2@gmail.com",
+      "name": "Mikaeel",
+      "consentAccepted": true,
+      "kycStatus": "verified",
+      "kycDetails": {
+        "fullName": "Mikaeel Naidoo",
+        "idNumber": "9805125123081",
+        "country": "South Africa",
+        "documentType": "National ID"
+      },
+      "createdAt": "2026-06-26T19:24:20.379Z"
+    }
+  ],
+  "wallets": [
+    {
+      "id": "wal_corazon",
+      "userId": "usr_corazon",
+      "username": "mikaeel",
+      "pointer": "$ilp.interledger-test.dev/mikaeel",
+      "balance": 4820.5,
+      "reserveBalance": 500,
+      "creditOwed": 0,
+      "creditLimit": 1500,
+      "accumulatedInterest": 0,
+      "confidenceScore": 780,
+      "currency": "ZAR",
+      "active": true,
+      "createdAt": "2026-06-26T19:24:20.380Z"
+    }
+  ],
+  "grants": [],
+  "incomingPayments": [],
+  "outgoingPayments": [],
+  "quotes": [],
+  "transactions": [
+    {
+      "id": "tx_1",
+      "walletId": "wal_corazon",
+      "type": "deposit",
+      "direction": "in",
+      "amount": 500,
+      "currency": "ZAR",
+      "counterparty": "Deposit via ILP",
+      "reference": "ref_dep_9837a",
+      "status": "completed",
+      "category": "General",
+      "createdAt": "2026-06-26T17:24:20.380Z"
+    },
+    {
+      "id": "tx_2",
+      "walletId": "wal_corazon",
+      "type": "send",
+      "direction": "out",
+      "amount": 220,
+      "currency": "ZAR",
+      "counterparty": "$ilp.interledger-test.dev/liam",
+      "reference": "ref_snd_3321b",
+      "status": "completed",
+      "category": "Food",
+      "createdAt": "2026-06-25T19:24:20.380Z"
+    },
+    {
+      "id": "tx_3",
+      "walletId": "wal_corazon",
+      "type": "receive",
+      "direction": "in",
+      "amount": 350,
+      "currency": "ZAR",
+      "counterparty": "$ilp.interledger-test.dev/nia",
+      "reference": "ref_rcv_7612c",
+      "status": "completed",
+      "category": "General",
+      "createdAt": "2026-06-23T19:24:20.380Z"
+    },
+    {
+      "id": "tx_4",
+      "walletId": "wal_corazon",
+      "type": "send",
+      "direction": "out",
+      "amount": 80,
+      "currency": "ZAR",
+      "counterparty": "$ilp.interledger-test.dev/marco",
+      "reference": "ref_snd_4419d",
+      "status": "pending",
+      "category": "Transport",
+      "createdAt": "2026-06-22T19:24:20.380Z"
+    },
+    {
+      "id": "tx_5",
+      "walletId": "wal_corazon",
+      "type": "deposit",
+      "direction": "in",
+      "amount": 1300,
+      "currency": "ZAR",
+      "counterparty": "Deposit via ILP",
+      "reference": "ref_dep_1123e",
+      "status": "completed",
+      "category": "Savings",
+      "createdAt": "2026-06-21T19:24:20.380Z"
+    }
+  ],
+  "budgetCategories": [
+    {
+      "id": "bc_food",
+      "walletId": "wal_corazon",
+      "name": "Food & groceries",
+      "icon": "shopping-cart",
+      "limit": 900,
+      "allocated": 680,
+      "color": "#1D9E75"
+    },
+    {
+      "id": "bc_trans",
+      "walletId": "wal_corazon",
+      "name": "Transport",
+      "icon": "bus",
+      "limit": 400,
+      "allocated": 210,
+      "color": "#378ADD"
+    },
+    {
+      "id": "bc_tech",
+      "walletId": "wal_corazon",
+      "name": "Tech & subscriptions",
+      "icon": "device-laptop",
+      "limit": 500,
+      "allocated": 490,
+      "color": "#A32D2D"
+    },
+    {
+      "id": "bc_save",
+      "walletId": "wal_corazon",
+      "name": "Savings",
+      "icon": "piggy-bank",
+      "limit": 1400,
+      "allocated": 1000,
+      "color": "#EF9F27"
+    }
+  ],
+  "budgetAllocations": [],
+  "aiConversations": [],
+  "auditLogs": [
+    {
+      "id": "log_1",
+      "action": "SYSTEM_STARTUP",
+      "details": "Zen-i core accounting ledger activated.",
+      "timestamp": "2026-06-26T19:24:20.380Z"
+    }
+  ],
+  "subscriptions": [
+    {
+      "id": "sub_netflix",
+      "walletId": "wal_corazon",
+      "merchantName": "Netflix Premium",
+      "pointer": "$ilp.interledger-test.dev/netflix",
+      "amount": 159,
+      "currency": "ZAR",
+      "frequency": "monthly",
+      "category": "Tech & subscriptions",
+      "status": "active",
+      "nextPaymentDate": "2026-06-29T19:24:20.380Z",
+      "lastPaymentDate": "2026-05-30T19:24:20.380Z",
+      "interestRate": 0.05,
+      "createdAt": "2026-06-26T19:24:20.380Z"
+    },
+    {
+      "id": "sub_gym",
+      "walletId": "wal_corazon",
+      "merchantName": "Planet Fitness Gym",
+      "pointer": "$ilp.interledger-test.dev/planetfitness",
+      "amount": 350,
+      "currency": "ZAR",
+      "frequency": "monthly",
+      "category": "Food & groceries",
+      "status": "active",
+      "nextPaymentDate": "2026-06-27T07:24:20.380Z",
+      "lastPaymentDate": "2026-05-27T19:24:20.380Z",
+      "interestRate": 0.1,
+      "createdAt": "2026-06-26T19:24:20.380Z"
+    }
+  ],
+  "bnplContracts": [
+    {
+      "id": "bnpl_superbalist",
+      "walletId": "wal_corazon",
+      "merchantName": "Superbalist Fashion",
+      "purchaseAmount": 1200,
+      "remainingAmount": 800,
+      "currency": "ZAR",
+      "totalInstallments": 3,
+      "status": "active",
+      "createdAt": "2026-06-16T19:24:20.380Z",
+      "installments": [
+        {
+          "id": "inst_sb_1",
+          "installmentNumber": 1,
+          "amount": 400,
+          "dueDate": "2026-06-16T19:24:20.380Z",
+          "status": "paid",
+          "paidAt": "2026-06-16T19:24:20.380Z",
+          "transactionId": "tx_sb_init"
+        },
+        {
+          "id": "inst_sb_2",
+          "installmentNumber": 2,
+          "amount": 400,
+          "dueDate": "2026-07-16T19:24:20.380Z",
+          "status": "pending"
+        },
+        {
+          "id": "inst_sb_3",
+          "installmentNumber": 3,
+          "amount": 400,
+          "dueDate": "2026-08-15T19:24:20.380Z",
+          "status": "pending"
+        }
+      ]
+    },
+    {
+      "id": "bnpl_takealot",
+      "walletId": "wal_corazon",
+      "merchantName": "Takealot Tech",
+      "purchaseAmount": 3200,
+      "remainingAmount": 2400,
+      "currency": "ZAR",
+      "totalInstallments": 4,
+      "status": "active",
+      "createdAt": "2026-06-21T19:24:20.380Z",
+      "installments": [
+        {
+          "id": "inst_tk_1",
+          "installmentNumber": 1,
+          "amount": 800,
+          "dueDate": "2026-06-21T19:24:20.380Z",
+          "status": "paid",
+          "paidAt": "2026-06-21T19:24:20.380Z",
+          "transactionId": "tx_tk_init"
+        },
+        {
+          "id": "inst_tk_2",
+          "installmentNumber": 2,
+          "amount": 800,
+          "dueDate": "2026-07-21T19:24:20.380Z",
+          "status": "pending"
+        },
+        {
+          "id": "inst_tk_3",
+          "installmentNumber": 3,
+          "amount": 800,
+          "dueDate": "2026-08-20T19:24:20.380Z",
+          "status": "pending"
+        },
+        {
+          "id": "inst_tk_4",
+          "installmentNumber": 4,
+          "amount": 800,
+          "dueDate": "2026-09-19T19:24:20.380Z",
+          "status": "pending"
+        }
+      ]
+    }
+  ]
+}

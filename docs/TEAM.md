@@ -2,7 +2,7 @@
 
 ## ⚒️ Team Name
 ``` c
-Replace Team_name
+REMMZ
 ```
 
 ## 👥 Members
@@ -15,5 +15,15 @@ Replace Team_name
 | **Misha Dick**   | Designer / Frontend Developer  | mishadj1425@gmail.com |
 
 
+## Linkedin Profiles
+- [Misha Dick](https://www.linkedin.com/in/misha-d-jacobs-3bb754321/)
+- [Entisaar Elfadl](https://www.linkedin.com/in/entisaar-elfadl-400744351/)
+- [Mikaeel Naidoo](https://www.linkedin.com/in/mikastudent/)
+- [Moegamat Samsodien](https://www.linkedin.com/in/moegamatsamsodien/)
+- [Zahra Salie](https://www.linkedin.com/in/zahrasalie)
+
+
 ## 📧 Other Contact Info
-- Portfilio : <https://plum165.github.io/portfolio/>
+- Portfilio : [Moegamat Samsodien](https://moegamat-samsodien-portfolio.vercel.app/)
+
+  

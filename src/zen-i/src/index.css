@@ -1,0 +1,37 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  
+  /* Primary Greeny Green Theme (#35A127) */
+  --color-peach-50: #F5FAF4; /* Very light soft cream green */
+  --color-peach-55: #EDF7EC; /* Navigation/active tab bg */
+  --color-peach-100: #E3F3E1;
+  --color-peach-200: #C4E7C1;
+  --color-peach-300: #A2D89D;
+  --color-peach-400: #7EC979;
+  --color-peach-500: #35A127; /* Base Primary Greeny Green */
+  --color-peach-600: #2C8820; /* Buttons/primary hover */
+  --color-peach-700: #236E1A;
+  --color-peach-800: #1B5514;
+  --color-peach-850: #164610;
+  --color-peach-900: #0F300B;
+
+  /* Yellowy Green Secondary Accent (#63C40E) */
+  --color-emerald-50: #F6FCF0;
+  --color-emerald-100: #ECFAD8;
+  --color-emerald-200: #D3F5AB;
+  --color-emerald-500: #63C40E; /* Yellowy Green Secondary Accent */
+  --color-emerald-600: #52A20B;
+  --color-emerald-700: #428209;
+
+  /* Peachy Brown High-Contrast Accent (#E59350) */
+  --color-amber-50: #FEF9F3;
+  --color-amber-100: #FDF1E2;
+  --color-amber-200: #FAE0BF;
+  --color-amber-500: #E59350; /* Peachy Brown High-Contrast Accent */
+  --color-amber-600: #C4793B;
+  --color-amber-700: #A05E29;
+}

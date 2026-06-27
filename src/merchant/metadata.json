@@ -1,0 +1,6 @@
+{
+  "name": "Zen-i",
+  "description": "An interactive merchant platform for Apparel Co. to generate secure split-payment links, SMS notifications, and local client-side scannable QR codes using Zen-i.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
