@@ -1,4 +1,4 @@
-# PandaPay — Open Payments Hackathon 2026
+# Zen-i — Open Payments Hackathon 2026
 
 Interest-free split payments for the unbanked, powered by the **Interledger Protocol**.
 
