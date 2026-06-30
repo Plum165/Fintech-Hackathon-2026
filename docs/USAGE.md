@@ -74,12 +74,12 @@ Full audit log with search and date filters.
 
 | Step | Who | Action |
 |---|---|---|
-| 1 | Merchant (Zanele) | Open Merchant Portal, fill in item + price, generate QR |
-| 2 | Customer (Misa) | Scan QR or paste the link — BNPL form opens pre-filled |
-| 3 | Misa | Review splits, advance to Sign step |
-| 4 | Misa | Type name as electronic signature, check consent, click Sign & Initiate |
-| 5 | Misa | Click the approval link → approve grant in ILP wallet |
-| 6 | Misa | Return to app, click I've Approved — Execute Payment |
+| 1 | Merchant (Zahra) | Open Merchant Portal, fill in item + price, generate QR |
+| 2 | Customer (Misha) | Scan QR or paste the link — BNPL form opens pre-filled |
+| 3 | Misha | Review splits, advance to Sign step |
+| 4 | Misha | Type name as electronic signature, check consent, click Sign & Initiate |
+| 5 | Misha | Click the approval link → approve grant in ILP wallet |
+| 6 | Misha | Return to app, click I've Approved — Execute Payment |
 | 7 | Both | Confirmation ticket appears; Zanele's wallet receives first installment |
 
 ---
