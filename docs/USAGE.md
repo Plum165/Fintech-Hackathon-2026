@@ -1,4 +1,4 @@
-# PandaPay — Usage Guide
+# Zeni — Usage Guide
 
 ---
 
